@@ -119,6 +119,7 @@ else:
 loan_amount = car_price - installment_prepaid
 r = (installment_rate / 100) / 12
 inst_monthly_pay = int(loan_amount * (r * (1 + r)**months) / ((1 + r)**months - 1)) if r > 0 else int(loan_amount / months)
+installment_interest = int((inst_monthly_pay * months) - loan_amount)
 
 total_ins = int((insurance_annual / 12) * months)
 total_tax = int((tax_annual / 12) * months)
@@ -170,7 +171,7 @@ with view_col1:
     st.markdown('<div class="capture-box">', unsafe_allow_html=True)
     st.markdown('<div class="excel-header-blue">카프리오 비교 프로그램 (반납형)</div>', unsafe_allow_html=True)
     
-    inst_total_cost_ret = (inst_monthly_pay * months) + reg_tax + total_tax + total_ins + installment_prepaid - car_sell_value
+    inst_total_cost_ret = installment_prepaid + loan_amount + installment_interest + reg_tax + total_tax + total_ins - car_sell_value
     rent_total_cost_ret = (rent_monthly_pay * months) + rent_deposit
     diff_ret = inst_total_cost_ret - rent_total_cost_ret
     
@@ -179,6 +180,7 @@ with view_col1:
         <tr><th style="width:34%;">세부 항목</th><th style="width:33%;">일반 할부</th><th style="width:33%;">장기렌트(반납형)</th></tr>
         <tr><td class="font-bold">선납금</td><td>{installment_prepaid:,} 원</td><td>{rent_deposit:,} 원</td></tr>
         <tr><td class="font-bold">월납입금<br><span style="color:red; font-size:10px;">(선납금 제외)</span></td><td>{inst_monthly_pay:,} 원</td><td>{rent_monthly_pay:,} 원</td></tr>
+        <tr><td class="font-bold">할부이자</td><td>{installment_interest:,} 원</td><td>-</td></tr>
         <tr><td class="font-bold">취등록세</td><td>{reg_tax:,} 원</td><td rowspan="5" class="bg-light text-blue" style="vertical-align:middle;">월 렌트료에<br>전부 포함</td></tr>
         <tr><td class="font-bold">자동차세</td><td>{total_tax:,} 원</td></tr>
         <tr><td class="font-bold">보험료</td><td>{total_ins:,} 원</td></tr>
@@ -201,7 +203,7 @@ with view_col2:
     st.markdown('<div class="capture-box">', unsafe_allow_html=True)
     st.markdown('<div class="excel-header-blue">카프리오 비교 프로그램 (인수형)</div>', unsafe_allow_html=True)
     
-    inst_total_cost_ins = (inst_monthly_pay * months) + reg_tax + total_tax + total_ins + installment_prepaid
+    inst_total_cost_ins = installment_prepaid + loan_amount + installment_interest + reg_tax + total_tax + total_ins
     rent_total_cost_ins = (rent_monthly_pay * months) + rent_takeover_price + rent_takeover_tax + rent_deposit
     diff_ins = inst_total_cost_ins - rent_total_cost_ins
 
@@ -210,6 +212,7 @@ with view_col2:
         <tr><th style="width:34%;">세부 항목</th><th style="width:33%;">일반 할부</th><th style="width:33%;">장기렌트(인수형)</th></tr>
         <tr><td class="font-bold">선납금</td><td>{installment_prepaid:,} 원</td><td>{rent_deposit:,} 원</td></tr>
         <tr><td class="font-bold">월납입금<br><span style="color:red; font-size:10px;">(선납금 제외)</span></td><td>{inst_monthly_pay:,} 원</td><td>{rent_monthly_pay:,} 원</td></tr>
+        <tr><td class="font-bold">할부이자</td><td>{installment_interest:,} 원</td><td>-</td></tr>
         <tr><td class="font-bold">취등록세</td><td>{reg_tax:,} 원</td><td rowspan="3" class="bg-light text-blue" style="vertical-align:middle;">월 렌트료에<br>전부 포함</td></tr>
         <tr><td class="font-bold">자동차세</td><td>{total_tax:,} 원</td></tr>
         <tr><td class="font-bold">보험료</td><td>{total_ins:,} 원</td></tr>
