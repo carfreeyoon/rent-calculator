@@ -607,7 +607,7 @@ st.markdown("""
 <td style="background:#0b3873;color:white;font-weight:bold;">번호판</td>
 <td style="background:#ddebf7;font-weight:bold;">일반번호판</td>
 <td>O</td>
-<td>X</td>
+<td>X<div style="color:red; font-size:10px; line-height:1; margin-top:-4px;">(하·허·호)</div></td>
 <td>O</td>
 </tr>
 
