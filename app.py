@@ -249,7 +249,7 @@ CC원문\t{cc_raw_val}
 # ==========================================
 # [TOP MAIN] 타사 견적 파싱 구역
 # ==========================================
-raw_data = st.text_area("📋 타사 렌트 견적 복사 붙여넣기", placeholder="견적 텍스트를 입력하세요.", height=80)
+raw_data = st.text_area("📋 렌트 견적 복사 붙여넣기", placeholder="견적 텍스트를 입력하세요.", height=80)
 
 if raw_data:
     parsed_data = auto_convert_quote(raw_data)
