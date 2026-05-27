@@ -517,7 +517,7 @@ with m_col1:
 
     st.markdown(
         """
-        <div style="margin-top:-10px; margin-left:58px;">
+        <div style="margin-top:-8px; margin-left:12px;">
             <span style="color:#ff3b30; font-size:11px; font-weight:600;">
                 * 차량별 상이 · 시세 확인 필수
             </span>
