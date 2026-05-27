@@ -10,7 +10,10 @@ st.markdown("""
     
     /* 타이틀 및 컨테이너 박스 */
     .excel-header-blue { background-color: #0b3873; color: white; padding: 6px; text-align: center; font-weight: bold; font-size: 15px; border-radius: 4px; margin-bottom: 10px; }
+    .excel-header-green { background-color: #264653; color: white; padding: 6px; text-align: center; font-weight: bold; font-size: 15px; border-radius: 4px; margin-bottom: 10px; }
+    .excel-header-gray { background-color: #5a5a5a; color: white; padding: 6px; text-align: center; font-weight: bold; font-size: 14px; border-radius: 4px; margin-bottom: 10px; }
     .capture-box { border: 2px solid #0b3873; padding: 12px; border-radius: 6px; background-color: #ffffff; margin-bottom: 10px; }
+    .matrix-box { border: 1px solid #dee2e6; padding: 10px; border-radius: 6px; background-color: #ffffff; margin-bottom: 10px; }
     
     /* 결과 배너 */
     .excel-green { background-color: #e2efda; color: #375623; font-weight: bold; font-size: 14px; border: 1px solid #a9d08e; border-radius: 4px; padding: 6px; text-align: center; margin-top: 10px; }
@@ -20,6 +23,13 @@ st.markdown("""
     .pure-table { width: 100%; border-collapse: collapse; font-size: 13px; text-align: center; }
     .pure-table th { background-color: #f2f2f2; font-weight: bold; padding: 6px; border: 1px solid #dee2e6; }
     .pure-table td { padding: 6px; border: 1px solid #dee2e6; height: 32px; }
+    
+    /* 매트릭스 전용 스타일 (그린 강조색 포함) */
+    .matrix-table { width: 100%; border-collapse: collapse; font-size: 12px; text-align: center; }
+    .matrix-table th { background-color: #0b3873; color: white; font-weight: bold; padding: 5px; border: 1px solid #dee2e6; }
+    .matrix-table td { padding: 5px; border: 1px solid #dee2e6; }
+    .td-highlight { background-color: #e2efda; font-weight: bold; }
+    
     .bg-light { background-color: #f8f9fa; }
     .font-bold { font-weight: bold; }
     .text-blue { color: #0b3873; font-weight: bold; }
@@ -33,7 +43,7 @@ months = 60
 mileage = "2만Km"
 rent_monthly_pay = 600930
 rent_deposit = 0
-residual_rent_pct = 58  # 기본 렌트 잔존가치
+residual_rent_pct = 58  
 cc_text = "1600CC이하"
 car_shape = "하이브리드"
 
@@ -44,8 +54,6 @@ st.sidebar.header("📋 할부 조건 설정")
 installment_prepaid = st.sidebar.number_input("💵 할부 선납금 (인도금)", value=10000000, step=1000000, format="%d")
 installment_rate = st.sidebar.number_input("📈 신용별 할부 금리 (%)", value=5.0, step=0.1, format="%.1f")
 insurance_annual = st.sidebar.number_input("🛡️ 고객 연 개인 보험료", value=1000000, step=100000, format="%d")
-
-# 누락되었던 렌트 잔존가치 수동 조절 창 추가 (텍스트 파싱과 연동)
 residual_rent_pct = st.sidebar.number_input("📉 할부 시, 잔존가치 (%)", value=residual_rent_pct, min_value=0, max_value=100, step=1)
 
 # ==========================================
@@ -72,7 +80,7 @@ if raw_data:
             elif "약정거리" in key: mileage = val.replace(" ", "")
             elif "월납입" in key: rent_monthly_pay = clean_num(val)
             elif "선납금" in key or "보증금" in key: rent_deposit = clean_num(val)
-            elif "잔존" in key: residual_rent_pct = clean_num(val)  # 파싱 시 사이드바 값도 자동 변경됨
+            elif "잔존" in key: residual_rent_pct = clean_num(val)  
             elif "CC" in key: cc_text = val.replace(" ", "")
             elif "형태" in key: car_shape = val.replace(" ", "")
 
@@ -119,7 +127,7 @@ car_sell_value = int(car_price * (residual_sell_pct / 100))
 rent_takeover_price = int(car_price * (residual_rent_pct / 100))
 
 # ==========================================
-# [📸 MAIN VISUAL BOARD] 양대 비교 테이블 출력 (공백 박스 제거 완료)
+# [📸 MAIN VISUAL BOARD] 양대 비교 테이블 출력
 # ==========================================
 view_col1, view_col2 = st.columns(2)
 
@@ -149,9 +157,9 @@ with view_col1:
     st.markdown(html_ret, unsafe_allow_html=True)
     
     if diff_ret > 0:
-        st.markdown(f'<div class="excel-green">🏆 할부 대비 {diff_ret:,} 절감</div>', unsafe_allow_html=True)
+        st.markdown(f'<div class="excel-green">🏆 할부 대비 {diff_ret:,} 원 절감</div>', unsafe_allow_html=True)
     else:
-        st.markdown(f'<div class="excel-red">할부 정산이 {abs(diff_ret):,} 우세</div>', unsafe_allow_html=True)
+        st.markdown(f'<div class="excel-red">할부 정산이 {abs(diff_ret):,} 원 우세</div>', unsafe_allow_html=True)
     st.markdown('</div>', unsafe_allow_html=True)
 
 # 2. 인수형 테이블 구역
@@ -182,14 +190,78 @@ with view_col2:
     st.markdown(html_ins, unsafe_allow_html=True)
     
     if diff_ins > 0:
-        st.markdown(f'<div class="excel-green">🏆 할부 대비 {diff_ins:,} 절감</div>', unsafe_allow_html=True)
+        st.markdown(f'<div class="excel-green">🏆 할부 대비 {diff_ins:,} 원 절감</div>', unsafe_allow_html=True)
     else:
-        st.markdown(f'<div class="excel-red">할부 인수가 {abs(diff_ins):,} 우세</div>', unsafe_allow_html=True)
+        st.markdown(f'<div class="excel-red">할부 인수가 {abs(diff_ins):,} 원 우세</div>', unsafe_allow_html=True)
     st.markdown('</div>', unsafe_allow_html=True)
 
-# 3. 신용/리스크 종합분석 (텍스트 간소화 버전)
+
+# ==========================================
+# [📊 NEW] 원본 데이터 검증용 매트릭스 표 구역 (추가 항목)
+# ==========================================
+st.markdown('<div class="matrix-box">', unsafe_allow_html=True)
+st.markdown('<div class="excel-header-gray">💻 내부 데이터 산출 요율 검증표</div>', unsafe_allow_html=True)
+
+m_col1, m_col2, m_col3, m_col4 = st.columns(4)
+
+with m_col1:
+    st.markdown("**■ 잔존가치 (주행거리 × 이용기간)**")
+    st.markdown(f"""
+    <table class="matrix-table">
+        <tr><th>구분</th><th>24개월</th><th>36개월</th><th>48개월</th><th>60개월</th></tr>
+        <tr><td>1만KM</td><td class="{'td-highlight' if mileage=='1만Km' and months==24 else ''}">78%</td><td class="{'td-highlight' if mileage=='1만Km' and months==36 else ''}">70%</td><td class="{'td-highlight' if mileage=='1만Km' and months==48 else ''}">63%</td><td class="{'td-highlight' if mileage=='1만Km' and months==60 else ''}">56%</td></tr>
+        <tr><td>1.5만KM</td><td class="{'td-highlight' if mileage=='1.5만Km' and months==24 else ''}">75%</td><td class="{'td-highlight' if mileage=='1.5만Km' and months==36 else ''}">67%</td><td class="{'td-highlight' if mileage=='1.5만Km' and months==48 else ''}">60%</td><td class="{'td-highlight' if mileage=='1.5만Km' and months==60 else ''}">53%</td></tr>
+        <tr><td>2만KM</td><td class="{'td-highlight' if mileage=='2만Km' and months==24 else ''}">72%</td><td class="{'td-highlight' if mileage=='2만Km' and months==36 else ''}">64%</td><td class="{'td-highlight' if mileage=='2만Km' and months==48 else ''}">57%</td><td class="{'td-highlight' if mileage=='2만Km' and months==60 else ''}">50%</td></tr>
+        <tr><td>3만KM</td><td class="{'td-highlight' if mileage=='3만Km' and months==24 else ''}">65%</td><td class="{'td-highlight' if mileage=='3만Km' and months==36 else ''}">55%</td><td class="{'td-highlight' if mileage=='3만Km' and months==48 else ''}">48%</td><td class="{'td-highlight' if mileage=='3만Km' and months==60 else ''}">40%</td></tr>
+    </table>
+    <span style='font-size:11px; color:gray;'>* 법인 차량 판매 시, 부가세 10% 지출</span>
+    """, unsafe_allow_html=True)
+
+with m_col2:
+    st.markdown("**■ 신용별 할부이자**")
+    st.markdown(f"""
+    <table class="matrix-table">
+        <tr><th>구분</th><th>할부이자</th></tr>
+        <tr><td>500점 이하</td><td>10.5 ~ 14.9%</td></tr>
+        <tr><td>500 ~ 700점</td><td>7.5 ~ 9.9%</td></tr>
+        <tr><td>700 ~ 900점</td><td>5.0 ~ 6.9%</td></tr>
+        <tr><td>900점 이상</td><td>3.5 ~ 4.8%</td></tr>
+    </table>
+    """, unsafe_allow_html=True)
+
+with m_col3:
+    st.markdown("**■ CC당 자동차세**")
+    st.markdown(f"""
+    <table class="matrix-table">
+        <tr><th>구분</th><th>CC당 비용</th><th>연간 비용</th></tr>
+        <tr class="{'td-highlight' if '1000' in cc_text else ''}"><td>1000CC 이하</td><td>104원</td><td>₩ 104,000</td></tr>
+        <tr class="{'td-highlight' if '1600' in cc_text else ''}"><td>1600CC 이하</td><td>182원</td><td>₩ 291,200</td></tr>
+        <tr class="{'td-highlight' if '2000' in cc_text else ''}"><td>2000CC 이하</td><td>260원</td><td>₩ 520,000</td></tr>
+        <tr class="{'td-highlight' if '2500' in cc_text else ''}"><td>2500CC 이하</td><td>260원</td><td>₩ 650,000</td></tr>
+        <tr class="{'td-highlight' if '3000' in cc_text else ''}"><td>3000CC 초과</td><td>260원</td><td>₩ 780,000</td></tr>
+        <tr class="{'td-highlight' if '전기' in car_shape else ''}"><td>전기차</td><td>X</td><td>₩ 130,000</td></tr>
+    </table>
+    """, unsafe_allow_html=True)
+
+with m_col4:
+    st.markdown("**■ 형태별 취등록세 감면**")
+    st.markdown(f"""
+    <table class="matrix-table">
+        <tr><th>구분</th><th>세율</th><th>감면 한도</th></tr>
+        <tr class="{'td-highlight' if car_shape=='일반' else ''}"><td>일반</td><td>7%</td><td>-</td></tr>
+        <tr class="{'td-highlight' if car_shape=='경차' else ''}"><td>경차</td><td>4%</td><td>75만 원</td></tr>
+        <tr class="{'td-highlight' if '전기' in car_shape or '수소' in car_shape else ''}"><td>전기/수소차</td><td>7%</td><td>140만 원</td></tr>
+        <tr class="{'td-highlight' if car_shape=='하이브리드' else ''}"><td>하이브리드</td><td>7%</td><td>40만 원</td></tr>
+        <tr class="{'td-highlight' if '승합' in car_shape else ''}"><td>승합차</td><td>5%</td><td>-</td></tr>
+    </table>
+    """, unsafe_allow_html=True)
+
+st.markdown('</div>', unsafe_allow_html=True)
+
+
+# 4. 신용/리스크 종합분석
 st.markdown('<div class="capture-box">', unsafe_allow_html=True)
-st.markdown('<div class="excel-header-blue" style="background-color: #264653; margin-bottom:8px;">할부 vs 렌트 리스크 분석</div>', unsafe_allow_html=True)
+st.markdown('<div class="excel-header-green">할부 vs 렌트 리스크 종합 비교</div>', unsafe_allow_html=True)
 
 st.markdown("""
 | 분류 | 평가 항목 | 일반 자동차 할부 금융 | 카프리오 대여 프로그램 |
