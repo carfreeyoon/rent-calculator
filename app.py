@@ -29,7 +29,7 @@ st.markdown("""
     .matrix-table th { background-color: #0b3873; color: white; font-weight: bold; padding: 5px; border: 1px solid #dee2e6; }
     .matrix-table td { padding: 5px; border: 1px solid #dee2e6; }
     
-    .td-highlight { background-color: #00f28a; font-weight: bold; }
+    .td-highlight { background-color: #e2efda; color: #375623; font-weight: bold; }
     .bg-light { background-color: #f8f9fa; }
     .text-blue { color: #0b3873; font-weight: bold; }
     .font-bold { font-weight: bold; }
