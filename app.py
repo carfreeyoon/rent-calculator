@@ -515,6 +515,12 @@ with m_col1:
     </table>
     """, unsafe_allow_html=True)
 
+    st.markdown(
+        '<div style="color:#ff3b30; font-size:11px; font-weight:600; text-align:center; margin-top:-4px;">* 차량별 상이 · 시세 확인 필수</div>',
+        unsafe_allow_html=True
+    )
+
+
 with m_col2:
     st.markdown("**■ 신용별 할부이자**")
     st.markdown(f"""
