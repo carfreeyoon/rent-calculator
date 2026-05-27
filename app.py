@@ -2,53 +2,36 @@ import streamlit as st
 
 st.set_page_config(page_title="카프리오 비교 프로그램", layout="wide")
 
-# 레이아웃 완벽 정렬 및 불필요한 공백 제거용 CSS
+# CSS: 레이아웃 정렬 및 고정
 st.markdown("""
     <style>
     div.block-container { padding-top: 1rem !important; padding-bottom: 1rem !important; }
-    
-    /* 상단 공통 조건 박스 및 테이블 */
     .common-info-box { background-color: #f8f9fa; border: 1px solid #dee2e6; padding: 15px; border-radius: 6px; margin-bottom: 20px; }
     .common-table { width: 100%; border-collapse: collapse; background-color: #ffffff; text-align: center; font-size: 13px; }
     .common-table th { background-color: #f1f3f5; color: #0b3873; font-weight: bold; padding: 8px; border: 1px solid #dee2e6; }
     .common-table td { padding: 8px; border: 1px solid #dee2e6; color: #333333; }
-
-    /* 메인 비교 테이블 */
     .excel-header-blue { background-color: #0b3873; color: white; padding: 8px; text-align: center; font-weight: bold; font-size: 15px; border-radius: 4px; margin-bottom: 12px; }
     .excel-header-gray { background-color: #5a5a5a; color: white; padding: 6px; text-align: center; font-weight: bold; font-size: 14px; border-radius: 4px; margin-bottom: 10px; }
     .capture-box { border: 2px solid #0b3873; padding: 15px; border-radius: 6px; background-color: #ffffff; min-height: 440px; }
     .excel-green { background-color: #e2efda; color: #375623; font-weight: bold; font-size: 14px; border: 1px solid #a9d08e; border-radius: 4px; padding: 8px; text-align: center; margin-top: 15px; }
     .excel-red { background-color: #fce4d6; color: #c65911; font-weight: bold; font-size: 14px; border: 1px solid #f4b084; border-radius: 4px; padding: 8px; text-align: center; margin-top: 15px; }
-    
     .pure-table { width: 100%; border-collapse: collapse; font-size: 13px; text-align: center; table-layout: fixed; }
     .pure-table th { background-color: #0b3873; color: white; font-weight: bold; padding: 8px; border: 1px solid #dee2e6; }
-    .pure-table td { padding: 8px; border: 1px solid #dee2e6; height: 42px; vertical-align: middle; }
-    
-    /* 하단 검증 요율표 */
+    .pure-table td { padding: 8px; border: 1px solid #dee2e6; height: 40px; vertical-align: middle; }
     .matrix-table { width: 100%; border-collapse: collapse; font-size: 12px; text-align: center; margin-bottom: 10px; }
     .matrix-table th { background-color: #0b3873; color: white; font-weight: bold; padding: 5px; border: 1px solid #dee2e6; }
     .matrix-table td { padding: 5px; border: 1px solid #dee2e6; }
-    
     .bg-light { background-color: #f8f9fa; }
     .text-blue { color: #0b3873; font-weight: bold; }
     .font-bold { font-weight: bold; }
     </style>
 """, unsafe_allow_html=True)
 
-# 초기 기본값 설정
+# 초기값 및 로직 (기존 그대로 유지)
 car_name = "기아 카니발 가솔린 1.6 터보 하이브리드 2WD 7인승 노블레스"
-car_option = "-"
-car_price = 47810000
-months = 60
-mileage = "2만Km"
-rent_monthly_pay = 600930
-rent_deposit = 0
-cc_text = "1600CC이하"
-car_shape = "하이브리드"
-installment_resale_pct = 50 
-rent_resale_pct = 58
+car_option = "-"; car_price = 47810000; months = 60; mileage = "2만Km"; rent_monthly_pay = 600930; rent_deposit = 0; cc_text = "1600CC이하"; car_shape = "하이브리드"
+installment_resale_pct = 50; rent_resale_pct = 58
 
-# [SIDEBAR] 조건 설정
 st.sidebar.header("📋 조건 설정")
 is_corporate = st.sidebar.checkbox("🏢 법인 고객 여부", value=False)
 installment_prepaid = st.sidebar.number_input("💵 할부 선납금", value=10000000, step=1000000)
@@ -56,7 +39,6 @@ installment_rate = st.sidebar.number_input("📈 할부 금리 (%)", value=5.0, 
 insurance_annual = st.sidebar.number_input("🛡️ 연 개인 보험료", value=1000000, step=100000)
 installment_resale_pct = st.sidebar.number_input("📉 할부 잔존가치 (%)", value=installment_resale_pct, min_value=0, max_value=100, step=1)
 
-# [TOP MAIN] 타사 견적 파싱
 raw_data = st.text_area("📋 타사 렌트 견적 복사 붙여넣기", placeholder="견적 텍스트를 입력하세요.", height=80)
 if raw_data:
     lines = raw_data.strip().split('\n')
@@ -75,10 +57,8 @@ if raw_data:
             elif "CC" in key: cc_text = val.replace(" ", "")
             elif "형태" in key: car_shape = val.replace(" ", "")
 
-# [BACKEND] 연산 로직
 e15 = "O" if "승합" in car_shape else ""; e14 = "O" if "경차" in car_shape else ""
 g14 = "O" if "전기" in car_shape or "수소" in car_shape else ""; i14 = "O" if "하이브리드" in car_shape else ""
-
 if e15 != "" and g14 != "": reg_tax_raw = (car_price * 0.05) - 1400000
 elif e15 != "" and i14 != "": reg_tax_raw = (car_price * 0.05) - 400000
 elif e15 != "": reg_tax_raw = car_price * 0.05
@@ -105,7 +85,7 @@ corporate_discount = 0.9 if (is_corporate and car_shape != "경차" and car_shap
 car_sell_value = int(car_price * (installment_resale_pct / 100) * corporate_discount)
 rent_takeover_price = int(car_price * (rent_resale_pct / 100)); rent_takeover_tax = int(rent_takeover_price * 0.07)
 
-# [UI] 공통 정보
+# 공통 정보
 st.markdown(f"""
     <div class="common-info-box">
         <div style="font-size:15px; font-weight:bold; margin-bottom:10px; color:#0b3873;">🚘 비교 차량 공통 조건</div>
@@ -116,7 +96,7 @@ st.markdown(f"""
     </div>
 """, unsafe_allow_html=True)
 
-# [📊 MAIN VISUAL] 대칭형 비교 테이블
+# 메인 비교 테이블
 view_col1, view_col2 = st.columns(2)
 
 inst_total_ret = (inst_monthly_pay * months) + reg_tax + total_tax + total_ins + installment_prepaid - car_sell_value
@@ -130,17 +110,17 @@ with view_col1:
         <tr><th style="width:34%;">세부 항목</th><th style="width:33%;">일반 할부</th><th style="width:33%;">장기렌트(반납형)</th></tr>
         <tr><td class="font-bold">선납금</td><td>{installment_prepaid:,} 원</td><td>{rent_deposit:,} 원</td></tr>
         <tr><td class="font-bold">월납입금</td><td>{inst_monthly_pay:,} 원</td><td>{rent_monthly_pay:,} 원</td></tr>
-        <tr><td class="font-bold">취등록세</td><td>{reg_tax:,} 원</td><td rowspan="5" class="bg-light text-blue">월 렌트료에<br>전부 포함</td></tr>
+        <tr><td class="font-bold">이자/기타</td><td>{total_inst_interest:,} 원</td><td>-</td></tr>
+        <tr><td class="font-bold">취등록세</td><td>{reg_tax:,} 원</td><td rowspan="4" class="bg-light text-blue">월 렌트료에<br>전부 포함</td></tr>
         <tr><td class="font-bold">자동차세</td><td>{total_tax:,} 원</td></tr>
         <tr><td class="font-bold">보험료</td><td>{total_ins:,} 원</td></tr>
         <tr><td class="font-bold">만기 차량 매각</td><td>-{car_sell_value:,} 원</td></tr>
-        <tr><td class="font-bold">기타 비용</td><td>-</td></tr>
-        <tr><td class="font-bold">이자/기타</td><td>{total_inst_interest:,} 원</td><td>-</td></tr>
+        <tr><td class="font-bold">-</td><td>-</td><td>-</td></tr>
         <tr class="bg-light font-bold"><td>📊 월 평균 환산</td><td>{int(inst_total_ret/months):,} 원</td><td>{int(rent_total_ret/months):,} 원</td></tr>
         <tr class="bg-light font-bold" style="background-color:#e9ecef;"><td>💰 총 투입 비용</td><td>{inst_total_ret:,} 원</td><td>{rent_total_ret:,} 원</td></tr>
     </table>
     """, unsafe_allow_html=True)
-    st.markdown(f'<div class="{"excel-green" if diff_ret > 0 else "excel-red"}">{"🏆 장기렌트 선택 시 할부 대비 " + str(diff_ret) + "원 절감!" if diff_ret > 0 else "할부 이용이 유리합니다."}</div>', unsafe_allow_html=True)
+    st.markdown(f'<div class="{"excel-green" if diff_ret > 0 else "excel-red"}">{"🏆 장기렌트 선택 시 할부 대비 " + f"{diff_ret:,}" + "원 절감!" if diff_ret > 0 else "할부 이용이 " + f"{abs(diff_ret):,}" + "원 더 유리합니다."}</div>', unsafe_allow_html=True)
     st.markdown('</div>', unsafe_allow_html=True)
 
 inst_total_ins = (inst_monthly_pay * months) + reg_tax + total_tax + total_ins + installment_prepaid
@@ -154,33 +134,15 @@ with view_col2:
         <tr><th style="width:34%;">세부 항목</th><th style="width:33%;">일반 할부</th><th style="width:33%;">장기렌트(인수형)</th></tr>
         <tr><td class="font-bold">선납금</td><td>{installment_prepaid:,} 원</td><td>{rent_deposit:,} 원</td></tr>
         <tr><td class="font-bold">월납입금</td><td>{inst_monthly_pay:,} 원</td><td>{rent_monthly_pay:,} 원</td></tr>
-        <tr><td class="font-bold">취등록세</td><td>{reg_tax:,} 원</td><td rowspan="3" class="bg-light text-blue">월 렌트료에<br>전부 포함</td></tr>
+        <tr><td class="font-bold">이자/기타</td><td>{total_inst_interest:,} 원</td><td>-</td></tr>
+        <tr><td class="font-bold">취등록세</td><td>{reg_tax:,} 원</td><td rowspan="2" class="bg-light text-blue">월 렌트료에<br>전부 포함</td></tr>
         <tr><td class="font-bold">자동차세</td><td>{total_tax:,} 원</td></tr>
-        <tr><td class="font-bold">보험료</td><td>{total_ins:,} 원</td></tr>
+        <tr><td class="font-bold">보험료</td><td>{total_ins:,} 원</td><td>-</td></tr>
         <tr><td class="font-bold">만기 인수금</td><td>-</td><td>{rent_takeover_price:,} 원</td></tr>
         <tr><td class="font-bold">인수 시 취등록세</td><td>-</td><td>{rent_takeover_tax:,} 원</td></tr>
-        <tr><td class="font-bold">이자/기타</td><td>{total_inst_interest:,} 원</td><td>-</td></tr>
         <tr class="bg-light font-bold"><td>📊 월 평균 환산</td><td>{int(inst_total_ins/months):,} 원</td><td>{int(rent_total_ins/months):,} 원</td></tr>
         <tr class="bg-light font-bold" style="background-color:#e9ecef;"><td>💰 총 투입 비용</td><td>{inst_total_ins:,} 원</td><td>{rent_total_ins:,} 원</td></tr>
     </table>
     """, unsafe_allow_html=True)
-    st.markdown(f'<div class="{"excel-green" if diff_ins > 0 else "excel-red"}">{"🏆 장기렌트 선택 시 할부 대비 " + str(diff_ins) + "원 절감!" if diff_ins > 0 else "할부 인수가 유리합니다."}</div>', unsafe_allow_html=True)
+    st.markdown(f'<div class="{"excel-green" if diff_ins > 0 else "excel-red"}">{"🏆 장기렌트 선택 시 할부 대비 " + f"{diff_ins:,}" + "원 절감!" if diff_ins > 0 else "할부 인수가 총 " + f"{abs(diff_ins):,}" + "원 더 유리합니다."}</div>', unsafe_allow_html=True)
     st.markdown('</div>', unsafe_allow_html=True)
-
-# [📊 BOTTOM] 검증 요율표
-st.write("")
-st.markdown('<div class="excel-header-gray">💻 내부 데이터 산출 요율 검증표</div>', unsafe_allow_html=True)
-m_col1, m_col2, m_col3, m_col4 = st.columns(4)
-
-with m_col1:
-    st.markdown("**■ 잔존가치 (매각 요율표)**")
-    st.markdown("""<table class="matrix-table"><tr><th>구분</th><th>24개월</th><th>36개월</th><th>48개월</th><th>60개월</th></tr><tr><td>1만KM</td><td>78%</td><td>70%</td><td>63%</td><td>56%</td></tr><tr><td>1.5만KM</td><td>75%</td><td>67%</td><td>60%</td><td>53%</td></tr><tr><td>2만KM</td><td>72%</td><td>64%</td><td>57%</td><td>50%</td></tr><tr><td>3만KM</td><td>65%</td><td>55%</td><td>48%</td><td>40%</td></tr></table>""", unsafe_allow_html=True)
-with m_col2:
-    st.markdown("**■ 신용별 할부이자**")
-    st.markdown("""<table class="matrix-table"><tr><th>구분</th><th>할부이자</th></tr><tr><td>500점 이하</td><td>10.5 ~ 14.9%</td></tr><tr><td>500 ~ 700점</td><td>7.5 ~ 9.9%</td></tr><tr><td>700 ~ 900점</td><td>5.0 ~ 6.9%</td></tr><tr><td>900점 이상</td><td>3.5 ~ 4.8%</td></tr></table>""", unsafe_allow_html=True)
-with m_col3:
-    st.markdown("**■ 자동차세 (연간)**")
-    st.markdown("""<table class="matrix-table"><tr><th>구분</th><th>CC당 비용</th><th>연간 비용</th></tr><tr><td>1000CC 이하</td><td>104원</td><td>₩ 104,000</td></tr><tr><td>1600CC 이하</td><td>182원</td><td>₩ 291,200</td></tr><tr><td>2000CC 이하</td><td>260원</td><td>₩ 520,000</td></tr><tr><td>2500CC 이하</td><td>260원</td><td>₩ 650,000</td></tr><tr><td>3000CC 초과</td><td>260원</td><td>₩ 780,000</td></tr><tr><td>전기차</td><td>-</td><td>₩ 130,000</td></tr></table>""", unsafe_allow_html=True)
-with m_col4:
-    st.markdown("**■ 취등록세 감면율**")
-    st.markdown("""<table class="matrix-table"><tr><th>구분</th><th>세율</th><th>감면 한도</th></tr><tr><td>일반</td><td>7%</td><td>-</td></tr><tr><td>경차</td><td>4%</td><td>75만 원</td></tr><tr><td>전기/수소차</td><td>7%</td><td>140만 원</td></tr><tr><td>하이브리드</td><td>7%</td><td>40만 원</td></tr><tr><td>승합차</td><td>5%</td><td>-</td></tr></table>""", unsafe_allow_html=True)
