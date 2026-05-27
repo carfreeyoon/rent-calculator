@@ -378,31 +378,25 @@ st.markdown(f"""
                     <th style="width: 12%;">약정거리</th>
                 </tr>
             </thead>
-<tbody>
-    <tr>
-        <td class="font-bold" style="text-align:left; padding-left:10px;">{car_name}</td>
-        <td style="color:#111;">{car_option}</td>
-        <td class="font-bold" style="color:#111;">{car_price:,} 원</td>
-        <td>{months} 개월</td>
-        <td>{mileage}</td>
-    </tr>
-
-    <tr>
-        <th>유종</th>
-        <th>CC</th>
-        <th></th>
-        <th></th>
-        <th></th>
-    </tr>
-
-    <tr>
-        <td>{car_shape if fuel_text == "휘발유/전기" else fuel_text}</td>
-        <td>{cc_raw_text}</td>
-        <td></td>
-        <td></td>
-        <td></td>
-    </tr>
-</tbody>
+            <tbody>
+                <tr>
+                    <td class="font-bold" style="text-align:left; padding-left:10px;">{car_name}</td>
+                    <td style="color:#111;">{car_option}</td>
+                    <td class="font-bold" style="color:#111;">{car_price:,} 원</td>
+                    <td>{months} 개월</td>
+                    <td>{mileage}</td>
+                </tr>
+                <tr>
+                    <th>유종</th>
+                    <th>CC</th>
+                    <th>형태</th>
+                </tr>
+                <tr>
+                    <td>{fuel_text}</td>
+                    <td>{cc_raw_text}</td>
+                    <td>{car_shape}</td>
+                </tr>
+            </tbody>
         </table>
     </div>
 """, unsafe_allow_html=True)
