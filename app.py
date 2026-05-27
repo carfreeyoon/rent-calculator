@@ -9,13 +9,7 @@ ENG = "qwertyuiopasdfghjklzxcvbnm"
 KOR = "ㅂㅈㄷㄱㅅㅛㅕㅑㅐㅔㅁㄴㅇㄹㅎㅗㅓㅏㅣㅋㅌㅊㅍㅠㅜㅡ"
 
 def eng_to_kor(text):
-    result = ""
-    for ch in text.lower():
-        if ch in ENG:
-            result += KOR[ENG.index(ch)]
-        else:
-            result += ch
-    return result
+    return text.lower().translate(str.maketrans(ENG, KOR))
 
 if not APP_PASSWORD:
     st.warning("APP_PASSWORD가 설정되지 않았습니다.")
@@ -26,8 +20,9 @@ input_password = st.text_input("🔒 비밀번호 입력", type="password")
 if input_password:
     pw_input = input_password.strip().lower()
     pw_secret = APP_PASSWORD.strip().lower()
+    pw_input_kor = eng_to_kor(pw_input)
 
-    if pw_input != pw_secret and eng_to_kor(pw_input) != pw_secret:
+    if pw_input != pw_secret and pw_input_kor != pw_secret:
         st.error("비밀번호가 올바르지 않습니다.")
         st.stop()
 else:
