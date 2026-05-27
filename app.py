@@ -449,82 +449,43 @@ with m_col4:
     """, unsafe_allow_html=True)
 
 
-
-    # ==========================================
-# [할부 · 렌트 비교표]
-# ==========================================
 st.write("")
 st.markdown('<div class="excel-header-gray">🚗 할부 · 렌트 비교표</div>', unsafe_allow_html=True)
 
 st.markdown("""
 <table class="matrix-table" style="font-size:13px;">
-    <tr>
-        <th style="width:12%;">분류</th>
-        <th style="width:18%;">항목</th>
-        <th style="width:35%;">할부</th>
-        <th style="width:35%;">렌트</th>
-    </tr>
-
-    <tr>
-        <td rowspan="1" style="background:#0b3873;color:white;font-weight:bold;">번호판</td>
-        <td>번호판</td>
-        <td>일반번호판</td>
-        <td>하·허·호</td>
-    </tr>
-
-    <tr>
-        <td rowspan="2" style="background:#0b3873;color:white;font-weight:bold;">재무/신용</td>
-        <td>금융·부채 영향</td>
-        <td>대출한도(DSR) 영향 / 세금 인상 O</td>
-        <td>영향 X</td>
-    </tr>
-    <tr>
-        <td>차량 명의·자산</td>
-        <td>본인 명의·자산</td>
-        <td>렌트사 명의</td>
-    </tr>
-
-    <tr>
-        <td rowspan="2" style="background:#0b3873;color:white;font-weight:bold;">비용</td>
-        <td>세금·보험 납부</td>
-        <td>취등록세·자동차세·보험 별도 납부</td>
-        <td>월납입 내 포함</td>
-    </tr>
-    <tr>
-        <td>초기비용</td>
-        <td>차량가·취등록세 부담</td>
-        <td>선택 가능 (무보증·선납·보증)</td>
-    </tr>
-
-    <tr>
-        <td rowspan="2" style="background:#0b3873;color:white;font-weight:bold;">보험·사고</td>
-        <td>보험·사고 처리</td>
-        <td>직접 가입·직접 처리</td>
-        <td>보험 포함·사고처리 지원</td>
-    </tr>
-    <tr>
-        <td>사고 비용·리스크</td>
-        <td>수리비·감가 부담</td>
-        <td>면책금 중심</td>
-    </tr>
-
-    <tr>
-        <td rowspan="1" style="background:#0b3873;color:white;font-weight:bold;">관리</td>
-        <td>차량 관리</td>
-        <td>직접 관리</td>
-        <td>정비 포함 선택 가능</td>
-    </tr>
-
-    <tr>
-        <td rowspan="2" style="background:#6b8e23;color:white;font-weight:bold;">법인</td>
-        <td>비용처리</td>
-        <td>최장 8년 소요</td>
-        <td>납입기간 내 100% 비용처리</td>
-    </tr>
-    <tr>
-        <td>판매 시</td>
-        <td>경차·승합차 제외 판매 시 부가세 10% 부담</td>
-        <td>반납 처리</td>
-    </tr>
+<tr>
+<th>분류</th><th>항목</th><th>할부</th><th>렌트</th>
+</tr>
+<tr>
+<td style="background:#0b3873;color:white;font-weight:bold;">번호판</td><td>번호판</td><td>일반번호판</td><td>하·허·호</td>
+</tr>
+<tr>
+<td rowspan="2" style="background:#0b3873;color:white;font-weight:bold;">재무/신용</td><td>금융·부채 영향</td><td>대출한도(DSR) 영향 / 세금 인상 O</td><td>영향 X</td>
+</tr>
+<tr>
+<td>차량 명의·자산</td><td>본인 명의·자산</td><td>렌트사 명의</td>
+</tr>
+<tr>
+<td rowspan="2" style="background:#0b3873;color:white;font-weight:bold;">비용</td><td>세금·보험 납부</td><td>취등록세·자동차세·보험 별도 납부</td><td>월납입 내 포함</td>
+</tr>
+<tr>
+<td>초기비용</td><td>차량가·취등록세 부담</td><td>선택 가능</td>
+</tr>
+<tr>
+<td rowspan="2" style="background:#0b3873;color:white;font-weight:bold;">보험·사고</td><td>보험·사고 처리</td><td>직접 가입·직접 처리</td><td>보험 포함·사고처리 지원</td>
+</tr>
+<tr>
+<td>사고 비용·리스크</td><td>수리비·감가 부담</td><td>면책금 중심</td>
+</tr>
+<tr>
+<td style="background:#0b3873;color:white;font-weight:bold;">관리</td><td>차량 관리</td><td>직접 관리</td><td>정비 포함 선택 가능</td>
+</tr>
+<tr>
+<td rowspan="2" style="background:#6b8e23;color:white;font-weight:bold;">법인</td><td>비용처리</td><td>최장 8년 소요</td><td>납입기간 내 100% 비용처리</td>
+</tr>
+<tr>
+<td>판매 시</td><td>경차·승합차 제외 판매 시 부가세 10% 부담</td><td>반납 처리</td>
+</tr>
 </table>
 """, unsafe_allow_html=True)
