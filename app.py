@@ -29,7 +29,7 @@ st.markdown("""
     .matrix-table th { background-color: #0b3873; color: white; font-weight: bold; padding: 5px; border: 1px solid #dee2e6; }
     .matrix-table td { padding: 5px; border: 1px solid #dee2e6; }
     
-    .td-highlight { background-color: #e2efda; font-weight: bold; }
+    .td-highlight { background-color: #00f28a; font-weight: bold; }
     .bg-light { background-color: #f8f9fa; }
     .text-blue { color: #0b3873; font-weight: bold; }
     .font-bold { font-weight: bold; }
@@ -118,8 +118,9 @@ else:
 
 loan_amount = car_price - installment_prepaid
 r = (installment_rate / 100) / 12
-inst_monthly_pay = int(loan_amount * (r * (1 + r)**months) / ((1 + r)**months - 1)) if r > 0 else int(loan_amount / months)
-installment_interest = int((inst_monthly_pay * months) - loan_amount)
+inst_monthly_pay = int(loan_amount / months)
+installment_equal_pay = loan_amount * (r * (1 + r)**months) / ((1 + r)**months - 1) if r > 0 else loan_amount / months
+installment_interest = int((installment_equal_pay * months) - loan_amount)
 
 total_ins = int((insurance_annual / 12) * months)
 total_tax = int((tax_annual / 12) * months)
@@ -130,7 +131,51 @@ car_sell_value = int(car_price * (installment_resale_pct / 100) * corporate_disc
 
 # 렌트 고정 잔존가치 산출 (수정: 렌트 고정값 58% 사용)
 rent_takeover_price = int(car_price * (rent_resale_pct / 100))
-rent_takeover_tax = int(rent_takeover_price * 0.07)
+
+if e15 != "" and g14 != "": rent_takeover_tax_raw = (rent_takeover_price * 0.05) - 1400000
+elif e15 != "" and i14 != "": rent_takeover_tax_raw = (rent_takeover_price * 0.05) - 400000
+elif e15 != "": rent_takeover_tax_raw = rent_takeover_price * 0.05
+elif e14 != "": rent_takeover_tax_raw = (rent_takeover_price * 0.04) - 750000
+elif g14 != "": rent_takeover_tax_raw = (rent_takeover_price * 0.07) - 1400000
+elif i14 != "": rent_takeover_tax_raw = (rent_takeover_price * 0.07) - 400000
+else: rent_takeover_tax_raw = rent_takeover_price * 0.07
+
+rent_takeover_tax = max(0, int(rent_takeover_tax_raw))
+
+resale_24_1 = "td-highlight" if mileage == "1만KM" and months == 24 else ""
+resale_36_1 = "td-highlight" if mileage == "1만KM" and months == 36 else ""
+resale_48_1 = "td-highlight" if mileage == "1만KM" and months == 48 else ""
+resale_60_1 = "td-highlight" if mileage == "1만KM" and months == 60 else ""
+resale_24_15 = "td-highlight" if mileage == "1.5만KM" and months == 24 else ""
+resale_36_15 = "td-highlight" if mileage == "1.5만KM" and months == 36 else ""
+resale_48_15 = "td-highlight" if mileage == "1.5만KM" and months == 48 else ""
+resale_60_15 = "td-highlight" if mileage == "1.5만KM" and months == 60 else ""
+resale_24_2 = "td-highlight" if mileage == "2만Km" and months == 24 else ""
+resale_36_2 = "td-highlight" if mileage == "2만Km" and months == 36 else ""
+resale_48_2 = "td-highlight" if mileage == "2만Km" and months == 48 else ""
+resale_60_2 = "td-highlight" if mileage == "2만Km" and months == 60 else ""
+resale_24_3 = "td-highlight" if mileage == "3만KM" and months == 24 else ""
+resale_36_3 = "td-highlight" if mileage == "3만KM" and months == 36 else ""
+resale_48_3 = "td-highlight" if mileage == "3만KM" and months == 48 else ""
+resale_60_3 = "td-highlight" if mileage == "3만KM" and months == 60 else ""
+
+rate_500 = "td-highlight" if installment_rate >= 10.5 and installment_rate <= 14.9 else ""
+rate_700 = "td-highlight" if installment_rate >= 7.5 and installment_rate <= 9.9 else ""
+rate_900 = "td-highlight" if installment_rate >= 5.0 and installment_rate <= 6.9 else ""
+rate_901 = "td-highlight" if installment_rate >= 3.5 and installment_rate <= 4.8 else ""
+
+tax_1000 = "td-highlight" if "1000" in cc_text else ""
+tax_1600 = "td-highlight" if "1600" in cc_text else ""
+tax_2000 = "td-highlight" if "2000" in cc_text else ""
+tax_2500 = "td-highlight" if "2500" in cc_text else ""
+tax_3000 = "td-highlight" if "3000" in cc_text else ""
+tax_ev = "td-highlight" if "전기" in cc_text else ""
+
+reg_general = "td-highlight" if car_shape == "일반" else ""
+reg_light = "td-highlight" if "경차" in car_shape else ""
+reg_ev = "td-highlight" if "전기" in car_shape or "수소" in car_shape else ""
+reg_hybrid = "td-highlight" if "하이브리드" in car_shape else ""
+reg_van = "td-highlight" if "승합" in car_shape else ""
 
 # ==========================================
 # [공통 조건 구역]
@@ -170,7 +215,7 @@ view_col1, view_col2 = st.columns(2)
 with view_col1:
     st.markdown('<div class="excel-header-blue">카프리오 비교 프로그램 (반납형)</div>', unsafe_allow_html=True)
     
-    inst_total_cost_ret = installment_prepaid + loan_amount + installment_interest + reg_tax + total_tax + total_ins - car_sell_value
+    inst_total_cost_ret = installment_prepaid + (inst_monthly_pay * months) + installment_interest + reg_tax + total_tax + total_ins - car_sell_value
     rent_total_cost_ret = (rent_monthly_pay * months) + rent_deposit
     diff_ret = inst_total_cost_ret - rent_total_cost_ret
     
@@ -200,7 +245,7 @@ with view_col1:
 with view_col2:
     st.markdown('<div class="excel-header-blue">카프리오 비교 프로그램 (인수형)</div>', unsafe_allow_html=True)
     
-    inst_total_cost_ins = installment_prepaid + loan_amount + installment_interest + reg_tax + total_tax + total_ins
+    inst_total_cost_ins = installment_prepaid + (inst_monthly_pay * months) + installment_interest + reg_tax + total_tax + total_ins
     rent_total_cost_ins = (rent_monthly_pay * months) + rent_takeover_price + rent_takeover_tax + rent_deposit
     diff_ins = inst_total_cost_ins - rent_total_cost_ins
 
@@ -234,52 +279,52 @@ st.markdown('<div class="excel-header-gray">💻 내부 데이터 산출 요율 
 m_col1, m_col2, m_col3, m_col4 = st.columns(4)
 
 with m_col1:
-    st.markdown("**■ 잔존가치 (매각 요율표)**")
-    st.markdown("""
+    st.markdown("**■ 예상잔존가치(주행×개월수) *가솔린 기준**")
+    st.markdown(f"""
     <table class="matrix-table">
         <tr><th>구분</th><th>24개월</th><th>36개월</th><th>48개월</th><th>60개월</th></tr>
-        <tr><td>1만KM</td><td>78%</td><td>70%</td><td>63%</td><td>56%</td></tr>
-        <tr><td>1.5만KM</td><td>75%</td><td>67%</td><td>60%</td><td>53%</td></tr>
-        <tr><td>2만KM</td><td>72%</td><td>64%</td><td>57%</td><td>50%</td></tr>
-        <tr><td>3만KM</td><td>65%</td><td>55%</td><td>48%</td><td>40%</td></tr>
+        <tr><td>1만KM</td><td class="{resale_24_1}">78%</td><td class="{resale_36_1}">70%</td><td class="{resale_48_1}">63%</td><td class="{resale_60_1}">56%</td></tr>
+        <tr><td>1.5만KM</td><td class="{resale_24_15}">75%</td><td class="{resale_36_15}">67%</td><td class="{resale_48_15}">60%</td><td class="{resale_60_15}">53%</td></tr>
+        <tr><td>2만KM</td><td class="{resale_24_2}">72%</td><td class="{resale_36_2}">64%</td><td class="{resale_48_2}">57%</td><td class="{resale_60_2}">50%</td></tr>
+        <tr><td>3만KM</td><td class="{resale_24_3}">65%</td><td class="{resale_36_3}">55%</td><td class="{resale_48_3}">48%</td><td class="{resale_60_3}">40%</td></tr>
     </table>
     """, unsafe_allow_html=True)
 
 with m_col2:
     st.markdown("**■ 신용별 할부이자**")
-    st.markdown("""
+    st.markdown(f"""
     <table class="matrix-table">
         <tr><th>구분</th><th>할부이자</th></tr>
-        <tr><td>500점 이하</td><td>10.5 ~ 14.9%</td></tr>
-        <tr><td>500 ~ 700점</td><td>7.5 ~ 9.9%</td></tr>
-        <tr><td>700 ~ 900점</td><td>5.0 ~ 6.9%</td></tr>
-        <tr><td>900점 이상</td><td>3.5 ~ 4.8%</td></tr>
+        <tr class="{rate_500}"><td>500점 이하</td><td>10.5 ~ 14.9%</td></tr>
+        <tr class="{rate_700}"><td>500 ~ 700점</td><td>7.5 ~ 9.9%</td></tr>
+        <tr class="{rate_900}"><td>700 ~ 900점</td><td>5.0 ~ 6.9%</td></tr>
+        <tr class="{rate_901}"><td>900점 이상</td><td>3.5 ~ 4.8%</td></tr>
     </table>
     """, unsafe_allow_html=True)
 
 with m_col3:
     st.markdown("**■ 자동차세 (연간)**")
-    st.markdown("""
+    st.markdown(f"""
     <table class="matrix-table">
-        <tr><th>구분</th><th>CC당 비용</th><th>연간 비용</th></tr>
-        <tr><td>1000CC 이하</td><td>104원</td><td>₩ 104,000</td></tr>
-        <tr><td>1600CC 이하</td><td>182원</td><td>₩ 291,200</td></tr>
-        <tr><td>2000CC 이하</td><td>260원</td><td>₩ 520,000</td></tr>
-        <tr><td>2500CC 이하</td><td>260원</td><td>₩ 650,000</td></tr>
-        <tr><td>3000CC 초과</td><td>260원</td><td>₩ 780,000</td></tr>
-        <tr><td>전기차</td><td>-</td><td>₩ 130,000</td></tr>
+        <tr><th>구분</th><th>연간 비용</th></tr>
+        <tr class="{tax_1000}"><td>1000CC 이하</td><td>₩ 104,000</td></tr>
+        <tr class="{tax_1600}"><td>1600CC 이하</td><td>₩ 291,200</td></tr>
+        <tr class="{tax_2000}"><td>2000CC 이하</td><td>₩ 520,000</td></tr>
+        <tr class="{tax_2500}"><td>2500CC 이하</td><td>₩ 650,000</td></tr>
+        <tr class="{tax_3000}"><td>3000CC 초과</td><td>₩ 780,000</td></tr>
+        <tr class="{tax_ev}"><td>전기차</td><td>₩ 130,000</td></tr>
     </table>
     """, unsafe_allow_html=True)
 
 with m_col4:
     st.markdown("**■ 취등록세 감면율**")
-    st.markdown("""
+    st.markdown(f"""
     <table class="matrix-table">
         <tr><th>구분</th><th>세율</th><th>감면 한도</th></tr>
-        <tr><td>일반</td><td>7%</td><td>-</td></tr>
-        <tr><td>경차</td><td>4%</td><td>75만 원</td></tr>
-        <tr><td>전기/수소차</td><td>7%</td><td>140만 원</td></tr>
-        <tr><td>하이브리드</td><td>7%</td><td>40만 원</td></tr>
-        <tr><td>승합차</td><td>5%</td><td>-</td></tr>
+        <tr class="{reg_general}"><td>일반</td><td>7%</td><td>-</td></tr>
+        <tr class="{reg_light}"><td>경차</td><td>4%</td><td>75만 원</td></tr>
+        <tr class="{reg_ev}"><td>전기/수소차</td><td>7%</td><td>140만 원</td></tr>
+        <tr class="{reg_hybrid}"><td>하이브리드</td><td>7%</td><td>40만 원</td></tr>
+        <tr class="{reg_van}"><td>승합차</td><td>5%</td><td>-</td></tr>
     </table>
     """, unsafe_allow_html=True)
