@@ -36,18 +36,31 @@ if not APP_PASSWORD:
     st.warning("APP_PASSWORD가 설정되지 않았습니다.")
     st.stop()
 
-input_password = st.text_input("🔒 비밀번호 입력", type="password")
+if "auth_ok" not in st.session_state:
+    st.session_state.auth_ok = False
 
-if input_password:
-    pw_input = input_password.strip().lower()
-    pw_secret = APP_PASSWORD.strip().lower()
-    pw_secret_eng = hangul_to_eng(pw_secret)
+if not st.session_state.auth_ok:
+    input_password = st.text_input(
+        "",
+        type="password",
+        placeholder="비밀번호 입력"
+    )
 
-    if pw_input != pw_secret and pw_input != pw_secret_eng:
-        st.error("비밀번호가 올바르지 않습니다.")
+    if input_password:
+        pw_input = input_password.strip().lower()
+        pw_secret = APP_PASSWORD.strip().lower()
+        pw_secret_eng = hangul_to_eng(pw_secret)
+
+        if pw_input == pw_secret or pw_input == pw_secret_eng:
+            st.session_state.auth_ok = True
+            st.rerun()
+        else:
+            st.error("비밀번호가 올바르지 않습니다.")
+            st.stop()
+    else:
         st.stop()
-else:
-    st.stop()
+
+
 # 레이아웃 완벽 정렬 및 불필요한 공백 제거용 CSS
 st.markdown("""
     <style>
