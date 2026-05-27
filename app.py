@@ -2,31 +2,43 @@ import streamlit as st
 
 st.set_page_config(page_title="카프리오 비교 프로그램", layout="wide")
 
-# 레이아웃 싱크 및 간소화를 위한 CSS 내부 최적화
+# 레이아웃 완벽 정렬 및 불필요한 공백 제거용 CSS
 st.markdown("""
     <style>
     div.block-container { padding-top: 1rem !important; padding-bottom: 1rem !important; }
+    
+    /* 상단 공통 조건 박스 및 테이블 */
     .common-info-box { background-color: #f8f9fa; border: 1px solid #dee2e6; padding: 15px; border-radius: 6px; margin-bottom: 20px; }
-    .excel-header-blue { background-color: #0b3873; color: white; padding: 8px; text-align: center; font-weight: bold; font-size: 16px; border-radius: 4px; margin-bottom: 12px; }
+    .common-table { width: 100%; border-collapse: collapse; background-color: #ffffff; text-align: center; font-size: 13px; }
+    .common-table th { background-color: #f1f3f5; color: #0b3873; font-weight: bold; padding: 8px; border: 1px solid #dee2e6; }
+    .common-table td { padding: 8px; border: 1px solid #dee2e6; color: #333333; }
+
+    /* 메인 비교 테이블 */
+    .excel-header-blue { background-color: #0b3873; color: white; padding: 8px; text-align: center; font-weight: bold; font-size: 15px; border-radius: 4px; margin-bottom: 12px; }
     .excel-header-gray { background-color: #5a5a5a; color: white; padding: 6px; text-align: center; font-weight: bold; font-size: 14px; border-radius: 4px; margin-bottom: 10px; }
-    .capture-box { border: 2px solid #0b3873; padding: 15px; border-radius: 6px; background-color: #ffffff; min-height: 480px; }
+    .capture-box { border: 2px solid #0b3873; padding: 15px; border-radius: 6px; background-color: #ffffff; min-height: 440px; }
     .excel-green { background-color: #e2efda; color: #375623; font-weight: bold; font-size: 14px; border: 1px solid #a9d08e; border-radius: 4px; padding: 8px; text-align: center; margin-top: 15px; }
     .excel-red { background-color: #fce4d6; color: #c65911; font-weight: bold; font-size: 14px; border: 1px solid #f4b084; border-radius: 4px; padding: 8px; text-align: center; margin-top: 15px; }
-    .pure-table { width: 100%; border-collapse: collapse; font-size: 14px; text-align: center; }
+    
+    .pure-table { width: 100%; border-collapse: collapse; font-size: 13px; text-align: center; }
     .pure-table th { background-color: #0b3873; color: white; font-weight: bold; padding: 8px; border: 1px solid #dee2e6; }
-    .pure-table td { padding: 8px; border: 1px solid #dee2e6; height: 42px; }
+    .pure-table td { padding: 8px; border: 1px solid #dee2e6; height: 40px; }
+    
+    /* 하단 검증 요율표 */
+    .matrix-table { width: 100%; border-collapse: collapse; font-size: 12px; text-align: center; margin-bottom: 10px; }
+    .matrix-table th { background-color: #0b3873; color: white; font-weight: bold; padding: 5px; border: 1px solid #dee2e6; }
+    .matrix-table td { padding: 5px; border: 1px solid #dee2e6; }
+    
     .td-highlight { background-color: #e2efda; font-weight: bold; }
     .bg-light { background-color: #f8f9fa; }
     .text-blue { color: #0b3873; font-weight: bold; }
     .font-bold { font-weight: bold; }
-    .matrix-table { width: 100%; border-collapse: collapse; font-size: 12px; text-align: center; margin-bottom: 10px; }
-    .matrix-table th { background-color: #0b3873; color: white; font-weight: bold; padding: 5px; border: 1px solid #dee2e6; }
-    .matrix-table td { padding: 5px; border: 1px solid #dee2e6; }
     </style>
 """, unsafe_allow_html=True)
 
-# 초기 기본값 정의
+# 초기 기본값 설정
 car_name = "기아 카니발 가솔린 1.6 터보 하이브리드 2WD 7인승 노블레스"
+car_option = "-"
 car_price = 47810000
 months = 60
 mileage = "2만Km"
@@ -37,7 +49,7 @@ cc_text = "1600CC이하"
 car_shape = "하이브리드"
 
 # ==========================================
-# [SIDEBAR] 입력 제어 구역
+# [SIDEBAR] 조건 설정 구역
 # ==========================================
 st.sidebar.header("📋 조건 설정")
 is_corporate = st.sidebar.checkbox("🏢 법인 고객 여부", value=False)
@@ -47,9 +59,9 @@ insurance_annual = st.sidebar.number_input("🛡️ 연 개인 보험료", value
 residual_rent_pct = st.sidebar.number_input("📉 렌트 잔존가치 (%)", value=residual_rent_pct, min_value=0, max_value=100, step=1)
 
 # ==========================================
-# [TOP] 타사 견적 파싱용 텍스트 영역
+# [TOP MAIN] 타사 견적 파싱 구역
 # ==========================================
-raw_data = st.text_area("📋 타사 렌트 견적 복사 붙여넣기", placeholder="견적 텍스트를 입력하면 하단 정보가 자동으로 연동됩니다.", height=70)
+raw_data = st.text_area("📋 타사 렌트 견적 복사 붙여넣기", placeholder="견적 텍스트를 입력하세요.", height=80)
 
 if raw_data:
     lines = raw_data.strip().split('\n')
@@ -61,6 +73,7 @@ if raw_data:
             def clean_num(v): return int("".join(filter(str.isdigit, v))) if any(char.isdigit() for char in v) else 0
             
             if "차량명" in key: car_name = val
+            elif "옵션" in key: car_option = val
             elif "차량가" in key: car_price = clean_num(val)
             elif "개월수" in key: months = clean_num(val)
             elif "약정거리" in key: mileage = val.replace(" ", "")
@@ -71,7 +84,7 @@ if raw_data:
             elif "형태" in key: car_shape = val.replace(" ", "")
 
 # ==========================================
-# [BACKEND] 핵심 수식 연산 구역
+# [BACKEND] 연산 로직
 # ==========================================
 e15 = "O" if "승합" in car_shape else ""
 e14 = "O" if "경차" in car_shape else ""
@@ -110,37 +123,49 @@ inst_monthly_pay = int(loan_amount * (r * (1 + r)**months) / ((1 + r)**months - 
 total_ins = int((insurance_annual / 12) * months)
 total_tax = int((tax_annual / 12) * months)
 
-# 피드백 반영: 법인 감가 리스크 수식 연동 (+ 잔존가치만큼 더해 총비용 효과를 줄여주는 구조 반영)
+# 법인 감가 리스크 수식 연동
 corporate_discount = 0.9 if (is_corporate and car_shape != "경차" and car_shape != "승합") else 1.0
 car_sell_value = int(car_price * (residual_sell_pct / 100) * corporate_discount)
 
-# 렌트 만기 인수금 및 취등록세 계산 (기존 입력값 잔존 기반)
+# 렌트 만기 인수금 및 취등록세 계산
 rent_takeover_price = int(car_price * (residual_rent_pct / 100))
 rent_takeover_tax = int(rent_takeover_price * 0.07)
 
 # ==========================================
-# [공통 조건 구역] 좌우를 나누지 않고 상단에 가로로 통합 배치
+# [공통 조건 구역] 표 형태로 상단 배치
 # ==========================================
 st.markdown(f"""
     <div class="common-info-box">
-        <h4 style="margin: 0 0 10px 0; color: #0b3873;">🚘 비교 차량 공통 조건</h4>
-        <table style="width:100%; font-size:14px; border-collapse:collapse;">
-            <tr>
-                <td style="font-weight:bold; width:10%;">차량명</td><td style="color:#222; text-align:left; padding-left:10px;">{car_name}</td>
-                <td style="font-weight:bold; width:10%;">차량가격</td><td style="color:#0b3873; font-weight:bold; width:15%;">{car_price:,} 원</td>
-                <td style="font-weight:bold; width:10%;">계약기간</td><td style="width:10%;">{months} 개월</td>
-                <td style="font-weight:bold; width:10%;">약정거리</td><td style="width:10%;">{mileage}</td>
-            </tr>
+        <div style="font-size:15px; font-weight:bold; margin-bottom:10px; color:#0b3873;">🚘 비교 차량 공통 조건</div>
+        <table class="common-table">
+            <thead>
+                <tr>
+                    <th style="width: 35%;">차량명</th>
+                    <th style="width: 25%;">옵션</th>
+                    <th style="width: 16%;">차량가격</th>
+                    <th style="width: 12%;">계약기간</th>
+                    <th style="width: 12%;">약정거리</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td class="font-bold" style="text-align:left; padding-left:10px;">{car_name}</td>
+                    <td style="color:gray;">{car_option}</td>
+                    <td class="font-bold" style="color:#0b3873;">{car_price:,} 원</td>
+                    <td>{months} 개월</td>
+                    <td>{mileage}</td>
+                </tr>
+            </tbody>
         </table>
     </div>
 """, unsafe_allow_html=True)
 
 # ==========================================
-# [📊 VISUAL] 높이가 정교하게 일치하는 좌우 비교 테이블
+# [📊 MAIN VISUAL] 대칭형 비교 테이블
 # ==========================================
 view_col1, view_col2 = st.columns(2)
 
-# 1. 좌측: 반납형 테이블 (행 개수 8개로 우측과 완벽 매칭)
+# 1. 반납형 테이블
 with view_col1:
     st.markdown('<div class="capture-box">', unsafe_allow_html=True)
     st.markdown('<div class="excel-header-blue">카프리오 비교 프로그램 (반납형)</div>', unsafe_allow_html=True)
@@ -159,7 +184,7 @@ with view_col1:
         <tr><td class="font-bold">만기 차량 매각</td><td>-{car_sell_value:,} 원</td></tr>
         <tr><td class="font-bold">-</td><td>-</td></tr>
         <tr class="bg-light font-bold"><td>📊 월 평균 환산 비용</td><td>{int(inst_total_cost_ret/months):,} 원</td><td>{int(rent_total_cost_ret/months):,} 원</td></tr>
-        <tr class="bg-light font-bold" style="background-color:#f1f3f5;"><td>💰 총 투입 비용</td><td>{inst_total_cost_ret:,} 원</td><td>{rent_total_cost_ret:,} 원</td></tr>
+        <tr class="bg-light font-bold" style="background-color:#e9ecef;"><td>💰 총 투입 비용</td><td>{inst_total_cost_ret:,} 원</td><td>{rent_total_cost_ret:,} 원</td></tr>
     </table>
     """
     st.markdown(html_ret, unsafe_allow_html=True)
@@ -170,7 +195,7 @@ with view_col1:
         st.markdown(f'<div class="excel-red">할부 이용이 {abs(diff_ret):,}원 더 유리합니다.</div>', unsafe_allow_html=True)
     st.markdown('</div>', unsafe_allow_html=True)
 
-# 2. 우측: 인수형 테이블 (행 개수 8개로 좌측과 완벽 매칭)
+# 2. 인수형 테이블
 with view_col2:
     st.markdown('<div class="capture-box">', unsafe_allow_html=True)
     st.markdown('<div class="excel-header-blue">카프리오 비교 프로그램 (인수형)</div>', unsafe_allow_html=True)
@@ -189,7 +214,7 @@ with view_col2:
         <tr><td class="font-bold">만기 인수금</td><td>-</td><td>{rent_takeover_price:,} 원</td></tr>
         <tr><td class="font-bold">인수 시 취등록세</td><td>-</td><td>{rent_takeover_tax:,} 원</td></tr>
         <tr class="bg-light font-bold"><td>📊 월 평균 환산 비용</td><td>{int(inst_total_cost_ins/months):,} 원</td><td>{int(rent_total_cost_ins/months):,} 원</td></tr>
-        <tr class="bg-light font-bold" style="background-color:#f1f3f5;"><td>💰 총 투입 비용</td><td>{inst_total_cost_ins:,} 원</td><td>{rent_total_cost_ins:,} 원</td></tr>
+        <tr class="bg-light font-bold" style="background-color:#e9ecef;"><td>💰 총 투입 비용</td><td>{inst_total_cost_ins:,} 원</td><td>{rent_total_cost_ins:,} 원</td></tr>
     </table>
     """
     st.markdown(html_ins, unsafe_allow_html=True)
