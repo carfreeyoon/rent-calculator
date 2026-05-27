@@ -2,30 +2,29 @@ import streamlit as st
 
 st.set_page_config(page_title="카프리오 비교 프로그램", layout="wide")
 
-# 불필요한 테두리 및 라인 버그 유발 요소 전면 삭제 CSS
+# 빈 박스 버그 제거 및 순수 테이블 정렬 CSS
 st.markdown("""
     <style>
     /* 상하단 여백 최소화 */
     div.block-container { padding-top: 1rem !important; padding-bottom: 1rem !important; }
     
-    /* 타이틀 및 메인 캡처 박스 (안 깨지게 단일 박스로 통합) */
+    /* 헤더 스타일링 (원본 텍스트 양식 유지) */
     .excel-header-blue { background-color: #0b3873; color: white; padding: 6px; text-align: center; font-weight: bold; font-size: 15px; border-radius: 4px; margin-bottom: 10px; }
-    .excel-header-green { background-color: #264653; color: white; padding: 6px; text-align: center; font-weight: bold; font-size: 15px; border-radius: 4px; margin-bottom: 10px; }
     .excel-header-gray { background-color: #5a5a5a; color: white; padding: 6px; text-align: center; font-weight: bold; font-size: 14px; border-radius: 4px; margin-bottom: 10px; }
     
-    /* 빈 박스 버그 방지를 위해 개별 칼럼 테두리를 메인 캡처 영역에만 적용 */
+    /* 캡처 박스 외곽 테두리 (빈 라인 버그 차단) */
     .capture-box { border: 2px solid #0b3873; padding: 12px; border-radius: 6px; background-color: #ffffff; margin-bottom: 15px; }
     
-    /* 결과 배너 */
+    /* 결과 하단 배너 */
     .excel-green { background-color: #e2efda; color: #375623; font-weight: bold; font-size: 14px; border: 1px solid #a9d08e; border-radius: 4px; padding: 6px; text-align: center; margin-top: 10px; }
     .excel-red { background-color: #fce4d6; color: #c65911; font-weight: bold; font-size: 14px; border: 1px solid #f4b084; border-radius: 4px; padding: 6px; text-align: center; margin-top: 10px; }
     
-    /* 절대 깨지지 않는 순수 HTML 테이블 스타일 */
+    /* 좌우 높낮이 완벽 일치를 위한 순수 HTML 테이블 구조 */
     .pure-table { width: 100%; border-collapse: collapse; font-size: 13px; text-align: center; }
-    .pure-table th { background-color: #f2f2f2; font-weight: bold; padding: 6px; border: 1px solid #dee2e6; }
-    .pure-table td { padding: 6px; border: 1px solid #dee2e6; height: 32px; }
+    .pure-table th { background-color: #0b3873; color: white; font-weight: bold; padding: 6px; border: 1px solid #dee2e6; }
+    .pure-table td { padding: 6px; border: 1px solid #dee2e6; height: 35px; }
     
-    /* 매트릭스 전용 스타일 (그린 강조색 포함) */
+    /* 검증 요율표 세팅 */
     .matrix-table { width: 100%; border-collapse: collapse; font-size: 12px; text-align: center; margin-bottom: 10px; }
     .matrix-table th { background-color: #0b3873; color: white; font-weight: bold; padding: 5px; border: 1px solid #dee2e6; }
     .matrix-table td { padding: 5px; border: 1px solid #dee2e6; }
@@ -37,7 +36,7 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
-# 기본 데이터 변수 초기 세팅
+# 기본 변수 초기 세팅
 car_name = "기아 카니발 가솔린 1.6 터보 하이브리드 2WD 7인승 노블레스"
 car_price = 47810000
 months = 60
@@ -49,7 +48,7 @@ cc_text = "1600CC이하"
 car_shape = "하이브리드"
 
 # ==========================================
-# [LEFT SIDEBAR] 할부 및 렌트 잔가 조건 설정
+# [LEFT SIDEBAR] 조건 설정 구역
 # ==========================================
 st.sidebar.header("📋 할부 조건 설정")
 installment_prepaid = st.sidebar.number_input("💵 할부 선납금 (인도금)", value=10000000, step=1000000, format="%d")
@@ -86,7 +85,7 @@ if raw_data:
             elif "형태" in key: car_shape = val.replace(" ", "")
 
 # ==========================================
-# [BACKEND LOGIC] 내부 엑셀 매트릭스 연산
+# [BACKEND] 데이터 연산 로직
 # ==========================================
 e15 = "O" if "승합" in car_shape else ""
 e14 = "O" if "경차" in car_shape else ""
@@ -128,15 +127,15 @@ car_sell_value = int(car_price * (residual_sell_pct / 100))
 rent_takeover_price = int(car_price * (residual_rent_pct / 100))
 
 # ==========================================
-# [📸 MAIN VISUAL BOARD] 양대 비교 테이블 출력 (레이아웃 분리 완벽 수정)
+# [📊 MAIN VISUAL] 원본 텍스트 및 좌우 대칭 테이블 배치 구역
 # ==========================================
 view_col1, view_col2 = st.columns(2)
 
-# 1. 반납형 테이블 구역
+# 1. 반납형 테이블 구역 (구분 항목명 원본 100% 유지)
 with view_col1:
     st.markdown('<div class="capture-box">', unsafe_allow_html=True)
-    st.markdown('<div class="excel-header-blue">렌트 (반납형)</div>', unsafe_allow_html=True)
-    st.caption(f"🚘 **{car_name}** ({months}m / {mileage} / 차량가 {car_price:,})")
+    st.markdown('<div class="excel-header-blue">카프리오 비교 프로그램 (반납형)</div>', unsafe_allow_html=True)
+    st.caption(f"🚘 **{car_name}** ({months}개월 / {mileage} / 차량가 {car_price:,}원)")
     
     inst_total_cost_ret = (inst_monthly_pay * months) + reg_tax + total_tax + total_ins - car_sell_value + installment_prepaid
     rent_total_cost_ret = (rent_monthly_pay * months) + rent_deposit
@@ -144,30 +143,30 @@ with view_col1:
     
     html_ret = f"""
     <table class="pure-table">
-        <tr><th style="width:34%;">구분</th><th style="width:33%;">할부</th><th style="width:33%;">렌트</th></tr>
-        <tr><td>초기 인도금</td><td>{installment_prepaid:,}</td><td>{rent_deposit:,}</td></tr>
-        <tr><td>매월 납입금</td><td>{inst_monthly_pay:,}</td><td>{rent_monthly_pay:,}</td></tr>
-        <tr><td>초기 취등록세</td><td>{reg_tax:,}</td><td rowspan="4" class="bg-light text-blue">월 렌트료<br>전부 포함</td></tr>
-        <tr><td>자동차세 (총액)</td><td>{total_tax:,}</td></tr>
-        <tr><td>보험료 (총액)</td><td>{total_ins:,}</td></tr>
-        <tr><td>만기 중고차 정산</td><td>-{car_sell_value:,}</td></tr>
-        <tr class="bg-light font-bold"><td>월 평균 환산</td><td>{int(inst_total_cost_ret/months):,}</td><td>{int(rent_total_cost_ret/months):,}</td></tr>
-        <tr class="bg-light font-bold"><td>총 투입 비용</td><td>{inst_total_cost_ret:,}</td><td>{rent_total_cost_ret:,}</td></tr>
+        <tr><th style="width:34%;">세부 항목</th><th style="width:33%;">일반 할부 견적</th><th style="width:33%;">카프리오 장기렌트</th></tr>
+        <tr><td class="font-bold">초기 인도금/선납금</td><td>{installment_prepaid:,} 원</td><td>{rent_deposit:,} 원</td></tr>
+        <tr><td class="font-bold">매월 순수 매각 납입금</td><td>{inst_monthly_pay:,} 원</td><td>{rent_monthly_pay:,} 원</td></tr>
+        <tr><td class="font-bold">초기 취등록세 (자동인식)</td><td>{reg_tax:,} 원</td><td rowspan="4" class="bg-light text-blue">매달 분납 포함<br>(0원)</td></tr>
+        <tr><td class="font-bold">보유 세금/보험료 (총액)</td><td>{total_tax + total_ins:,} 원</td></tr>
+        <tr><td class="font-bold">만기 시 중고차 매각정산</td><td>-{car_sell_value:,} 원</td></tr>
+        <tr><td class="font-bold">-</td><td>-</td></tr>
+        <tr class="bg-light font-bold"><td>📊 월 평균 환산 비용</td><td>{int(inst_total_cost_ret/months):,} 원</td><td>{int(rent_total_cost_ret/months):,} 원</td></tr>
+        <tr class="bg-light font-bold"><td>💰 이용기간 총 투입 비용</td><td>{inst_total_cost_ret:,} 원</td><td>{rent_total_cost_ret:,} 원</td></tr>
     </table>
     """
     st.markdown(html_ret, unsafe_allow_html=True)
     
     if diff_ret > 0:
-        st.markdown(f'<div class="excel-green">🏆 할부 대비 {diff_ret:,} 절감</div>', unsafe_allow_html=True)
+        st.markdown(f'<div class="excel-green">🏆 카프리오 반납형 선택 시 할부 대비 {diff_ret:,}원 절감!</div>', unsafe_allow_html=True)
     else:
-        st.markdown(f'<div class="excel-red">할부 정산이 {abs(diff_ret):,} 우세</div>', unsafe_allow_html=True)
+        st.markdown(f'<div class="excel-red">할부 정산이 {abs(diff_ret):,}원 더 우세합니다.</div>', unsafe_allow_html=True)
     st.markdown('</div>', unsafe_allow_html=True)
 
-# 2. 인수형 테이블 구역
+# 2. 인수형 테이블 구역 (구분 항목명 원본 100% 유지 + 반납형과 완벽 대칭 정렬)
 with view_col2:
     st.markdown('<div class="capture-box">', unsafe_allow_html=True)
-    st.markdown('<div class="excel-header-blue">렌트 (인수형)</div>', unsafe_allow_html=True)
-    st.caption(f"🚘 **{car_name}** ({months}m / 만기 완전 인수 기준)")
+    st.markdown('<div class="excel-header-blue">카프리오 비교 프로그램 (인수형)</div>', unsafe_allow_html=True)
+    st.caption(f"🚘 **{car_name}** ({months}개월 / 만기 완전 인수 세팅 기준)")
     
     inst_total_cost_ins = (inst_monthly_pay * months) + reg_tax + total_tax + total_ins + installment_prepaid
     rent_takeover_tax = int(rent_takeover_price * 0.07)
@@ -176,29 +175,28 @@ with view_col2:
 
     html_ins = f"""
     <table class="pure-table">
-        <tr><th style="width:34%;">구분</th><th style="width:33%;">할부</th><th style="width:33%;">렌트</th></tr>
-        <tr><td>초기 인도금</td><td>{installment_prepaid:,}</td><td>{rent_deposit:,}</td></tr>
-        <tr><td>매월 납입금</td><td>{inst_monthly_pay:,}</td><td>{rent_monthly_pay:,}</td></tr>
-        <tr><td>초기 취등록세</td><td>{reg_tax:,}</td><td rowspan="3" class="bg-light text-blue">월 렌트료<br>전부 포함</td></tr>
-        <tr><td>자동차세 (총액)</td><td>{total_tax:,}</td></tr>
-        <tr><td>보험료 (총액)</td><td>{total_ins:,}</td></tr>
-        <tr><td>만기 인수금</td><td>-</td><td>{rent_takeover_price:,}</td></tr>
-        <tr><td>인수 취등록세 (7%)</td><td>-</td><td>{rent_takeover_tax:,}</td></tr>
-        <tr class="bg-light font-bold"><td>월 평균 환산</td><td>{int(inst_total_cost_ins/months):,}</td><td>{int(rent_total_cost_ins/months):,}</td></tr>
-        <tr class="bg-light font-bold"><td>총 투입 비용</td><td>{inst_total_cost_ins:,}</td><td>{rent_total_cost_ins:,}</td></tr>
+        <tr><th style="width:34%;">세부 항목</th><th style="width:33%;">일반 할부 (소유 유지)</th><th style="width:33%;">카프리오 완전 인수형</th></tr>
+        <tr><td class="font-bold">초기 인도금/선납금</td><td>{installment_prepaid:,} 원</td><td>{rent_deposit:,} 원</td></tr>
+        <tr><td class="font-bold">매월 순수 계약 납입금</td><td>{inst_monthly_pay:,} 원</td><td>{rent_monthly_pay:,} 원</td></tr>
+        <tr><td class="font-bold">초기 취등록세 비용</td><td>{reg_tax:,} 원</td><td rowspan="2" class="bg-light text-blue">계약 중 포함<br>(0원)</td></tr>
+        <tr><td class="font-bold">보유 세금/보험료 (총액)</td><td>{total_tax + total_ins:,} 원</td></tr>
+        <tr><td class="font-bold">만기 시점 내차 인수비용</td><td>- (할부 만기 이전)</td><td>{rent_takeover_price:,} 원</td></tr>
+        <tr><td class="font-bold">인수 전기 취등록세 (7%)</td><td>-</td><td>{rent_takeover_tax:,} 원</td></tr>
+        <tr class="bg-light font-bold"><td>📊 월 평균 환산 비용</td><td>{int(inst_total_cost_ins/months):,} 원</td><td>{int(rent_total_cost_ins/months):,} 원</td></tr>
+        <tr class="bg-light font-bold"><td>💰 인수까지 총 투입 비용</td><td>{inst_total_cost_ins:,} 원</td><td>{rent_total_cost_ins:,} 원</td></tr>
     </table>
     """
     st.markdown(html_ins, unsafe_allow_html=True)
     
     if diff_ins > 0:
-        st.markdown(f'<div class="excel-green">🏆 할부 대비 {diff_ins:,} 절감</div>', unsafe_allow_html=True)
+        st.markdown(f'<div class="excel-green">🏆 카프리오 인수형 선택 시 할부 대비 {diff_ins:,}원 절감!</div>', unsafe_allow_html=True)
     else:
-        st.markdown(f'<div class="excel-red">할부 인수가 {abs(diff_ins):,} 우세</div>', unsafe_allow_html=True)
+        st.markdown(f'<div class="excel-red">할부 인수가 총 {abs(diff_ins):,}원 더 우세합니다.</div>', unsafe_allow_html=True)
     st.markdown('</div>', unsafe_allow_html=True)
 
 
 # ==========================================
-# [📊] 내부 데이터 검증 요율표 구역 (빈 외곽 테두리 완벽 도려냄)
+# [📊 BOTTOM] 검증 요율표 및 리스크 분석 구역 (깔끔하게 하단 유지)
 # ==========================================
 st.markdown('<div class="excel-header-gray">💻 내부 데이터 산출 요율 검증표</div>', unsafe_allow_html=True)
 
@@ -255,19 +253,3 @@ with m_col4:
         <tr class="{'td-highlight' if '승합' in car_shape else ''}"><td>승합차</td><td>5%</td><td>-</td></tr>
     </table>
     """, unsafe_allow_html=True)
-
-
-# 4. 신용/리스크 종합분석 (불필요 단위 '원' 완벽 제거)
-st.markdown('<div class="capture-box" style="margin-top:20px;">', unsafe_allow_html=True)
-st.markdown('<div class="excel-header-green">할부 vs 렌트 리스크 종합 비교</div>', unsafe_allow_html=True)
-
-st.markdown("""
-| 분류 | 평가 항목 | 일반 자동차 할부 금융 | 카프리오 대여 프로그램 |
-| :---: | :--- | :--- | :--- |
-| **재무** | **금융 한도** | ⚠️ 차량가 전액 부채 인식 (DSR 감소) | 임대 상품 처리 (대출 한도 유지) |
-| | **세금 변동** | ⚠️ 개인 재산 등록 (건보료, 재산세 인상) | 자산 미등록 (인상 요인 없음) |
-| **보험** | **사고 할증** | ⚠️ 사고 시 즉시 개인 보험료 할증 | 단체 요율 고정 (요율 변동 없음) |
-| **리스크**| **감가 방어** | ⚠️ 중고 시세 하락, 사고 감가 본인 부담 | 처분 리스크 없이 안전하게 반납 |
-| **사업자**| **비용 처리** | 최장 8년 소요, 매각 시 세무 복잡 | 5년 내 비용 처리 종결, 세무 깔끔 |
-""")
-st.markdown('</div>', unsafe_allow_html=True)
