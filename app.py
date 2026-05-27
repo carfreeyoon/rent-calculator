@@ -387,8 +387,8 @@ st.markdown(f"""
                     <td>{mileage}</td>
                 </tr>
                 <tr>
-                    <th style="width:50%;">유종</th>
-                    <th style="width:50%;">CC</th>
+                    <th colspan="2">유종</th>
+                    <th colspan="3">CC</th>
                 </tr>
                 <tr>
                     <td>{car_shape if fuel_text == "휘발유/전기" else fuel_text}</td>
