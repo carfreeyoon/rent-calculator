@@ -5,11 +5,32 @@ st.set_page_config(page_title="카프리오 비교 프로그램", layout="wide")
 
 APP_PASSWORD = st.secrets.get("APP_PASSWORD", "")
 
-ENG = "qwertyuiopasdfghjklzxcvbnm"
-KOR = "ㅂㅈㄷㄱㅅㅛㅕㅑㅐㅔㅁㄴㅇㄹㅎㅗㅓㅏㅣㅋㅌㅊㅍㅠㅜㅡ"
+CHO = ["ㄱ","ㄲ","ㄴ","ㄷ","ㄸ","ㄹ","ㅁ","ㅂ","ㅃ","ㅅ","ㅆ","ㅇ","ㅈ","ㅉ","ㅊ","ㅋ","ㅌ","ㅍ","ㅎ"]
+JUNG = ["ㅏ","ㅐ","ㅑ","ㅒ","ㅓ","ㅔ","ㅕ","ㅖ","ㅗ","ㅘ","ㅙ","ㅚ","ㅛ","ㅜ","ㅝ","ㅞ","ㅟ","ㅠ","ㅡ","ㅢ","ㅣ"]
+JONG = ["","ㄱ","ㄲ","ㄳ","ㄴ","ㄵ","ㄶ","ㄷ","ㄹ","ㄺ","ㄻ","ㄼ","ㄽ","ㄾ","ㄿ","ㅀ","ㅁ","ㅂ","ㅄ","ㅅ","ㅆ","ㅇ","ㅈ","ㅊ","ㅋ","ㅌ","ㅍ","ㅎ"]
 
-def eng_to_kor(text):
-    return text.lower().translate(str.maketrans(ENG, KOR))
+KEY = {
+    "ㄱ":"r","ㄲ":"R","ㄴ":"s","ㄷ":"e","ㄸ":"E","ㄹ":"f","ㅁ":"a","ㅂ":"q","ㅃ":"Q","ㅅ":"t","ㅆ":"T","ㅇ":"d","ㅈ":"w","ㅉ":"W","ㅊ":"c","ㅋ":"z","ㅌ":"x","ㅍ":"v","ㅎ":"g",
+    "ㅏ":"k","ㅐ":"o","ㅑ":"i","ㅒ":"O","ㅓ":"j","ㅔ":"p","ㅕ":"u","ㅖ":"P","ㅗ":"h","ㅛ":"y","ㅜ":"n","ㅠ":"b","ㅡ":"m","ㅣ":"l",
+    "ㅘ":"hk","ㅙ":"ho","ㅚ":"hl","ㅝ":"nj","ㅞ":"np","ㅟ":"nl","ㅢ":"ml",
+    "ㄳ":"rt","ㄵ":"sw","ㄶ":"sg","ㄺ":"fr","ㄻ":"fa","ㄼ":"fq","ㄽ":"ft","ㄾ":"fx","ㄿ":"fv","ㅀ":"fg","ㅄ":"qt"
+}
+
+def hangul_to_eng(text):
+    result = ""
+    for ch in text:
+        code = ord(ch)
+        if 0xAC00 <= code <= 0xD7A3:
+            base = code - 0xAC00
+            cho = base // 588
+            jung = (base % 588) // 28
+            jong = base % 28
+            result += KEY.get(CHO[cho], "")
+            result += KEY.get(JUNG[jung], "")
+            result += KEY.get(JONG[jong], "")
+        else:
+            result += ch
+    return result.lower()
 
 if not APP_PASSWORD:
     st.warning("APP_PASSWORD가 설정되지 않았습니다.")
@@ -20,14 +41,13 @@ input_password = st.text_input("🔒 비밀번호 입력", type="password")
 if input_password:
     pw_input = input_password.strip().lower()
     pw_secret = APP_PASSWORD.strip().lower()
-    pw_input_kor = eng_to_kor(pw_input)
+    pw_secret_eng = hangul_to_eng(pw_secret)
 
-    if pw_input != pw_secret and pw_input_kor != pw_secret:
+    if pw_input != pw_secret and pw_input != pw_secret_eng:
         st.error("비밀번호가 올바르지 않습니다.")
         st.stop()
 else:
     st.stop()
-
 # 레이아웃 완벽 정렬 및 불필요한 공백 제거용 CSS
 st.markdown("""
     <style>
