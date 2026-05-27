@@ -60,8 +60,7 @@ installment_rate = st.sidebar.number_input("📈 할부 금리 (%)", value=5.0, 
 insurance_annual = st.sidebar.number_input("🛡️ 연 개인 보험료", value=1000000, step=100000)
 installment_resale_pct = st.sidebar.number_input("📉 할부 잔존가치 (%)", value=installment_resale_pct, min_value=0, max_value=100, step=1)
 st.sidebar.markdown("---")
-rent_resale_pct = st.sidebar.number_input("📉 렌트 잔존가치 (%)", value=float(rent_resale_pct), min_value=0.0, max_value=100.0, step=0.1)
-
+st.sidebar.text_input("📉 렌트 고정 잔존가치 (%)", value=f"{rent_resale_pct}%", disabled=True)
 def auto_convert_quote(raw_text):
     if "견적서" not in raw_text or "최종차량가격" not in raw_text:
         return raw_text
