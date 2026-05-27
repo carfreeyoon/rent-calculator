@@ -1,4 +1,5 @@
 import streamlit as st
+import re
 
 st.set_page_config(page_title="카프리오 비교 프로그램", layout="wide")
 
@@ -59,13 +60,115 @@ installment_rate = st.sidebar.number_input("📈 할부 금리 (%)", value=5.0, 
 insurance_annual = st.sidebar.number_input("🛡️ 연 개인 보험료", value=1000000, step=100000)
 installment_resale_pct = st.sidebar.number_input("📉 할부 잔존가치 (%)", value=installment_resale_pct, min_value=0, max_value=100, step=1)
 
+def auto_convert_quote(raw_text):
+    if "견적서" not in raw_text or "최종차량가격" not in raw_text:
+        return raw_text
+
+    text = raw_text.replace("\r\n", "\n").replace("\r", "\n")
+    lines_raw = [line.strip() for line in text.split("\n")]
+    lines_clean = [line for line in lines_raw if line]
+
+    def only_num(v):
+        return "".join(re.findall(r"\d+", v))
+
+    def money_after(label):
+        m = re.search(label + r"\s*[\t ]*([0-9,]+)원", text)
+        return only_num(m.group(1)) if m else ""
+
+    def percent_after(label):
+        m = re.search(label + r"\s*[\t ]*([0-9.]+)%", text)
+        return m.group(1) + "%" if m else ""
+
+    def line_money_after(label):
+        m = re.search(label + r"\s*[\t ]*[0-9.]+%\s*[\t ]*([0-9,]+)원", text)
+        return only_num(m.group(1)) if m else "0"
+
+    car_name_val = ""
+    for i, line in enumerate(lines_clean):
+        if line == "차종" and i + 1 < len(lines_clean):
+            car_name_val = lines_clean[i + 1]
+            break
+
+    car_name_val = re.sub(r"\b20\d{2}년형\b", "", car_name_val)
+    car_name_val = re.sub(r"디 올-뉴|디 올 뉴|더 뉴|올 뉴", "", car_name_val)
+    car_name_val = re.sub(r"\([^)]*개별소비세[^)]*\)", "", car_name_val)
+    car_name_val = re.sub(r"\([A-Z0-9 ]*(?:F/L|FL)[A-Z0-9 /]*\)", "", car_name_val)
+    car_name_val = re.sub(r"\s+", " ", car_name_val).strip()
+
+    option_val = ""
+    if "옵션가격0원" not in text.replace(" ", ""):
+        option_lines = []
+        in_option = False
+        for line in lines_clean:
+            if line == "옵션":
+                in_option = True
+                continue
+            if in_option and line.startswith("옵션가격"):
+                break
+            if in_option:
+                option_lines.append(re.sub(r"\([0-9,]+원\)", "", line).strip())
+        option_val = " / ".join([v for v in option_lines if v])
+
+    car_price_val = money_after("최종차량가격")
+    months_val = only_num(re.search(r"기간\s*[\t ]*([0-9]+)개월", text).group(1)) if re.search(r"기간\s*[\t ]*([0-9]+)개월", text) else ""
+    mileage_match = re.search(r"약정거리\s*[\t ]*([0-9.]+만)km", text)
+    mileage_val = mileage_match.group(1) + "Km" if mileage_match else ""
+    monthly_val = money_after("월 납입금")
+    prepaid_val = line_money_after("선수금")
+    resale_val = percent_after(r"잔존가치\(인수\)")
+
+    cc_match = re.search(r"([0-9,]+)cc", text)
+    fuel_line = ""
+    for line in lines_clean:
+        if "출시" in line and "·" in line:
+            fuel_line = line
+            break
+
+    if "전기" in fuel_line and not cc_match:
+        cc_val = "전기차"
+    elif cc_match:
+        cc_num = int(only_num(cc_match.group(1)))
+        if cc_num <= 1000:
+            cc_val = "1000CC이하"
+        elif cc_num <= 1600:
+            cc_val = "1600CC이하"
+        elif cc_num <= 2000:
+            cc_val = "2000CC이하"
+        elif cc_num <= 2500:
+            cc_val = "2500CC이하"
+        else:
+            cc_val = "3000CC초과"
+    else:
+        cc_val = ""
+
+    if "하이브리드" in car_name_val or "하이브리드" in fuel_line:
+        shape_val = "하이브리드"
+    elif "전기" in fuel_line and not cc_match:
+        shape_val = "전기"
+    elif "경차" in car_name_val:
+        shape_val = "경차"
+    else:
+        shape_val = "일반"
+
+    return f"""차량명\t{car_name_val}
+옵션\t{option_val}
+차량가\t{car_price_val}
+개월수\t{months_val}
+약정거리\t{mileage_val}
+월납입\t{monthly_val}
+선납금\t{prepaid_val}
+잔존(렌트)\t{resale_val}
+CC\t{cc_val}
+형태\t{shape_val}"""
+
 # ==========================================
 # [TOP MAIN] 타사 견적 파싱 구역
 # ==========================================
 raw_data = st.text_area("📋 타사 렌트 견적 복사 붙여넣기", placeholder="견적 텍스트를 입력하세요.", height=80)
 
 if raw_data:
-    lines = raw_data.strip().split('\n')
+    parsed_data = auto_convert_quote(raw_data)
+    lines = parsed_data.strip().split('\n')
     for line in lines:
         parts = line.split('\t') if '\t' in line else (line.split(':') if ':' in line else line.split())
         if len(parts) >= 2:
@@ -80,6 +183,7 @@ if raw_data:
             elif "약정거리" in key: mileage = val.replace(" ", "")
             elif "월납입" in key: rent_monthly_pay = clean_num(val)
             elif "선납금" in key or "보증금" in key: rent_deposit = clean_num(val)
+            elif "잔존" in key: rent_resale_pct = float(val.replace("%", "").replace(" ", ""))
             elif "CC" in key: cc_text = val.replace(" ", "")
             elif "형태" in key: car_shape = val.replace(" ", "")
 
