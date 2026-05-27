@@ -117,7 +117,6 @@ total_tax = int((tax_annual / 12) * months)
 corporate_discount = 0.9 if (is_corporate and car_shape != "경차" and car_shape != "승합") else 1.0
 car_sell_value = int(car_price * (installment_resale_pct / 100) * corporate_discount)
 
-# 렌트 만기 인수금 (기존 로직: 차량가의 40%로 가정)
 rent_takeover_price = int(car_price * 0.40)
 rent_takeover_tax = int(rent_takeover_price * 0.07)
 
@@ -180,7 +179,7 @@ with view_col1:
     st.markdown(html_ret, unsafe_allow_html=True)
     
     if diff_ret > 0:
-        st.markdown(f'<div class="excel-green">🏆 카프리오 반납형 선택 시 할부 대비 {diff_ret:,}원 절감!</div>', unsafe_allow_html=True)
+        st.markdown(f'<div class="excel-green">🏆 장기렌트 선택 시 할부 대비 {diff_ret:,}원 절감!</div>', unsafe_allow_html=True)
     else:
         st.markdown(f'<div class="excel-red">할부 이용이 {abs(diff_ret):,}원 더 유리합니다.</div>', unsafe_allow_html=True)
     st.markdown('</div>', unsafe_allow_html=True)
@@ -210,7 +209,7 @@ with view_col2:
     st.markdown(html_ins, unsafe_allow_html=True)
     
     if diff_ins > 0:
-        st.markdown(f'<div class="excel-green">🏆 카프리오 인수형 선택 시 할부 대비 {diff_ins:,}원 절감!</div>', unsafe_allow_html=True)
+        st.markdown(f'<div class="excel-green">🏆 장기렌트 선택 시 할부 대비 {diff_ins:,}원 절감!</div>', unsafe_allow_html=True)
     else:
         st.markdown(f'<div class="excel-red">할부 인수가 총 {abs(diff_ins):,}원 더 유리합니다.</div>', unsafe_allow_html=True)
     st.markdown('</div>', unsafe_allow_html=True)
