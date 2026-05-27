@@ -61,12 +61,12 @@ insurance_annual = st.sidebar.number_input("🛡️ 연 개인 보험료", value
 st.sidebar.markdown("---")
 installment_resale_pct = st.sidebar.number_input("📉 할부 잔존가치 (%)", value=installment_resale_pct, min_value=0, max_value=100, step=1)
 st.sidebar.markdown(
-    '<div style="font-size:14px; font-weight:400; color:#262730;">📉 렌트 고정 잔존가치</div>',
+    '<div style="font-size:14px; font-weight:400; color:#262730;">📉 렌트 고정 잔존가치 (%)</div>',
     unsafe_allow_html=True
 )
 st.sidebar.markdown(f"""
 <div style="background-color:white; padding:9px 13px; border-radius:8px; font-size:14px; color:#111; height:38px; display:flex; align-items:center;">
-{rent_resale_pct}%
+{rent_resale_pct}
 </div>
 """, unsafe_allow_html=True)
 def auto_convert_quote(raw_text):
