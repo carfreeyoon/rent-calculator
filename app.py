@@ -53,7 +53,7 @@ rent_resale_pct = 58       # 렌트 고정 잔존가치(기본값 58%)
 # ==========================================
 # [SIDEBAR] 조건 설정 구역
 # ==========================================
-st.sidebar.header("📋 조건 설정")
+st.sidebar.header("📋 할부 조건설정")
 is_corporate = st.sidebar.checkbox("🏢 법인 고객 여부", value=False)
 installment_prepaid = st.sidebar.number_input("💵 할부 선납금", value=10000000, step=1000000)
 installment_rate = st.sidebar.number_input("📈 할부 금리 (%)", value=5.0, step=0.1)
