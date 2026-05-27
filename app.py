@@ -316,7 +316,7 @@ st.markdown(f"""
                 <tr>
                     <td class="font-bold" style="text-align:left; padding-left:10px;">{car_name}</td>
                     <td style="color:gray;">{car_option}</td>
-                    <td class="font-bold" style="color:#0b3873;">{car_price:,} 원</td>
+                    <td class="font-bold" style="color:#111;">{car_price:,} 원</td>
                     <td>{months} 개월</td>
                     <td>{mileage}</td>
                 </tr>
