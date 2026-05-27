@@ -168,8 +168,9 @@ with view_col1:
         <tr><th style="width:34%;">세부 항목</th><th style="width:33%;">일반 할부</th><th style="width:33%;">장기렌트(반납형)</th></tr>
         <tr><td class="font-bold">선납금</td><td>{installment_prepaid:,} 원</td><td>{rent_deposit:,} 원</td></tr>
         <tr><td class="font-bold">월납입금</td><td>{inst_monthly_pay:,} 원</td><td>{rent_monthly_pay:,} 원</td></tr>
-        <tr><td class="font-bold">취등록세</td><td>{reg_tax:,} 원</td><td rowspan="4" class="bg-light text-blue" style="vertical-align:middle;">월 렌트료에<br>전부 포함</td></tr>
-        <tr><td class="font-bold">자동차세/보험료</td><td>{total_tax + total_ins:,} 원</td></tr>
+        <tr><td class="font-bold">취등록세</td><td>{reg_tax:,} 원</td><td rowspan="5" class="bg-light text-blue" style="vertical-align:middle;">월 렌트료에<br>전부 포함</td></tr>
+        <tr><td class="font-bold">자동차세</td><td>{total_tax:,} 원</td></tr>
+        <tr><td class="font-bold">보험료</td><td>{total_ins:,} 원</td></tr>
         <tr><td class="font-bold">만기 차량 매각</td><td>-{car_sell_value:,} 원</td></tr>
         <tr><td class="font-bold">-</td><td>-</td></tr>
         <tr class="bg-light font-bold"><td>📊 월 평균 환산 비용</td><td>{int(inst_total_cost_ret/months):,} 원</td><td>{int(rent_total_cost_ret/months):,} 원</td></tr>
@@ -198,8 +199,9 @@ with view_col2:
         <tr><th style="width:34%;">세부 항목</th><th style="width:33%;">일반 할부</th><th style="width:33%;">장기렌트(인수형)</th></tr>
         <tr><td class="font-bold">선납금</td><td>{installment_prepaid:,} 원</td><td>{rent_deposit:,} 원</td></tr>
         <tr><td class="font-bold">월납입금</td><td>{inst_monthly_pay:,} 원</td><td>{rent_monthly_pay:,} 원</td></tr>
-        <tr><td class="font-bold">취등록세</td><td>{reg_tax:,} 원</td><td rowspan="2" class="bg-light text-blue" style="vertical-align:middle;">월 렌트료에<br>전부 포함</td></tr>
-        <tr><td class="font-bold">자동차세/보험료</td><td>{total_tax + total_ins:,} 원</td></tr>
+        <tr><td class="font-bold">취등록세</td><td>{reg_tax:,} 원</td><td rowspan="3" class="bg-light text-blue" style="vertical-align:middle;">월 렌트료에<br>전부 포함</td></tr>
+        <tr><td class="font-bold">자동차세</td><td>{total_tax:,} 원</td></tr>
+        <tr><td class="font-bold">보험료</td><td>{total_ins:,} 원</td></tr>
         <tr><td class="font-bold">만기 인수금</td><td>-</td><td>{rent_takeover_price:,} 원</td></tr>
         <tr><td class="font-bold">인수 시 취등록세</td><td>-</td><td>{rent_takeover_tax:,} 원</td></tr>
         <tr class="bg-light font-bold"><td>📊 월 평균 환산 비용</td><td>{int(inst_total_cost_ins/months):,} 원</td><td>{int(rent_total_cost_ins/months):,} 원</td></tr>
