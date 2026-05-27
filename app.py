@@ -206,13 +206,16 @@ e14 = "O" if "경차" in car_shape else ""
 g14 = "O" if "전기" in car_shape or "수소" in car_shape else ""
 i14 = "O" if "하이브리드" in car_shape else ""
 
-if e15 != "" and g14 != "": reg_tax_raw = (car_price * 0.05) - 1400000
-elif e15 != "" and i14 != "": reg_tax_raw = (car_price * 0.05) - 400000
-elif e15 != "": reg_tax_raw = car_price * 0.05
-elif e14 != "": reg_tax_raw = (car_price * 0.04) - 750000
-elif g14 != "": reg_tax_raw = (car_price * 0.07) - 1400000
-elif i14 != "": reg_tax_raw = (car_price * 0.07) - 400000
-else: reg_tax_raw = car_price * 0.07
+if e15 != "" and g14 != "":
+    reg_tax_raw = (car_price * 0.05) - 1400000
+elif e15 != "":
+    reg_tax_raw = car_price * 0.05
+elif e14 != "":
+    reg_tax_raw = (car_price * 0.04) - 750000
+elif g14 != "":
+    reg_tax_raw = (car_price * 0.07) - 1400000
+else:
+    reg_tax_raw = car_price * 0.07
 
 reg_tax = max(0, int(reg_tax_raw))
 
