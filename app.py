@@ -516,7 +516,13 @@ with m_col1:
     """, unsafe_allow_html=True)
 
     st.markdown(
-        '<div style="color:#ff3b30; font-size:11px; font-weight:600; text-align:left; margin-top:-8px; padding-left:78px;">* 차량별 상이 · 시세 확인 필수</div>',
+        """
+        <div style="margin-top:-10px; margin-left:58px;">
+            <span style="color:#ff3b30; font-size:11px; font-weight:600;">
+                * 차량별 상이 · 시세 확인 필수
+            </span>
+        </div>
+        """,
         unsafe_allow_html=True
     )
 
