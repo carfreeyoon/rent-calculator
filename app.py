@@ -47,6 +47,7 @@ rent_deposit = 0
 cc_text = "1600CC이하"
 car_shape = "하이브리드"
 installment_resale_pct = 50 # 할부 잔존가치(매각율) 기본값
+rent_resale_pct = 58       # 렌트 고정 잔존가치(기본값 58%)
 
 # ==========================================
 # [SIDEBAR] 조건 설정 구역
@@ -122,10 +123,12 @@ inst_monthly_pay = int(loan_amount * (r * (1 + r)**months) / ((1 + r)**months - 
 total_ins = int((insurance_annual / 12) * months)
 total_tax = int((tax_annual / 12) * months)
 
+# 할부 잔존가치(매각) 산출
 corporate_discount = 0.9 if (is_corporate and car_shape != "경차" and car_shape != "승합") else 1.0
 car_sell_value = int(car_price * (installment_resale_pct / 100) * corporate_discount)
 
-rent_takeover_price = int(car_price * 0.40)
+# 렌트 고정 잔존가치 산출 (수정: 렌트 고정값 58% 사용)
+rent_takeover_price = int(car_price * (rent_resale_pct / 100))
 rent_takeover_tax = int(rent_takeover_price * 0.07)
 
 # ==========================================
