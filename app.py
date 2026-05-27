@@ -11,7 +11,7 @@ if not APP_PASSWORD:
 
 input_password = st.text_input("🔒 비밀번호 입력", type="password")
 
-if input_password != APP_PASSWORD:
+if input_password.strip().lower() != APP_PASSWORD.strip().lower():
     if input_password:
         st.error("비밀번호가 올바르지 않습니다.")
     st.stop()
