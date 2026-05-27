@@ -51,6 +51,7 @@ car_shape = "하이브리드"
 # [LEFT SIDEBAR] 조건 설정 구역
 # ==========================================
 st.sidebar.header("📋 할부 조건 설정")
+is_corporate = st.sidebar.checkbox("🏢 법인 고객 여부 (체크 시 감가 적용)", value=False)
 installment_prepaid = st.sidebar.number_input("💵 할부 선납금 (인도금)", value=10000000, step=1000000, format="%d")
 installment_rate = st.sidebar.number_input("📈 신용별 할부 금리 (%)", value=5.0, step=0.1, format="%.1f")
 insurance_annual = st.sidebar.number_input("🛡️ 고객 연 개인 보험료", value=1000000, step=100000, format="%d")
@@ -123,7 +124,12 @@ inst_monthly_pay = int(loan_amount * (r * (1 + r)**months) / ((1 + r)**months - 
 
 total_ins = int((insurance_annual / 12) * months)
 total_tax = int((tax_annual / 12) * months)
-car_sell_value = int(car_price * (residual_sell_pct / 100))
+
+# 엑셀 수식 보완: =-(C6 * I11 * IF(AND(C1<>"", X12<>"경차", X12<>"승합"), 0.9, 1))
+# 법인(is_corporate=True)이고 경차/승합이 아닐 때 0.9 감가 적용
+corporate_discount = 0.9 if (is_corporate and car_shape != "경차" and car_shape != "승합") else 1.0
+car_sell_value = int(car_price * (residual_sell_pct / 100) * corporate_discount)
+
 rent_takeover_price = int(car_price * (residual_rent_pct / 100))
 
 # ==========================================
@@ -131,7 +137,7 @@ rent_takeover_price = int(car_price * (residual_rent_pct / 100))
 # ==========================================
 view_col1, view_col2 = st.columns(2)
 
-# 1. 반납형 테이블 구역 (구분 항목명 원본 100% 유지)
+# 1. 반납형 테이블 구역
 with view_col1:
     st.markdown('<div class="capture-box">', unsafe_allow_html=True)
     st.markdown('<div class="excel-header-blue">카프리오 비교 프로그램 (반납형)</div>', unsafe_allow_html=True)
@@ -162,7 +168,7 @@ with view_col1:
         st.markdown(f'<div class="excel-red">할부 정산이 {abs(diff_ret):,}원 더 우세합니다.</div>', unsafe_allow_html=True)
     st.markdown('</div>', unsafe_allow_html=True)
 
-# 2. 인수형 테이블 구역 (구분 항목명 원본 100% 유지 + 반납형과 완벽 대칭 정렬)
+# 2. 인수형 테이블 구역
 with view_col2:
     st.markdown('<div class="capture-box">', unsafe_allow_html=True)
     st.markdown('<div class="excel-header-blue">카프리오 비교 프로그램 (인수형)</div>', unsafe_allow_html=True)
@@ -196,7 +202,7 @@ with view_col2:
 
 
 # ==========================================
-# [📊 BOTTOM] 검증 요율표 및 리스크 분석 구역 (깔끔하게 하단 유지)
+# [📊 BOTTOM] 검증 요율표 및 리스크 분석 구역
 # ==========================================
 st.markdown('<div class="excel-header-gray">💻 내부 데이터 산출 요율 검증표</div>', unsafe_allow_html=True)
 
