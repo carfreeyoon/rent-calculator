@@ -167,7 +167,7 @@ with view_col1:
     <table class="pure-table">
         <tr><th style="width:34%;">세부 항목</th><th style="width:33%;">일반 할부</th><th style="width:33%;">장기렌트(반납형)</th></tr>
         <tr><td class="font-bold">선납금</td><td>{installment_prepaid:,} 원</td><td>{rent_deposit:,} 원</td></tr>
-        <tr><td class="font-bold">월납입금</td><td>{inst_monthly_pay:,} 원</td><td>{rent_monthly_pay:,} 원</td></tr>
+        <tr><td class="font-bold">월납입금<br><span style="color:red; font-size:10px;">(선납금 제외)</span></td><td>{inst_monthly_pay:,} 원</td><td>{rent_monthly_pay:,} 원</td></tr>
         <tr><td class="font-bold">취등록세</td><td>{reg_tax:,} 원</td><td rowspan="5" class="bg-light text-blue" style="vertical-align:middle;">월 렌트료에<br>전부 포함</td></tr>
         <tr><td class="font-bold">자동차세</td><td>{total_tax:,} 원</td></tr>
         <tr><td class="font-bold">보험료</td><td>{total_ins:,} 원</td></tr>
@@ -198,7 +198,7 @@ with view_col2:
     <table class="pure-table">
         <tr><th style="width:34%;">세부 항목</th><th style="width:33%;">일반 할부</th><th style="width:33%;">장기렌트(인수형)</th></tr>
         <tr><td class="font-bold">선납금</td><td>{installment_prepaid:,} 원</td><td>{rent_deposit:,} 원</td></tr>
-        <tr><td class="font-bold">월납입금</td><td>{inst_monthly_pay:,} 원</td><td>{rent_monthly_pay:,} 원</td></tr>
+        <tr><td class="font-bold">월납입금<br><span style="color:red; font-size:10px;">(선납금 제외)</span></td><td>{inst_monthly_pay:,} 원</td><td>{rent_monthly_pay:,} 원</td></tr>
         <tr><td class="font-bold">취등록세</td><td>{reg_tax:,} 원</td><td rowspan="3" class="bg-light text-blue" style="vertical-align:middle;">월 렌트료에<br>전부 포함</td></tr>
         <tr><td class="font-bold">자동차세</td><td>{total_tax:,} 원</td></tr>
         <tr><td class="font-bold">보험료</td><td>{total_ins:,} 원</td></tr>
