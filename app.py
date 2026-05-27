@@ -2,18 +2,19 @@ import streamlit as st
 
 st.set_page_config(page_title="카프리오 비교 프로그램", layout="wide")
 
-# 불필요한 라인 제거 및 완벽 고정형 CSS 스타일
+# 불필요한 테두리 및 라인 버그 유발 요소 전면 삭제 CSS
 st.markdown("""
     <style>
     /* 상하단 여백 최소화 */
     div.block-container { padding-top: 1rem !important; padding-bottom: 1rem !important; }
     
-    /* 타이틀 및 컨테이너 박스 */
+    /* 타이틀 및 메인 캡처 박스 (안 깨지게 단일 박스로 통합) */
     .excel-header-blue { background-color: #0b3873; color: white; padding: 6px; text-align: center; font-weight: bold; font-size: 15px; border-radius: 4px; margin-bottom: 10px; }
     .excel-header-green { background-color: #264653; color: white; padding: 6px; text-align: center; font-weight: bold; font-size: 15px; border-radius: 4px; margin-bottom: 10px; }
     .excel-header-gray { background-color: #5a5a5a; color: white; padding: 6px; text-align: center; font-weight: bold; font-size: 14px; border-radius: 4px; margin-bottom: 10px; }
-    .capture-box { border: 2px solid #0b3873; padding: 12px; border-radius: 6px; background-color: #ffffff; margin-bottom: 10px; }
-    .matrix-box { border: 1px solid #dee2e6; padding: 10px; border-radius: 6px; background-color: #ffffff; margin-bottom: 10px; }
+    
+    /* 빈 박스 버그 방지를 위해 개별 칼럼 테두리를 메인 캡처 영역에만 적용 */
+    .capture-box { border: 2px solid #0b3873; padding: 12px; border-radius: 6px; background-color: #ffffff; margin-bottom: 15px; }
     
     /* 결과 배너 */
     .excel-green { background-color: #e2efda; color: #375623; font-weight: bold; font-size: 14px; border: 1px solid #a9d08e; border-radius: 4px; padding: 6px; text-align: center; margin-top: 10px; }
@@ -25,7 +26,7 @@ st.markdown("""
     .pure-table td { padding: 6px; border: 1px solid #dee2e6; height: 32px; }
     
     /* 매트릭스 전용 스타일 (그린 강조색 포함) */
-    .matrix-table { width: 100%; border-collapse: collapse; font-size: 12px; text-align: center; }
+    .matrix-table { width: 100%; border-collapse: collapse; font-size: 12px; text-align: center; margin-bottom: 10px; }
     .matrix-table th { background-color: #0b3873; color: white; font-weight: bold; padding: 5px; border: 1px solid #dee2e6; }
     .matrix-table td { padding: 5px; border: 1px solid #dee2e6; }
     .td-highlight { background-color: #e2efda; font-weight: bold; }
@@ -127,7 +128,7 @@ car_sell_value = int(car_price * (residual_sell_pct / 100))
 rent_takeover_price = int(car_price * (residual_rent_pct / 100))
 
 # ==========================================
-# [📸 MAIN VISUAL BOARD] 양대 비교 테이블 출력
+# [📸 MAIN VISUAL BOARD] 양대 비교 테이블 출력 (레이아웃 분리 완벽 수정)
 # ==========================================
 view_col1, view_col2 = st.columns(2)
 
@@ -157,9 +158,9 @@ with view_col1:
     st.markdown(html_ret, unsafe_allow_html=True)
     
     if diff_ret > 0:
-        st.markdown(f'<div class="excel-green">🏆 할부 대비 {diff_ret:,} 원 절감</div>', unsafe_allow_html=True)
+        st.markdown(f'<div class="excel-green">🏆 할부 대비 {diff_ret:,} 절감</div>', unsafe_allow_html=True)
     else:
-        st.markdown(f'<div class="excel-red">할부 정산이 {abs(diff_ret):,} 원 우세</div>', unsafe_allow_html=True)
+        st.markdown(f'<div class="excel-red">할부 정산이 {abs(diff_ret):,} 우세</div>', unsafe_allow_html=True)
     st.markdown('</div>', unsafe_allow_html=True)
 
 # 2. 인수형 테이블 구역
@@ -190,16 +191,15 @@ with view_col2:
     st.markdown(html_ins, unsafe_allow_html=True)
     
     if diff_ins > 0:
-        st.markdown(f'<div class="excel-green">🏆 할부 대비 {diff_ins:,} 원 절감</div>', unsafe_allow_html=True)
+        st.markdown(f'<div class="excel-green">🏆 할부 대비 {diff_ins:,} 절감</div>', unsafe_allow_html=True)
     else:
-        st.markdown(f'<div class="excel-red">할부 인수가 {abs(diff_ins):,} 원 우세</div>', unsafe_allow_html=True)
+        st.markdown(f'<div class="excel-red">할부 인수가 {abs(diff_ins):,} 우세</div>', unsafe_allow_html=True)
     st.markdown('</div>', unsafe_allow_html=True)
 
 
 # ==========================================
-# [📊 NEW] 원본 데이터 검증용 매트릭스 표 구역 (추가 항목)
+# [📊] 내부 데이터 검증 요율표 구역 (빈 외곽 테두리 완벽 도려냄)
 # ==========================================
-st.markdown('<div class="matrix-box">', unsafe_allow_html=True)
 st.markdown('<div class="excel-header-gray">💻 내부 데이터 산출 요율 검증표</div>', unsafe_allow_html=True)
 
 m_col1, m_col2, m_col3, m_col4 = st.columns(4)
@@ -256,11 +256,9 @@ with m_col4:
     </table>
     """, unsafe_allow_html=True)
 
-st.markdown('</div>', unsafe_allow_html=True)
 
-
-# 4. 신용/리스크 종합분석
-st.markdown('<div class="capture-box">', unsafe_allow_html=True)
+# 4. 신용/리스크 종합분석 (불필요 단위 '원' 완벽 제거)
+st.markdown('<div class="capture-box" style="margin-top:20px;">', unsafe_allow_html=True)
 st.markdown('<div class="excel-header-green">할부 vs 렌트 리스크 종합 비교</div>', unsafe_allow_html=True)
 
 st.markdown("""
