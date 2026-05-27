@@ -60,7 +60,7 @@ installment_rate = st.sidebar.number_input("📈 할부 금리 (%)", value=5.0, 
 insurance_annual = st.sidebar.number_input("🛡️ 연 개인 보험료", value=1000000, step=100000)
 st.sidebar.markdown("---")
 installment_resale_pct = st.sidebar.number_input("📉 할부 잔존가치 (%)", value=installment_resale_pct, min_value=0, max_value=100, step=1)
-st.sidebar.markdown("📉 렌트 고정 잔존가치 (%)")
+st.sidebar.caption("📉 렌트 고정 잔존가치 (%)")
 st.sidebar.markdown(f"""
 <div style="background-color:white; padding:9px 13px; border-radius:8px; font-size:14px; color:#111; height:38px; display:flex; align-items:center;">
 {rent_resale_pct}%
