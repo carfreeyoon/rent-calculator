@@ -448,7 +448,7 @@ with m_col4:
         <tr class="{reg_general}"><td>일반</td><td>7%</td><td>-</td></tr>
         <tr class="{reg_light}"><td>경차</td><td>4%</td><td>75만 원</td></tr>
         <tr class="{reg_ev}"><td>전기/수소차</td><td>7%</td><td>140만 원</td></tr>
-        <tr><td>하이브리드</td><td>7%</td><td>-</td></tr>
+        <tr class="{reg_hybrid}"><td>하이브리드</td><td>7%</td><td>-</td></tr>
         <tr class="{reg_van}"><td>승합차</td><td>5%</td><td>-</td></tr>
     </table>
     """, unsafe_allow_html=True)
