@@ -454,72 +454,115 @@ with m_col4:
     """, unsafe_allow_html=True)
 
 
+# ==========================================
+# [할부 · 렌트 · 리스 비교표]
+# ==========================================
 st.write("")
-st.markdown('<div class="excel-header-gray" style="width:55%;">🚗 할부 · 렌트 비교표</div>', unsafe_allow_html=True)
+st.markdown('<div class="excel-header-gray" style="width:55%;">🚗 할부 · 렌트 · 리스 비교표</div>', unsafe_allow_html=True)
 
 st.markdown("""
 <table class="matrix-table" style="width:55%; font-size:13px;">
 <tr>
 <th style="width:12%;">분류</th>
 <th style="width:18%;">항목</th>
-<th style="width:35%;">할부</th>
-<th style="width:35%;">렌트</th>
+<th style="width:23%;">할부</th>
+<th style="width:23%;">렌트</th>
+<th style="width:24%;">리스</th>
 </tr>
+
 <tr>
 <td style="background:#0b3873;color:white;font-weight:bold;">번호판</td>
-<td style="background:#ddebf7;font-weight:bold;">번호판</td>
-<td>일반번호판</td>
-<td>하·허·호</td>
+<td style="background:#ddebf7;font-weight:bold;">일반번호판</td>
+<td>O</td>
+<td>X</td>
+<td>O</td>
 </tr>
+
 <tr>
 <td rowspan="2" style="background:#0b3873;color:white;font-weight:bold;">재무/신용</td>
 <td style="background:#ddebf7;font-weight:bold;">금융·부채 영향</td>
-<td>대출한도(DSR) 영향 / 세금 인상 O</td>
-<td>영향 X</td>
+<td>O</td>
+<td>X</td>
+<td>O</td>
 </tr>
 <tr>
-<td style="background:#ddebf7;font-weight:bold;">차량 명의·자산</td>
-<td>본인 명의·자산</td>
-<td>렌트사 명의</td>
+<td style="background:#ddebf7;font-weight:bold;">차량 자산 인식</td>
+<td>O</td>
+<td>X</td>
+<td>X</td>
 </tr>
+
 <tr>
 <td rowspan="2" style="background:#0b3873;color:white;font-weight:bold;">비용</td>
 <td style="background:#ddebf7;font-weight:bold;">세금·보험 납부</td>
-<td>취등록세·자동차세·보험 별도 납부</td>
-<td>월납입 내 포함</td>
+<td>별도 납부</td>
+<td>월납입 포함</td>
+<td>보험 별도</td>
 </tr>
 <tr>
 <td style="background:#ddebf7;font-weight:bold;">초기비용</td>
 <td>차량가·취등록세 부담</td>
 <td>선택 가능</td>
+<td>선택 가능</td>
+</tr>
+
+<tr>
+<td rowspan="3" style="background:#0b3873;color:white;font-weight:bold;">보험·사고</td>
+<td style="background:#ddebf7;font-weight:bold;">보험 포함</td>
+<td>X</td>
+<td>O</td>
+<td>X</td>
 </tr>
 <tr>
-<td rowspan="2" style="background:#0b3873;color:white;font-weight:bold;">보험·사고</td>
 <td style="background:#ddebf7;font-weight:bold;">보험·사고 처리</td>
-<td>직접 가입·직접 처리</td>
-<td>보험 포함·사고처리 지원</td>
+<td>직접 가입·처리</td>
+<td>보험 포함·지원</td>
+<td>직접 가입·처리</td>
 </tr>
 <tr>
 <td style="background:#ddebf7;font-weight:bold;">사고 비용·리스크</td>
 <td>수리비·감가 부담</td>
 <td>면책금 중심</td>
+<td>감가·보험료 영향</td>
+</tr>
+
+<tr>
+<td rowspan="2" style="background:#0b3873;color:white;font-weight:bold;">이력 관리</td>
+<td style="background:#ddebf7;font-weight:bold;">보험경력 인정</td>
+<td>O</td>
+<td>O</td>
+<td>O</td>
 </tr>
 <tr>
-<td style="background:#0b3873;color:white;font-weight:bold;">관리</td>
-<td style="background:#ddebf7;font-weight:bold;">차량 관리</td>
-<td>직접 관리</td>
-<td>정비 포함 선택 가능</td>
+<td style="background:#ddebf7;font-weight:bold;">사고이력·보험할증</td>
+<td>O</td>
+<td>X</td>
+<td>O</td>
 </tr>
+
+<tr>
+<td style="background:#0b3873;color:white;font-weight:bold;">관리</td>
+<td style="background:#ddebf7;font-weight:bold;">정비 선택 가능</td>
+<td>X</td>
+<td>O</td>
+<td>X</td>
+</tr>
+
 <tr>
 <td rowspan="2" style="background:#6b8e23;color:white;font-weight:bold;">법인</td>
 <td style="background:#ddebf7;font-weight:bold;">비용처리</td>
-<td>최장 8년 소요</td>
-<td>납입기간 내 100% 비용처리</td>
+<td>O (최장 8년)</td>
+<td>O (납입기간 내)</td>
+<td>O (납입기간 내)</td>
 </tr>
 <tr>
 <td style="background:#ddebf7;font-weight:bold;">판매 시</td>
-<td>경차·승합차 제외 판매 시 부가세 10% 부담</td>
-<td>반납 처리</td>
+<td>
+부가세 10% 발생
+<br><span style="color:red; font-size:10px;">(경차, 승합차 제외)</span>
+</td>
+<td>인수·반납 자유</td>
+<td>인수·반납 자유</td>
 </tr>
 </table>
 """, unsafe_allow_html=True)
