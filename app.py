@@ -44,9 +44,9 @@ months = 60
 mileage = "2만Km"
 rent_monthly_pay = 600930
 rent_deposit = 0
-installment_resale_pct = 50 # 할부 잔존가치(매각율) 초기값
 cc_text = "1600CC이하"
 car_shape = "하이브리드"
+installment_resale_pct = 50 # 기본값
 
 # ==========================================
 # [SIDEBAR] 조건 설정 구역
@@ -56,7 +56,7 @@ is_corporate = st.sidebar.checkbox("🏢 법인 고객 여부", value=False)
 installment_prepaid = st.sidebar.number_input("💵 할부 선납금", value=10000000, step=1000000)
 installment_rate = st.sidebar.number_input("📈 할부 금리 (%)", value=5.0, step=0.1)
 insurance_annual = st.sidebar.number_input("🛡️ 연 개인 보험료", value=1000000, step=100000)
-# '렌트 잔존가치' 삭제 및 '할부 잔존가치' 입력 추가
+# '할부 잔존가치' 명칭 수정 (일반 할부 처분용)
 installment_resale_pct = st.sidebar.number_input("📉 할부 잔존가치 (%)", value=installment_resale_pct, min_value=0, max_value=100, step=1)
 
 # ==========================================
@@ -108,7 +108,7 @@ elif "2500" in cc_text: tax_annual = 650000
 elif "3000" in cc_text: tax_annual = 780000
 else: tax_annual = 130000
 
-# 할부 잔존가치 계산
+# 할부 계산
 loan_amount = car_price - installment_prepaid
 r = (installment_rate / 100) / 12
 inst_monthly_pay = int(loan_amount * (r * (1 + r)**months) / ((1 + r)**months - 1)) if r > 0 else int(loan_amount / months)
@@ -116,11 +116,12 @@ inst_monthly_pay = int(loan_amount * (r * (1 + r)**months) / ((1 + r)**months - 
 total_ins = int((insurance_annual / 12) * months)
 total_tax = int((tax_annual / 12) * months)
 
+# 할부 처분 시 가치 (사용자 정의 할부 잔존가치 활용)
 corporate_discount = 0.9 if (is_corporate and car_shape != "경차" and car_shape != "승합") else 1.0
 car_sell_value = int(car_price * (installment_resale_pct / 100) * corporate_discount)
 
-# 렌트 만기 인수금 계산 (이제 할부 잔존가치 기준과 동일하게 정렬)
-rent_takeover_price = int(car_price * (installment_resale_pct / 100))
+# 렌트 만기 인수금 (기존 로직 유지 - 입력값과 무관하게 고정/별도 로직 사용)
+rent_takeover_price = int(car_price * 0.40) # 기존 렌트 인수 가정가
 rent_takeover_tax = int(rent_takeover_price * 0.07)
 
 # ==========================================
@@ -131,22 +132,10 @@ st.markdown(f"""
         <div style="font-size:15px; font-weight:bold; margin-bottom:10px; color:#0b3873;">🚘 비교 차량 공통 조건</div>
         <table class="common-table">
             <thead>
-                <tr>
-                    <th style="width: 35%;">차량명</th>
-                    <th style="width: 25%;">옵션</th>
-                    <th style="width: 16%;">차량가격</th>
-                    <th style="width: 12%;">계약기간</th>
-                    <th style="width: 12%;">약정거리</th>
-                </tr>
+                <tr><th style="width: 35%;">차량명</th><th style="width: 25%;">옵션</th><th style="width: 16%;">차량가격</th><th style="width: 12%;">계약기간</th><th style="width: 12%;">약정거리</th></tr>
             </thead>
             <tbody>
-                <tr>
-                    <td class="font-bold" style="text-align:left; padding-left:10px;">{car_name}</td>
-                    <td style="color:gray;">{car_option}</td>
-                    <td class="font-bold" style="color:#0b3873;">{car_price:,} 원</td>
-                    <td>{months} 개월</td>
-                    <td>{mileage}</td>
-                </tr>
+                <tr><td class="font-bold" style="text-align:left; padding-left:10px;">{car_name}</td><td style="color:gray;">{car_option}</td><td class="font-bold" style="color:#0b3873;">{car_price:,} 원</td><td>{months} 개월</td><td>{mileage}</td></tr>
             </tbody>
         </table>
     </div>
@@ -162,7 +151,21 @@ with view_col1:
     inst_total_cost_ret = (inst_monthly_pay * months) + reg_tax + total_tax + total_ins + installment_prepaid - car_sell_value
     rent_total_cost_ret = (rent_monthly_pay * months) + rent_deposit
     diff_ret = inst_total_cost_ret - rent_total_cost_ret
-    st.markdown(f'<table class="pure-table"><tr><th>세부 항목</th><th>일반 할부</th><th>카프리오 장기렌트</th></tr><tr><td>선납금</td><td>{installment_prepaid:,} 원</td><td>{rent_deposit:,} 원</td></tr><tr><td>월납입금</td><td>{inst_monthly_pay:,} 원</td><td>{rent_monthly_pay:,} 원</td></tr><tr><td>취등록세</td><td>{reg_tax:,} 원</td><td rowspan="4" class="bg-light text-blue" style="vertical-align:middle;">월 렌트료에<br>전부 포함</td></tr><tr><td>자동차세/보험료</td><td>{total_tax + total_ins:,} 원</td></tr><tr><td>만기 차량 매각</td><td>-{car_sell_value:,} 원</td></tr><tr><td>-</td><td>-</td></tr><tr class="bg-light font-bold"><td>📊 월 평균 환산 비용</td><td>{int(inst_total_cost_ret/months):,} 원</td><td>{int(rent_total_cost_ret/months):,} 원</td></tr><tr class="bg-light font-bold" style="background-color:#e9ecef;"><td>💰 총 투입 비용</td><td>{inst_total_cost_ret:,} 원</td><td>{rent_total_cost_ret:,} 원</td></tr></table>', unsafe_allow_html=True)
+    
+    st.markdown(f"""
+    <table class="pure-table">
+        <tr><th style="width:34%;">세부 항목</th><th style="width:33%;">일반 할부</th><th style="width:33%;">카프리오 장기렌트</th></tr>
+        <tr><td class="font-bold">선납금</td><td>{installment_prepaid:,} 원</td><td>{rent_deposit:,} 원</td></tr>
+        <tr><td class="font-bold">월납입금</td><td>{inst_monthly_pay:,} 원</td><td>{rent_monthly_pay:,} 원</td></tr>
+        <tr><td class="font-bold">취등록세</td><td>{reg_tax:,} 원</td><td rowspan="4" class="bg-light text-blue" style="vertical-align:middle;">월 렌트료에<br>전부 포함</td></tr>
+        <tr><td class="font-bold">자동차세/보험료</td><td>{total_tax + total_ins:,} 원</td></tr>
+        <tr><td class="font-bold">만기 차량 매각</td><td>-{car_sell_value:,} 원</td></tr>
+        <tr><td class="font-bold">-</td><td>-</td></tr>
+        <tr class="bg-light font-bold"><td>📊 월 평균 환산 비용</td><td>{int(inst_total_cost_ret/months):,} 원</td><td>{int(rent_total_cost_ret/months):,} 원</td></tr>
+        <tr class="bg-light font-bold" style="background-color:#e9ecef;"><td>💰 총 투입 비용</td><td>{inst_total_cost_ret:,} 원</td><td>{rent_total_cost_ret:,} 원</td></tr>
+    </table>
+    """, unsafe_allow_html=True)
+    
     if diff_ret > 0: st.markdown(f'<div class="excel-green">🏆 카프리오 반납형 선택 시 할부 대비 {diff_ret:,}원 절감!</div>', unsafe_allow_html=True)
     else: st.markdown(f'<div class="excel-red">할부 이용이 {abs(diff_ret):,}원 더 유리합니다.</div>', unsafe_allow_html=True)
     st.markdown('</div>', unsafe_allow_html=True)
@@ -170,14 +173,29 @@ with view_col1:
 with view_col2:
     st.markdown('<div class="capture-box"><div class="excel-header-blue">카프리오 비교 프로그램 (인수형)</div>', unsafe_allow_html=True)
     inst_total_cost_ins = (inst_monthly_pay * months) + reg_tax + total_tax + total_ins + installment_prepaid
+    # [수정] 렌트 인수형은 할부 잔존가치와 무관하게 고유 로직 유지
     rent_total_cost_ins = (rent_monthly_pay * months) + rent_takeover_price + rent_takeover_tax + rent_deposit
     diff_ins = inst_total_cost_ins - rent_total_cost_ins
-    st.markdown(f'<table class="pure-table"><tr><th>세부 항목</th><th>일반 할부</th><th>카프리오 완전 인수형</th></tr><tr><td>선납금</td><td>{installment_prepaid:,} 원</td><td>{rent_deposit:,} 원</td></tr><tr><td>월납입금</td><td>{inst_monthly_pay:,} 원</td><td>{rent_monthly_pay:,} 원</td></tr><tr><td>취등록세</td><td>{reg_tax:,} 원</td><td rowspan="2" class="bg-light text-blue" style="vertical-align:middle;">월 렌트료에<br>전부 포함</td></tr><tr><td>자동차세/보험료</td><td>{total_tax + total_ins:,} 원</td></tr><tr><td>만기 인수금</td><td>-</td><td>{rent_takeover_price:,} 원</td></tr><tr><td>인수 시 취등록세</td><td>-</td><td>{rent_takeover_tax:,} 원</td></tr><tr class="bg-light font-bold"><td>📊 월 평균 환산 비용</td><td>{int(inst_total_cost_ins/months):,} 원</td><td>{int(rent_total_cost_ins/months):,} 원</td></tr><tr class="bg-light font-bold" style="background-color:#e9ecef;"><td>💰 총 투입 비용</td><td>{inst_total_cost_ins:,} 원</td><td>{rent_total_cost_ins:,} 원</td></tr></table>', unsafe_allow_html=True)
+
+    st.markdown(f"""
+    <table class="pure-table">
+        <tr><th style="width:34%;">세부 항목</th><th style="width:33%;">일반 할부</th><th style="width:33%;">카프리오 완전 인수형</th></tr>
+        <tr><td class="font-bold">선납금</td><td>{installment_prepaid:,} 원</td><td>{rent_deposit:,} 원</td></tr>
+        <tr><td class="font-bold">월납입금</td><td>{inst_monthly_pay:,} 원</td><td>{rent_monthly_pay:,} 원</td></tr>
+        <tr><td class="font-bold">취등록세</td><td>{reg_tax:,} 원</td><td rowspan="2" class="bg-light text-blue" style="vertical-align:middle;">월 렌트료에<br>전부 포함</td></tr>
+        <tr><td class="font-bold">자동차세/보험료</td><td>{total_tax + total_ins:,} 원</td></tr>
+        <tr><td class="font-bold">만기 인수금</td><td>-</td><td>{rent_takeover_price:,} 원</td></tr>
+        <tr><td class="font-bold">인수 시 취등록세</td><td>-</td><td>{rent_takeover_tax:,} 원</td></tr>
+        <tr class="bg-light font-bold"><td>📊 월 평균 환산 비용</td><td>{int(inst_total_cost_ins/months):,} 원</td><td>{int(rent_total_cost_ins/months):,} 원</td></tr>
+        <tr class="bg-light font-bold" style="background-color:#e9ecef;"><td>💰 총 투입 비용</td><td>{inst_total_cost_ins:,} 원</td><td>{rent_total_cost_ins:,} 원</td></tr>
+    </table>
+    """, unsafe_allow_html=True)
+    
     if diff_ins > 0: st.markdown(f'<div class="excel-green">🏆 카프리오 인수형 선택 시 할부 대비 {diff_ins:,}원 절감!</div>', unsafe_allow_html=True)
     else: st.markdown(f'<div class="excel-red">할부 인수가 총 {abs(diff_ins):,}원 더 유리합니다.</div>', unsafe_allow_html=True)
     st.markdown('</div>', unsafe_allow_html=True)
 
-# [📊 BOTTOM] 검증 요율표 구역
+# [📊 BOTTOM] 검증 요율표
 st.write("")
 st.markdown('<div class="excel-header-gray">💻 내부 데이터 산출 요율 검증표</div>', unsafe_allow_html=True)
 m_col1, m_col2, m_col3, m_col4 = st.columns(4)
