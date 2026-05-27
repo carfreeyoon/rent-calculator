@@ -1,4 +1,4 @@
-import streamlit as st
+original_code = """import streamlit as st
 
 st.set_page_config(page_title="카프리오 비교 프로그램", layout="wide")
 
@@ -123,7 +123,7 @@ rent_takeover_tax = int(rent_takeover_price * 0.07)
 # ==========================================
 # [공통 조건 구역]
 # ==========================================
-st.markdown(f"""
+st.markdown(f\"\"\"
     <div class="common-info-box">
         <div style="font-size:15px; font-weight:bold; margin-bottom:10px; color:#0b3873;">🚘 비교 차량 공통 조건</div>
         <table class="common-table">
@@ -140,14 +140,14 @@ st.markdown(f"""
                 <tr>
                     <td class="font-bold" style="text-align:left; padding-left:10px;">{car_name}</td>
                     <td style="color:gray;">{car_option}</td>
-                    <td class="font-bold" style="color:#0b3873;">{car_price:,} 원</td>
+                    <td class=\"font-bold\" style=\"color:#0b3873;\">{car_price:,} 원</td>
                     <td>{months} 개월</td>
                     <td>{mileage}</td>
                 </tr>
             </tbody>
         </table>
     </div>
-""", unsafe_allow_html=True)
+\"\"\", unsafe_allow_html=True)
 
 # ==========================================
 # [📊 MAIN VISUAL] 대칭형 비교 테이블
@@ -163,20 +163,20 @@ with view_col1:
     rent_total_cost_ret = (rent_monthly_pay * months) + rent_deposit
     diff_ret = inst_total_cost_ret - rent_total_cost_ret
     
-    html_ret = f"""
+    html_ret = f\"\"\"
     <table class="pure-table">
         <tr><th style="width:34%;">세부 항목</th><th style="width:33%;">일반 할부</th><th style="width:33%;">장기렌트(반납형)</th></tr>
         <tr><td class="font-bold">선납금</td><td>{installment_prepaid:,} 원</td><td>{rent_deposit:,} 원</td></tr>
         <tr><td class="font-bold">월납입금<br><span style="color:red; font-size:10px;">(선납금 제외)</span></td><td>{inst_monthly_pay:,} 원</td><td>{rent_monthly_pay:,} 원</td></tr>
         <tr><td class="font-bold">취등록세</td><td>{reg_tax:,} 원</td><td rowspan="5" class="bg-light text-blue" style="vertical-align:middle;">월 렌트료에<br>전부 포함</td></tr>
         <tr><td class="font-bold">자동차세</td><td>{total_tax:,} 원</td></tr>
-        <tr><td class="font-bold">보험료</td><td>{total_ins:,} 원</td></tr>
-        <tr><td class="font-bold">만기 차량 매각</td><td>-{car_sell_value:,} 원</td></tr>
+        <tr><td class=\"font-bold\">보험료</td><td>{total_ins:,} 원</td></tr>
+        <tr><td class=\"font-bold\">만기 차량 매각</td><td>-{car_sell_value:,} 원</td></tr>
         <tr><td class="font-bold">-</td><td>-</td></tr>
         <tr class="bg-light font-bold"><td>📊 월 평균 환산 비용</td><td>{int(inst_total_cost_ret/months):,} 원</td><td>{int(rent_total_cost_ret/months):,} 원</td></tr>
         <tr class="bg-light font-bold" style="background-color:#e9ecef;"><td>💰 총 투입 비용</td><td>{inst_total_cost_ret:,} 원</td><td>{rent_total_cost_ret:,} 원</td></tr>
     </table>
-    """
+    \"\"\"
     st.markdown(html_ret, unsafe_allow_html=True)
     
     if diff_ret > 0:
@@ -194,20 +194,20 @@ with view_col2:
     rent_total_cost_ins = (rent_monthly_pay * months) + rent_takeover_price + rent_takeover_tax + rent_deposit
     diff_ins = inst_total_cost_ins - rent_total_cost_ins
 
-    html_ins = f"""
+    html_ins = f\"\"\"
     <table class="pure-table">
         <tr><th style="width:34%;">세부 항목</th><th style="width:33%;">일반 할부</th><th style="width:33%;">장기렌트(인수형)</th></tr>
         <tr><td class="font-bold">선납금</td><td>{installment_prepaid:,} 원</td><td>{rent_deposit:,} 원</td></tr>
         <tr><td class="font-bold">월납입금<br><span style="color:red; font-size:10px;">(선납금 제외)</span></td><td>{inst_monthly_pay:,} 원</td><td>{rent_monthly_pay:,} 원</td></tr>
         <tr><td class="font-bold">취등록세</td><td>{reg_tax:,} 원</td><td rowspan="3" class="bg-light text-blue" style="vertical-align:middle;">월 렌트료에<br>전부 포함</td></tr>
-        <tr><td class="font-bold">자동차세</td><td>{total_tax:,} 원</td></tr>
-        <tr><td class="font-bold">보험료</td><td>{total_ins:,} 원</td></tr>
-        <tr><td class="font-bold">만기 인수금</td><td>-</td><td>{rent_takeover_price:,} 원</td></tr>
-        <tr><td class="font-bold">인수 시 취등록세</td><td>-</td><td>{rent_takeover_tax:,} 원</td></tr>
-        <tr class="bg-light font-bold"><td>📊 월 평균 환산 비용</td><td>{int(inst_total_cost_ins/months):,} 원</td><td>{int(rent_total_cost_ins/months):,} 원</td></tr>
+        <tr><td class=\"font-bold\">자동차세</td><td>{total_tax:,} 원</td></tr>
+        <tr><td class=\"font-bold\">보험료</td><td>{total_ins:,} 원</td></tr>
+        <tr><td class=\"font-bold\">만기 인수금</td><td>-</td><td>{rent_takeover_price:,} 원</td></tr>
+        <tr><td class=\"font-bold\">인수 시 취등록세</td><td>-</td><td>{rent_takeover_tax:,} 원</td></tr>
+        <tr class=\"bg-light font-bold\"><td>📊 월 평균 환산 비용</td><td>{int(inst_total_cost_ins/months):,} 원</td><td>{int(rent_total_cost_ins/months):,} 원</td></tr>
         <tr class="bg-light font-bold" style="background-color:#e9ecef;"><td>💰 총 투입 비용</td><td>{inst_total_cost_ins:,} 원</td><td>{rent_total_cost_ins:,} 원</td></tr>
     </table>
-    """
+    \"\"\"
     st.markdown(html_ins, unsafe_allow_html=True)
     
     if diff_ins > 0:
@@ -257,6 +257,7 @@ with m_col3:
         <tr><td>2000CC 이하</td><td>260원</td><td>₩ 520,000</td></tr>
         <tr><td>2500CC 이하</td><td>260원</td><td>₩ 650,000</td></tr>
         <tr><td>3000CC 초과</td><td>260원</td><td>₩ 780,000</td></tr>
+        <tr><td>전기차</td><td>X</td><td>₩ 130,000</td></tr>
     </table>
     """, unsafe_allow_html=True)
 
@@ -272,3 +273,26 @@ with m_col4:
         <tr><td>승합차</td><td>5%</td><td>-</td></tr>
     </table>
     """, unsafe_allow_html=True)
+"""
+
+# Modify the `tax_annual` calculation logic to include electric vehicles.
+# Need to check `cc_text` for "전기" or similar keyword.
+
+updated_code = original_code.replace(
+    """if "1000" in cc_text: tax_annual = 104000
+elif "1600" in cc_text: tax_annual = 291200
+elif "2000" in cc_text: tax_annual = 520000
+elif "2500" in cc_text: tax_annual = 650000
+elif "3000" in cc_text: tax_annual = 780000
+else: tax_annual = 130000""",
+    """if "전기" in cc_text: tax_annual = 130000
+elif "1000" in cc_text: tax_annual = 104000
+elif "1600" in cc_text: tax_annual = 291200
+elif "2000" in cc_text: tax_annual = 520000
+elif "2500" in cc_text: tax_annual = 650000
+elif "3000" in cc_text: tax_annual = 780000
+else: tax_annual = 130000"""
+)
+
+with open("updated_car_compare_app.py", "w", encoding="utf-8") as f:
+    f.write(updated_code)
