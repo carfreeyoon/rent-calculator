@@ -396,7 +396,7 @@ st.markdown(f"""
                     <td>{cc_raw_text}</td>
                     <td colspan="3"></td>
                 </tr>
-            
+            </tbody>
         </table>
     </div>
 """, unsafe_allow_html=True)
