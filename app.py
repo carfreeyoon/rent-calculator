@@ -6,7 +6,7 @@ st.set_page_config(page_title="카프리오 비교 프로그램", layout="wide")
 APP_PASSWORD = st.secrets.get("APP_PASSWORD", "")
 
 ENG = "qwertyuiopasdfghjklzxcvbnm"
-KOR = "ㅂㅈㄷㄱㅅㅛㅕㅑㅐㅔㅁㄴㅇㄹㅎㅋㅌㅊㅍㅠㅜㅡ"
+KOR = "ㅂㅈㄷㄱㅅㅛㅕㅑㅐㅔㅁㄴㅇㄹㅎㅗㅓㅏㅣㅋㅌㅊㅍㅠㅜㅡ"
 
 def eng_to_kor(text):
     result = ""
