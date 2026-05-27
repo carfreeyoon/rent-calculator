@@ -4,6 +4,17 @@ import re
 st.set_page_config(page_title="카프리오 비교 프로그램", layout="wide")
 
 APP_PASSWORD = st.secrets.get("APP_PASSWORD", "")
+ENG = "qwertyuiopasdfghjklzxcvbnm"
+KOR = "ㅂㅈㄷㄱㅅㅛㅕㅑㅐㅔㅁㄴㅇㄹㅎㅋㅌㅊㅍㅠㅜㅡ"
+
+def eng_to_kor(text):
+    result = ""
+    for ch in text.lower():
+        if ch in ENG:
+            result += KOR[ENG.index(ch)]
+        else:
+            result += ch
+    return result
 
 if not APP_PASSWORD:
     st.warning("APP_PASSWORD가 설정되지 않았습니다.")
@@ -11,7 +22,11 @@ if not APP_PASSWORD:
 
 input_password = st.text_input("🔒 비밀번호 입력", type="password")
 
-if input_password.strip().lower() != APP_PASSWORD.strip().lower():
+pw_input = input_password.strip().lower()
+pw_secret = APP_PASSWORD.strip().lower()
+
+if pw_input != pw_secret and eng_to_kor(pw_input) != pw_secret:
+    
     if input_password:
         st.error("비밀번호가 올바르지 않습니다.")
     st.stop()
@@ -358,15 +373,11 @@ st.markdown(f"""
                     <th>유종</th>
                     <th>CC</th>
                     <th>형태</th>
-                    <th>취등록세 기준</th>
-                    <th>인승</th>
                 </tr>
                 <tr>
                     <td>{fuel_text}</td>
                     <td>{cc_raw_text}</td>
                     <td>{car_shape}</td>
-                    <td>{tax_type_text}</td>
-                    <td>{passenger_count}인승</td>
                 </tr>
             </tbody>
         </table>
