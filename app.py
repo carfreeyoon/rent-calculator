@@ -607,13 +607,13 @@ st.markdown("""
 <tr>
 <td rowspan="2" style="background:#0b3873;color:white;font-weight:bold;">재무/신용</td>
 <td style="background:#ddebf7;font-weight:bold;">금융·부채 영향</td>
-<td>O<br><span style="color:red; font-size:10px;">(DSR·대출 영향)</span></td>
+<td>O<div style="color:red; font-size:10px; line-height:1; margin-top:-4px;">(DSR·대출 영향)</div></td>
 <td>X</td>
-<td>O<br><span style="color:red; font-size:10px;">(DSR·대출 영향)</span></td>
+<td>O<div style="color:red; font-size:10px; line-height:1; margin-top:-4px;">(DSR·대출 영향)</div></td>
 </tr>
 <tr>
 <td style="background:#ddebf7;font-weight:bold;">차량 자산 인식</td>
-<td>O<br><span style="color:red; font-size:10px;">(건보료·세금 인상)</span></td>
+<td>O<div style="color:red; font-size:10px; line-height:1; margin-top:-4px;">(건보료·세금 인상)</div></td>
 <td>X</td>
 <td>X</td>
 </tr>
@@ -648,7 +648,7 @@ st.markdown("""
 <tr>
 <td style="background:#ddebf7;font-weight:bold;">사고 비용·리스크</td>
 <td>수리비·감가 부담</td>
-<td>면책금 중심</td>
+<td>면책금 처리</td>
 <td>감가·보험료 영향</td>
 </tr>
 
@@ -685,7 +685,7 @@ st.markdown("""
 <td style="background:#ddebf7;font-weight:bold;">판매 시</td>
 <td>
 부가세 10% 발생
-<br><span style="color:red; font-size:10px;">(경차, 승합차 제외)</span>
+<div style="color:red; font-size:10px; line-height:1; margin-top:-4px;">(경차, 승합차 제외)</div>
 </td>
 <td>반납·인수 자유</td>
 <td>반납·인수 자유</td>
