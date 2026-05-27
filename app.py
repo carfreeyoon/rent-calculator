@@ -389,16 +389,12 @@ st.markdown(f"""
                 <tr>
                     <th>유종</th>
                     <th>CC</th>
-                    <th>형태</th>
-                    <th></th>
-                    <th></th>
+                    <th colspan="3"></th>
                 </tr>
                 <tr>
-                    <td>{fuel_text}</td>
+                    <td>{car_shape if fuel_text == "휘발유/전기" else fuel_text}</td>
                     <td>{cc_raw_text}</td>
-                    <td>{car_shape}</td>
-                    <td></td>
-                    <td></td>
+                    <td colspan="3"></td>
                 </tr>
             
         </table>
