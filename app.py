@@ -46,7 +46,7 @@ installment_rate = st.sidebar.number_input("📈 신용별 할부 금리 (%)", v
 insurance_annual = st.sidebar.number_input("🛡️ 고객 연 개인 보험료", value=1000000, step=100000, format="%d")
 
 # 누락되었던 렌트 잔존가치 수동 조절 창 추가 (텍스트 파싱과 연동)
-residual_rent_pct = st.sidebar.number_input("📉 할 잔존가치 (%)", value=residual_rent_pct, min_value=0, max_value=100, step=1)
+residual_rent_pct = st.sidebar.number_input("📉 할부 시, 잔존가치 (%)", value=residual_rent_pct, min_value=0, max_value=100, step=1)
 
 # ==========================================
 # [TOP MAIN] 타사 견적 파싱 구역
