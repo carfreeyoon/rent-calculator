@@ -274,10 +274,11 @@ resale_36_3 = "td-highlight" if mileage == "3만KM" and months == 36 else ""
 resale_48_3 = "td-highlight" if mileage == "3만KM" and months == 48 else ""
 resale_60_3 = "td-highlight" if mileage == "3만KM" and months == 60 else ""
 
-rate_500 = "td-highlight" if installment_rate >= 10.5 and installment_rate <= 14.9 else ""
-rate_700 = "td-highlight" if installment_rate >= 7.5 and installment_rate <= 9.9 else ""
-rate_900 = "td-highlight" if installment_rate >= 5.0 and installment_rate <= 6.9 else ""
-rate_901 = "td-highlight" if installment_rate >= 3.5 and installment_rate <= 4.8 else ""
+rate_900_over = "td-highlight" if installment_rate >= 3.5 and installment_rate <= 4.8 else ""
+rate_801_900 = "td-highlight" if installment_rate >= 4.9 and installment_rate <= 6.9 else ""
+rate_701_800 = "td-highlight" if installment_rate >= 7.0 and installment_rate <= 8.9 else ""
+rate_601_700 = "td-highlight" if installment_rate >= 9.0 and installment_rate <= 11.9 else ""
+rate_600_under = "td-highlight" if installment_rate >= 12.0 and installment_rate <= 14.9 else ""
 
 tax_1000 = "td-highlight" if "1000" in cc_text else ""
 tax_1600 = "td-highlight" if "1600" in cc_text else ""
@@ -414,10 +415,11 @@ with m_col2:
     st.markdown(f"""
     <table class="matrix-table">
         <tr><th>구분</th><th>할부이자</th></tr>
-        <tr class="{rate_500}"><td>500점 이하</td><td>10.5 ~ 14.9%</td></tr>
-        <tr class="{rate_700}"><td>500 ~ 700점</td><td>7.5 ~ 9.9%</td></tr>
-        <tr class="{rate_900}"><td>700 ~ 900점</td><td>5.0 ~ 6.9%</td></tr>
-        <tr class="{rate_901}"><td>900점 이상</td><td>3.5 ~ 4.8%</td></tr>
+        <tr class="{rate_900_over}"><td>900점 초과</td><td>3.5 ~ 4.8%</td></tr>
+        <tr class="{rate_801_900}"><td>801 ~ 900점</td><td>4.9 ~ 6.9%</td></tr>
+        <tr class="{rate_701_800}"><td>701 ~ 800점</td><td>7.0 ~ 8.9%</td></tr>
+        <tr class="{rate_601_700}"><td>601 ~ 700점</td><td>9.0 ~ 11.9%</td></tr>
+        <tr class="{rate_600_under}"><td>600점 이하</td><td>12.0 ~ 14.9%</td></tr>
     </table>
     """, unsafe_allow_html=True)
 
