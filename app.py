@@ -168,7 +168,6 @@ view_col1, view_col2 = st.columns(2)
 
 # 1. 반납형 테이블
 with view_col1:
-    st.markdown('<div class="capture-box">', unsafe_allow_html=True)
     st.markdown('<div class="excel-header-blue">카프리오 비교 프로그램 (반납형)</div>', unsafe_allow_html=True)
     
     inst_total_cost_ret = installment_prepaid + loan_amount + installment_interest + reg_tax + total_tax + total_ins - car_sell_value
@@ -196,11 +195,9 @@ with view_col1:
         st.markdown(f'<div class="excel-green">🏆 장기렌트 선택 시 할부 대비 {diff_ret:,}원 절감!</div>', unsafe_allow_html=True)
     else:
         st.markdown(f'<div class="excel-red">할부 이용이 {abs(diff_ret):,}원 더 유리합니다.</div>', unsafe_allow_html=True)
-    st.markdown('</div>', unsafe_allow_html=True)
 
 # 2. 인수형 테이블
 with view_col2:
-    st.markdown('<div class="capture-box">', unsafe_allow_html=True)
     st.markdown('<div class="excel-header-blue">카프리오 비교 프로그램 (인수형)</div>', unsafe_allow_html=True)
     
     inst_total_cost_ins = installment_prepaid + loan_amount + installment_interest + reg_tax + total_tax + total_ins
@@ -228,7 +225,6 @@ with view_col2:
         st.markdown(f'<div class="excel-green">🏆 장기렌트 선택 시 할부 대비 {diff_ins:,}원 절감!</div>', unsafe_allow_html=True)
     else:
         st.markdown(f'<div class="excel-red">할부 인수가 총 {abs(diff_ins):,}원 더 유리합니다.</div>', unsafe_allow_html=True)
-    st.markdown('</div>', unsafe_allow_html=True)
 
 # ==========================================
 # [📊 BOTTOM] 검증 요율표 구역
