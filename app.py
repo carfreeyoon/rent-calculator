@@ -673,13 +673,6 @@ st.markdown("""
 <td>O</td>
 </tr>
 
-<tr>
-<td style="background:#0b3873;color:white;font-weight:bold;">관리</td>
-<td style="background:#ddebf7;font-weight:bold;">정비 선택 가능</td>
-<td>X</td>
-<td>O</td>
-<td>X</td>
-</tr>
 
 <tr>
 <td rowspan="2" style="background:#6b8e23;color:white;font-weight:bold;">법인</td>
