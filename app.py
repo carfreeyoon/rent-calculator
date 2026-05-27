@@ -44,7 +44,6 @@ months = 60
 mileage = "2만Km"
 rent_monthly_pay = 600930
 rent_deposit = 0
-residual_rent_pct = 58  
 cc_text = "1600CC이하"
 car_shape = "하이브리드"
 installment_resale_pct = 50 # 할부 잔존가치(매각율) 기본값
@@ -57,7 +56,6 @@ is_corporate = st.sidebar.checkbox("🏢 법인 고객 여부", value=False)
 installment_prepaid = st.sidebar.number_input("💵 할부 선납금", value=10000000, step=1000000)
 installment_rate = st.sidebar.number_input("📈 할부 금리 (%)", value=5.0, step=0.1)
 insurance_annual = st.sidebar.number_input("🛡️ 연 개인 보험료", value=1000000, step=100000)
-residual_rent_pct = st.sidebar.number_input("📉 렌트 잔존가치 (%)", value=residual_rent_pct, min_value=0, max_value=100, step=1)
 installment_resale_pct = st.sidebar.number_input("📉 할부 잔존가치 (%)", value=installment_resale_pct, min_value=0, max_value=100, step=1)
 
 # ==========================================
@@ -81,7 +79,6 @@ if raw_data:
             elif "약정거리" in key: mileage = val.replace(" ", "")
             elif "월납입" in key: rent_monthly_pay = clean_num(val)
             elif "선납금" in key or "보증금" in key: rent_deposit = clean_num(val)
-            elif "잔존" in key: residual_rent_pct = clean_num(val)  
             elif "CC" in key: cc_text = val.replace(" ", "")
             elif "형태" in key: car_shape = val.replace(" ", "")
 
@@ -110,7 +107,6 @@ elif "2500" in cc_text: tax_annual = 650000
 elif "3000" in cc_text: tax_annual = 780000
 else: tax_annual = 130000
 
-# 할부 매각 로직 수정: 입력받은 installment_resale_pct 사용
 loan_amount = car_price - installment_prepaid
 r = (installment_rate / 100) / 12
 inst_monthly_pay = int(loan_amount * (r * (1 + r)**months) / ((1 + r)**months - 1)) if r > 0 else int(loan_amount / months)
@@ -121,8 +117,8 @@ total_tax = int((tax_annual / 12) * months)
 corporate_discount = 0.9 if (is_corporate and car_shape != "경차" and car_shape != "승합") else 1.0
 car_sell_value = int(car_price * (installment_resale_pct / 100) * corporate_discount)
 
-# 렌트 만기 인수금 및 취등록세 계산 (렌트 고유값 유지)
-rent_takeover_price = int(car_price * (residual_rent_pct / 100))
+# 렌트 만기 인수금 (기존 로직: 차량가의 40%로 가정)
+rent_takeover_price = int(car_price * 0.40)
 rent_takeover_tax = int(rent_takeover_price * 0.07)
 
 # ==========================================
@@ -228,7 +224,7 @@ m_col1, m_col2, m_col3, m_col4 = st.columns(4)
 
 with m_col1:
     st.markdown("**■ 잔존가치 (매각 요율표)**")
-    st.markdown(f"""
+    st.markdown("""
     <table class="matrix-table">
         <tr><th>구분</th><th>24개월</th><th>36개월</th><th>48개월</th><th>60개월</th></tr>
         <tr><td>1만KM</td><td>78%</td><td>70%</td><td>63%</td><td>56%</td></tr>
