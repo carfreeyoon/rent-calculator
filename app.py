@@ -279,7 +279,10 @@ st.markdown('<div class="excel-header-gray">💻 내부 데이터 산출 요율 
 m_col1, m_col2, m_col3, m_col4 = st.columns(4)
 
 with m_col1:
-    st.markdown("**■ 예상잔존가치(주행×개월수) *가솔린 기준**")
+st.markdown('''
+**■ 예상잔존가치(주행×개월수)** 
+<span style="color:red; font-size:10px;">*가솔린 기준</span>
+''', unsafe_allow_html=True)
     st.markdown(f"""
     <table class="matrix-table">
         <tr><th>구분</th><th>24개월</th><th>36개월</th><th>48개월</th><th>60개월</th></tr>
