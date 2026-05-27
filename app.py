@@ -656,7 +656,7 @@ st.markdown("""
 <td style="background:#ddebf7;font-weight:bold;">사고 비용·리스크</td>
 <td>수리비·감가 부담</td>
 <td>면책금 처리</td>
-<td>감가·보험료 영향</td>
+<td>수리비·감가 부담</td>
 </tr>
 
 <tr>
