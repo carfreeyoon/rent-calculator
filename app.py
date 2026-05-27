@@ -3,6 +3,19 @@ import re
 
 st.set_page_config(page_title="카프리오 비교 프로그램", layout="wide")
 
+APP_PASSWORD = st.secrets.get("APP_PASSWORD", "")
+
+if not APP_PASSWORD:
+    st.warning("APP_PASSWORD가 설정되지 않았습니다.")
+    st.stop()
+
+input_password = st.text_input("🔒 비밀번호 입력", type="password")
+
+if input_password != APP_PASSWORD:
+    if input_password:
+        st.error("비밀번호가 올바르지 않습니다.")
+    st.stop()
+
 # 레이아웃 완벽 정렬 및 불필요한 공백 제거용 CSS
 st.markdown("""
     <style>
@@ -46,6 +59,9 @@ mileage = "2만Km"
 rent_monthly_pay = 600930
 rent_deposit = 0
 cc_text = "1600CC이하"
+cc_raw_text = "1598cc"
+fuel_text = "휘발유/전기"
+passenger_count = 7
 car_shape = "하이브리드"
 installment_resale_pct = 50 # 할부 잔존가치(매각율) 기본값
 rent_resale_pct = 58       # 렌트 고정 잔존가치(기본값 58%)
@@ -53,7 +69,7 @@ rent_resale_pct = 58       # 렌트 고정 잔존가치(기본값 58%)
 # ==========================================
 # [SIDEBAR] 조건 설정 구역
 # ==========================================
-st.sidebar.header("📋 할부 조건설정")
+st.sidebar.header("📋 조건 설정")
 is_corporate = st.sidebar.checkbox("🏢 법인 고객 여부", value=False)
 installment_prepaid = st.sidebar.number_input("💵 할부 선납금", value=10000000, step=1000000)
 installment_rate = st.sidebar.number_input("📈 할부 금리 (%)", value=5.0, step=0.1)
@@ -118,36 +134,43 @@ def auto_convert_quote(raw_text):
     prepaid_val = line_money_after("선수금")
     resale_val = percent_after(r"잔존가치\(인수\)")
 
-    cc_match = re.search(r"([0-9,]+)cc", text)
     fuel_line = ""
     for line in lines_clean:
         if "출시" in line and "·" in line:
             fuel_line = line
             break
 
-    if "전기" in fuel_line and not cc_match:
-        cc_val = "전기차"
-    elif cc_match:
-        cc_num = int(only_num(cc_match.group(1)))
-        if cc_num <= 1000:
-            cc_val = "1000CC이하"
-        elif cc_num <= 1600:
-            cc_val = "1600CC이하"
-        elif cc_num <= 2000:
-            cc_val = "2000CC이하"
-        elif cc_num <= 2500:
-            cc_val = "2500CC이하"
-        else:
-            cc_val = "3000CC초과"
-    else:
-        cc_val = ""
+    fuel_parts = [p.strip() for p in fuel_line.split("·")]
+    fuel_val = fuel_parts[1] if len(fuel_parts) >= 2 else ""
+    
+    cc_match = re.search(r"([0-9,]+)cc", fuel_line)
+    cc_num = int(only_num(cc_match.group(1))) if cc_match else 0
+    cc_raw_val = cc_match.group(1).replace(",", "") + "cc" if cc_match else ""
 
-    if "하이브리드" in car_name_val or "하이브리드" in fuel_line:
-        shape_val = "하이브리드"
-    elif "전기" in fuel_line and not cc_match:
+    passenger_match = re.search(r"([0-9]+)인승", car_name_val)
+    passenger_val = int(passenger_match.group(1)) if passenger_match else 0
+
+    if fuel_val == "전기" or fuel_val == "수소":
+        cc_val = "전기차"
+    elif cc_num <= 1000:
+        cc_val = "1000CC이하"
+    elif cc_num <= 1600:
+        cc_val = "1600CC이하"
+    elif cc_num <= 2000:
+        cc_val = "2000CC이하"
+    elif cc_num <= 2500:
+        cc_val = "2500CC이하"
+    else:
+        cc_val = "3000CC초과"
+
+    if fuel_val == "전기":
         shape_val = "전기"
-    elif "경차" in car_name_val:
+    elif fuel_val == "수소":
+        shape_val = "수소"
+    elif cc_num > 0 and cc_num <= 1000:
         shape_val = "경차"
+    elif "하이브리드" in car_name_val or fuel_val == "휘발유/전기":
+        shape_val = "하이브리드"
     else:
         shape_val = "일반"
 
@@ -160,6 +183,9 @@ def auto_convert_quote(raw_text):
 선납금\t{prepaid_val}
 잔존(렌트)\t{resale_val}
 CC\t{cc_val}
+CC원문\t{cc_raw_val}
+유종\t{fuel_val}
+인승\t{passenger_val}
 형태\t{shape_val}"""
 
 # ==========================================
@@ -185,6 +211,9 @@ if raw_data:
             elif "월납입" in key: rent_monthly_pay = clean_num(val)
             elif "선납금" in key or "보증금" in key: rent_deposit = clean_num(val)
             elif "잔존" in key: rent_resale_pct = float(val.replace("%", "").replace(" ", ""))
+            elif key == "CC원문": cc_raw_text = val.replace(" ", "")
+            elif key == "유종": fuel_text = val.replace(" ", "")
+            elif key == "인승": passenger_count = clean_num(val)
             elif "CC" in key: cc_text = val.replace(" ", "")
             elif "형태" in key: car_shape = val.replace(" ", "")
 
@@ -201,7 +230,7 @@ st.sidebar.markdown(f"""
 # ==========================================
 # [BACKEND] 연산 로직
 # ==========================================
-e15 = "O" if "승합" in car_shape else ""
+e15 = "O" if passenger_count >= 9 else ""
 e14 = "O" if "경차" in car_shape else ""
 g14 = "O" if "전기" in car_shape or "수소" in car_shape else ""
 i14 = "O" if "하이브리드" in car_shape else ""
@@ -244,19 +273,22 @@ total_ins = int((insurance_annual / 12) * months)
 total_tax = int((tax_annual / 12) * months)
 
 # 할부 잔존가치(매각) 산출
-corporate_discount = 0.9 if (is_corporate and car_shape != "경차" and car_shape != "승합") else 1.0
+corporate_discount = 0.9 if (is_corporate and car_shape != "경차" and e15 == "") else 1.0
 car_sell_value = int(car_price * (installment_resale_pct / 100) * corporate_discount)
 
 # 렌트 고정 잔존가치 산출 (수정: 렌트 고정값 58% 사용)
 rent_takeover_price = int(car_price * (rent_resale_pct / 100))
 
-if e15 != "" and g14 != "": rent_takeover_tax_raw = (rent_takeover_price * 0.05) - 1400000
-elif e15 != "" and i14 != "": rent_takeover_tax_raw = (rent_takeover_price * 0.05) - 400000
-elif e15 != "": rent_takeover_tax_raw = rent_takeover_price * 0.05
-elif e14 != "": rent_takeover_tax_raw = (rent_takeover_price * 0.04) - 750000
-elif g14 != "": rent_takeover_tax_raw = (rent_takeover_price * 0.07) - 1400000
-elif i14 != "": rent_takeover_tax_raw = (rent_takeover_price * 0.07) - 400000
-else: rent_takeover_tax_raw = rent_takeover_price * 0.07
+if e15 != "" and g14 != "":
+    rent_takeover_tax_raw = (rent_takeover_price * 0.05) - 1400000
+elif e15 != "":
+    rent_takeover_tax_raw = rent_takeover_price * 0.05
+elif e14 != "":
+    rent_takeover_tax_raw = (rent_takeover_price * 0.04) - 750000
+elif g14 != "":
+    rent_takeover_tax_raw = (rent_takeover_price * 0.07) - 1400000
+else:
+    rent_takeover_tax_raw = rent_takeover_price * 0.07
 
 rent_takeover_tax = max(0, int(rent_takeover_tax_raw))
 
@@ -290,11 +322,13 @@ tax_2500 = "td-highlight" if "2500" in cc_text else ""
 tax_3000 = "td-highlight" if "3000" in cc_text else ""
 tax_ev = "td-highlight" if "전기" in cc_text else ""
 
-reg_general = "td-highlight" if car_shape == "일반" else ""
-reg_light = "td-highlight" if "경차" in car_shape else ""
-reg_ev = "td-highlight" if "전기" in car_shape or "수소" in car_shape else ""
-reg_hybrid = "td-highlight" if "하이브리드" in car_shape else ""
-reg_van = "td-highlight" if "승합" in car_shape else ""
+reg_general = "td-highlight" if car_shape == "일반" and e15 == "" else ""
+reg_light = "td-highlight" if "경차" in car_shape and e15 == "" else ""
+reg_ev = "td-highlight" if ("전기" in car_shape or "수소" in car_shape) and e15 == "" else ""
+reg_hybrid = "td-highlight" if "하이브리드" in car_shape and e15 == "" else ""
+reg_van = "td-highlight" if e15 != "" else ""
+
+tax_type_text = "승합차(9인승 이상)" if e15 != "" else car_shape
 
 # ==========================================
 # [공통 조건 구역]
@@ -319,6 +353,20 @@ st.markdown(f"""
                     <td class="font-bold" style="color:#111;">{car_price:,} 원</td>
                     <td>{months} 개월</td>
                     <td>{mileage}</td>
+                </tr>
+                <tr>
+                    <th>유종</th>
+                    <th>CC</th>
+                    <th>형태</th>
+                    <th>취등록세 기준</th>
+                    <th>인승</th>
+                </tr>
+                <tr>
+                    <td>{fuel_text}</td>
+                    <td>{cc_raw_text}</td>
+                    <td>{car_shape}</td>
+                    <td>{tax_type_text}</td>
+                    <td>{passenger_count}인승</td>
                 </tr>
             </tbody>
         </table>
@@ -449,10 +497,9 @@ with m_col4:
         <tr class="{reg_light}"><td>경차</td><td>4%</td><td>75만 원</td></tr>
         <tr class="{reg_ev}"><td>전기/수소차</td><td>7%</td><td>140만 원</td></tr>
         <tr class="{reg_hybrid}"><td>하이브리드</td><td>7%</td><td>-</td></tr>
-        <tr class="{reg_van}"><td>승합차</td><td>5%</td><td>-</td></tr>
+        <tr class="{reg_van}"><td>승합차<br><span style="color:red; font-size:10px;">(9인승 이상 포함)</span></td><td>5%</td><td>-</td></tr>
     </table>
     """, unsafe_allow_html=True)
-
 
 # ==========================================
 # [할부 · 렌트 · 리스 비교표]
