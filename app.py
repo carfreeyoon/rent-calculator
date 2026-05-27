@@ -194,7 +194,7 @@ st.sidebar.markdown(
 )
 st.sidebar.markdown(f"""
 <div style="background-color:white; padding:9px 13px; border-radius:8px; font-size:14px; color:#111; height:38px; display:flex; align-items:center;">
-{rent_resale_pct}
+{rent_resale_pct:g}
 </div>
 """, unsafe_allow_html=True)
 
