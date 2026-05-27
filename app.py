@@ -4,6 +4,7 @@ import re
 st.set_page_config(page_title="카프리오 비교 프로그램", layout="wide")
 
 APP_PASSWORD = st.secrets.get("APP_PASSWORD", "")
+
 ENG = "qwertyuiopasdfghjklzxcvbnm"
 KOR = "ㅂㅈㄷㄱㅅㅛㅕㅑㅐㅔㅁㄴㅇㄹㅎㅋㅌㅊㅍㅠㅜㅡ"
 
@@ -22,13 +23,14 @@ if not APP_PASSWORD:
 
 input_password = st.text_input("🔒 비밀번호 입력", type="password")
 
-pw_input = input_password.strip().lower()
-pw_secret = APP_PASSWORD.strip().lower()
+if input_password:
+    pw_input = input_password.strip().lower()
+    pw_secret = APP_PASSWORD.strip().lower()
 
-if pw_input != pw_secret and eng_to_kor(pw_input) != pw_secret:
-    
-    if input_password:
+    if pw_input != pw_secret and eng_to_kor(pw_input) != pw_secret:
         st.error("비밀번호가 올바르지 않습니다.")
+        st.stop()
+else:
     st.stop()
 
 # 레이아웃 완벽 정렬 및 불필요한 공백 제거용 CSS
