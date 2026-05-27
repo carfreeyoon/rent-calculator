@@ -607,13 +607,13 @@ st.markdown("""
 <tr>
 <td rowspan="2" style="background:#0b3873;color:white;font-weight:bold;">재무/신용</td>
 <td style="background:#ddebf7;font-weight:bold;">금융·부채 영향</td>
-<td>O</td>
+<td>O<br><span style="color:red; font-size:10px;">(DSR·대출 영향)</span></td>
 <td>X</td>
-<td>O</td>
+<td>O<br><span style="color:red; font-size:10px;">(DSR·대출 영향)</span></td>
 </tr>
 <tr>
 <td style="background:#ddebf7;font-weight:bold;">차량 자산 인식</td>
-<td>O</td>
+<td>O<br><span style="color:red; font-size:10px;">(건보료·세금 인상)</span></td>
 <td>X</td>
 <td>X</td>
 </tr>
@@ -687,8 +687,8 @@ st.markdown("""
 부가세 10% 발생
 <br><span style="color:red; font-size:10px;">(경차, 승합차 제외)</span>
 </td>
-<td>인수·반납 자유</td>
-<td>인수·반납 자유</td>
+<td>반납·인수 자유</td>
+<td>반납·인수 자유</td>
 </tr>
 </table>
 """, unsafe_allow_html=True)
