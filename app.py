@@ -1244,20 +1244,19 @@ st.markdown("""
     }
 
     
-    /* [PATCH] 다크모드 폼 입력칸/셀렉트 배경·테두리 복구 */
+    /* [PATCH] 다크모드 폼 입력칸/셀렉트 통일 (PC/MO) */
     html.caprio-dark div[data-testid="stForm"] div[data-baseweb="input"],
-    html.caprio-dark div[data-testid="stForm"] div[data-baseweb="select"] > div,
-    html.caprio-dark div[data-testid="stForm"] textarea {
+    html.caprio-dark div[data-testid="stForm"] input,
+    html.caprio-dark div[data-testid="stForm"] textarea,
+    html.caprio-dark div[data-testid="stForm"] div[data-testid="stTextArea"] textarea,
+    html.caprio-dark div[data-testid="stForm"] div[data-testid="stTextInput"] input,
+    html.caprio-dark div[data-testid="stForm"] div[data-baseweb="select"] > div {
+
         background-color: #232631 !important;
         color: #f3f6fb !important;
+        -webkit-text-fill-color: #f3f6fb !important;
         border: 1px solid #46566d !important;
         box-shadow: none !important;
-    }
-
-    html.caprio-dark div[data-testid="stForm"] input,
-    html.caprio-dark div[data-testid="stForm"] textarea {
-        color: #f3f6fb !important;
-        -webkit-text-fill-color: #f3f6fb !important;
     }
 
     html.caprio-dark div[data-testid="stForm"] div[data-baseweb="select"] svg {
