@@ -266,8 +266,8 @@ st.markdown("""
         font-weight: 900 !important;
     }
 
-    html.caprio-dark .compare-summary-table td[style*="background:#ddebf7"],
-    html.caprio-dark .compare-summary-table td[style*="background: #ddebf7"] {
+    html.caprio-dark .compare-summary-table td[style*="background:#ddebf7"]:nth-child(2),
+    html.caprio-dark .compare-summary-table td[style*="background: #ddebf7"]:nth-child(2) {
         background-color: #0b3873 !important;
         color: #ffffff !important;
         font-weight: 800 !important;
