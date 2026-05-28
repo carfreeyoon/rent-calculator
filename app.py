@@ -1202,7 +1202,7 @@ st.markdown("""
 <td class="compare-item">판매 시</td>
 <td>
 부가세 10% 발생
-<br><span style="color:red; font-size:10px;">(경차, 승합차 제외)</span>
+<br><span style="color:red; font-size:10px; display:block; margin-top:-2px; line-height:1;">(경차, 승합차 제외)</span>
 </td>
 <td>인수·반납 자유</td>
 <td>인수·반납 자유</td>
