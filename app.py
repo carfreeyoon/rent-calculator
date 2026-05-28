@@ -259,23 +259,26 @@ st.markdown("""
     /* 할부·렌트·리스 비교표 - class 기반 다크모드 */
     html.caprio-dark .compare-cat{
         background:#144b96 !important;
+        background-color:#144b96 !important;
         color:#ffffff !important;
         font-weight:900 !important;
     }
 
     html.caprio-dark .compare-item{
         background:#2b4461 !important;
+        background-color:#2b4461 !important;
         color:#ffffff !important;
         font-weight:700 !important;
     }
 
     html.caprio-dark .compare-legal{
         background:#6d9a2e !important;
+        background-color:#6d9a2e !important;
         color:#ffffff !important;
         font-weight:900 !important;
     }
 
-    html.caprio-dark .compare-summary-table td:not([style*="background:#0b3873"]):not([style*="background: #0b3873"]):not([style*="background:#6b8e23"]):not([style*="background: #6b8e23"]):not([style*="background:#ddebf7"]):not([style*="background: #ddebf7"]) {
+    html.caprio-dark .compare-summary-table td:not(.compare-cat):not(.compare-item):not(.compare-legal):not([style*="background:#0b3873"]):not([style*="background: #0b3873"]):not([style*="background:#6b8e23"]):not([style*="background: #6b8e23"]):not([style*="background:#ddebf7"]):not([style*="background: #ddebf7"]) {
         background-color: #0e141c !important;
         color: #f3f6fb !important;
     }
@@ -371,34 +374,6 @@ st.markdown("""
         color:#ffffff !important;
         font-weight:800 !important;
     }
-
-    /* ↓ 바로 여기 추가 ↓ */
-
-    html.caprio-dark table.compare-summary-table.matrix-table td.compare-cat {
-        background:#144b96 !important;
-        background-color:#144b96 !important;
-        color:#ffffff !important;
-        font-weight:900 !important;
-    }
-
-    html.caprio-dark table.compare-summary-table.matrix-table td.compare-item {
-        background:#2b4461 !important;
-        background-color:#2b4461 !important;
-        color:#ffffff !important;
-        font-weight:800 !important;
-    }
-
-    html.caprio-dark table.compare-summary-table.matrix-table td.compare-legal {
-        background:#6d9a2e !important;
-        background-color:#6d9a2e !important;
-        color:#ffffff !important;
-        font-weight:900 !important;
-    }
-
-</style>
-
-
-    
     </style>
 """, unsafe_allow_html=True)
 
