@@ -589,199 +589,87 @@ with m_col4:
 
 
 
+# ==========================================
+# [나에게 맞는 방식 선택 가이드]
+# ==========================================
+st.write("")
+st.markdown('<div class="excel-header-gray">🚗 나에게 맞는 방식 선택 가이드</div>', unsafe_allow_html=True)
+
 st.markdown("""
 <style>
 .guide-wrap{
     width:100%;
     display:grid;
-    grid-template-columns:repeat(2,minmax(0,1fr));
+    grid-template-columns:1fr 1fr;
     gap:18px;
-    margin-top:10px;
-    align-items:start;
+    margin-top:12px;
 }
-
 .guide-card{
+    width:100%;
     background:#ffffff;
     border:1px solid #d9e2ec;
     border-radius:8px;
     padding:18px;
     box-sizing:border-box;
-    width:100%;
 }
-
-.guide-card.full{
-    grid-column:1 / 2;
-}
-
 .guide-title{
     font-size:17px;
     font-weight:800;
     color:#0b3873;
     margin-bottom:6px;
 }
-
 .guide-copy{
     font-size:13px;
     font-weight:700;
-    color:#444;
+    color:#333;
     margin-bottom:12px;
     line-height:1.5;
 }
-
 .guide-subtitle{
     font-size:13px;
     font-weight:800;
     margin-bottom:6px;
 }
-
 .guide-list{
     font-size:12px;
     line-height:1.9;
     padding-left:20px;
-    margin-bottom:12px;
+    margin:0 0 12px 0;
 }
-
 .reality-box{
     background:#f4f6f8;
     border:1px solid #d9dee5;
     border-radius:6px;
     padding:12px;
 }
-
 .reality-title{
     font-size:13px;
     font-weight:800;
     margin-bottom:6px;
 }
-
-.reality-item{
-    font-size:12px;
-    line-height:1.75;
-    margin-bottom:5px;
-}
-
-@media (max-width:768px){
-
-    .guide-wrap{
-        grid-template-columns:1fr;
-        width:100%;
-    }
-
-    .guide-card,
-    .guide-card.full{
-        grid-column:auto;
-        width:100%;
-    }
-}
-</style>
-""", unsafe_allow_html=True)
-
-
-
-
-
-
-
-st.markdown("""
-<style>
-.guide-wrap{
-    width:55%;
-    display:grid;
-    grid-template-columns:1fr 1fr;
-    gap:16px;
-    margin-top:10px;
-}
-
-.guide-card{
-    background:#ffffff;
-    border:1px solid #d9e2ec;
-    border-radius:8px;
-    padding:18px;
-    box-sizing:border-box;
-}
-
-.guide-card.full{
-    grid-column:1 / 3;
-}
-
-.guide-title{
-    font-size:17px;
-    font-weight:800;
-    color:#0b3873;
-    margin-bottom:6px;
-}
-
-.guide-copy{
-    font-size:13px;
-    font-weight:700;
-    color:#444;
-    margin-bottom:12px;
-}
-
-.guide-subtitle{
-    font-size:13px;
-    font-weight:800;
-    margin-bottom:6px;
-}
-
-.guide-list{
-    font-size:12px;
-    line-height:1.8;
-    padding-left:18px;
-    margin-bottom:12px;
-}
-
-.reality-box{
-    background:#f4f6f8;
-    border:1px solid #d9dee5;
-    border-radius:6px;
-    padding:12px;
-}
-
-.reality-title{
-    font-size:13px;
-    font-weight:800;
-    margin-bottom:6px;
-}
-
 .reality-item{
     font-size:12px;
     line-height:1.7;
     margin-bottom:5px;
 }
-
 @media (max-width:768px){
     .guide-wrap{
-        width:100%;
         grid-template-columns:1fr;
-    }
-
-    .guide-card.full{
-        grid-column:auto;
     }
 }
 </style>
-""", unsafe_allow_html=True)
 
-
-
-
-st.markdown('<div class="excel-header-gray" style="width:100%;">🚗 나에게 맞는 방식 선택 가이드</div>', unsafe_allow_html=True)
-
-st.markdown("""
 <div class="guide-wrap">
 
 <div class="guide-card">
 <div class="guide-title">💳 [소유형] 할부 구매</div>
 <div class="guide-copy">내 차라는 확실한 자산, 오래도록 변함없이 타고 싶다면?</div>
-
 <div class="guide-subtitle">✅ 할부 체크리스트</div>
 <ol class="guide-list">
 <li>5~10년 이상 장기 보유할 목적이 확실해요.</li>
 <li>취등록세와 같은 초기 목돈을 지출할 여력이 있어요.</li>
 <li>명의가 개인 또는 법인 소유인 온전한 자산을 원해요.</li>
 </ol>
-
 <div class="reality-box">
 <div class="reality-title">💡 현실 체크</div>
 <div class="reality-item">📉 <b>집 대출 한도 축소</b> : 내 명의로 할부 대출이 잡히기 때문에, 추후 주택담보대출 한도가 줄어들 수 있어요.</div>
@@ -794,14 +682,12 @@ st.markdown("""
 <div class="guide-card">
 <div class="guide-title">🚗 [재테크형] 장기렌트</div>
 <div class="guide-copy">대출 한도 보호와 차량 관리의 효율성을 동시에!</div>
-
 <div class="guide-subtitle">✅ 렌트 체크리스트</div>
 <ol class="guide-list">
 <li>추후 주택 마련 등을 위해 대출 한도를 확보해야 해요.</li>
 <li>3~5년마다 새로운 차량으로 교체하는 주기를 선호해요.</li>
 <li>정비·세금·사고처리 등 번거로운 일은 맡기고 싶어요.</li>
 </ol>
-
 <div class="reality-box">
 <div class="reality-title">💡 현실 체크</div>
 <div class="reality-item">🔓 <b>대출 한도 영향 없음</b> : 렌트사 명의라 개인 대출 한도에 영향이 없어요.</div>
@@ -813,14 +699,12 @@ st.markdown("""
 <div class="guide-card">
 <div class="guide-title">✨ [이미지형] 리스</div>
 <div class="guide-copy">품격은 일반 번호판으로, 초기 비용은 리스로 합리적으로!</div>
-
 <div class="guide-subtitle">✅ 리스 체크리스트</div>
 <ol class="guide-list">
 <li>취등록세 초기 목돈 지출이 부담스러워요.</li>
 <li>하·허·호 대신 일반 번호판을 원해요.</li>
 <li>렌트보다 자차와 유사한 만족감을 원해요.</li>
 </ol>
-
 <div class="reality-box">
 <div class="reality-title">💡 현실 체크</div>
 <div class="reality-item">📉 <b>보험요율 유지</b> : 기존 개인 보험요율을 그대로 활용할 수 있어요.</div>
@@ -831,6 +715,3 @@ st.markdown("""
 
 </div>
 """, unsafe_allow_html=True)
-
-
-
