@@ -1474,7 +1474,7 @@ st.markdown("""
 <div class="reality-title">💡 현실 체크</div>
 <div class="reality-item">📉 <b>집 대출 한도 축소</b> : 내 명의로 할부 대출이 잡히기 때문에, 추후 주택담보대출 한도가 줄어들 수 있어요.</div>
 <div class="reality-item">💸 <b>부대 비용 발생</b> : 자동차세·취등록세·보험료 등 지속적인 비용이 발생해요.</div>
-<div class="reality-item">🛡️ <b>자산 가치 관리</b> : 사고주의 & 관리를 통해 감가를 최소화하는게 중요해요!</div>
+<div class="reality-item">🛡️ <b>자산 가치 관리</b> : 사고주의 & 관리를 통해 감가를 최소화하는게 중요해요.</div>
 <div class="reality-item">🏢 <b>법인 시 주의</b> : 판매 시 부가세 10%가 발생하니 미리 대비해야해요!</div>
 </div>
 </div>
@@ -1491,6 +1491,7 @@ st.markdown("""
 <div class="reality-box">
 <div class="reality-title">💡 현실 체크</div>
 <div class="reality-item">🔓 <b>대출 한도 영향 없음</b> : 렌트사 명의라 개인 대출 한도에 영향이 없어요.</div>
+<div class="reality-item">💵 <b>세금 할증 없음</b> : 재산세 등 세금 인상은 걱정하지 않으셔도 괜찮아요.</div>
 <div class="reality-item">🚫 <b>보험·사고 기록</b> : 사고 시, 정해진 면책금으로 해결하고 개인 보험 이력에 남지 않아요.</div>
 <div class="reality-item">🗓️ <b>관리 비용 최소화</b> : 보험·세금이 모두 월 이용료에 포함되며 추가 비용 부담이 없어요!</div>
 </div>
