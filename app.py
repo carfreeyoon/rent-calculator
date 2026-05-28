@@ -110,6 +110,60 @@ st.markdown("""
     .bg-light { background-color: #f8f9fa; }
     .text-blue { color: #0b3873; font-weight: bold; }
     .font-bold { font-weight: bold; }
+
+    /* 고객용 비교 조건 설정표 */
+    .rent-highlight {
+        background-color: #e2efda !important;
+        color: #375623 !important;
+        font-weight: bold !important;
+    }
+
+    @media (max-width: 768px) {
+        .client-condition-table,
+        .client-condition-table thead,
+        .client-condition-table tbody,
+        .client-condition-table tr,
+        .client-condition-table th,
+        .client-condition-table td {
+            display: block !important;
+            width: 100% !important;
+            box-sizing: border-box !important;
+        }
+
+        .client-condition-table thead {
+            display: none !important;
+        }
+
+        .client-condition-table tr {
+            display: block !important;
+        }
+
+        .client-condition-table td {
+            display: grid !important;
+            grid-template-columns: 110px 1fr !important;
+            align-items: center !important;
+            text-align: left !important;
+            padding: 8px !important;
+            font-size: 13px !important;
+            border-bottom: 1px solid #dee2e6 !important;
+            word-break: keep-all !important;
+        }
+
+        .client-condition-table td::before {
+            font-weight: 800 !important;
+            color: #0b3873 !important;
+            background: #f1f3f5 !important;
+            padding: 8px !important;
+            margin: -8px 8px -8px -8px !important;
+        }
+
+        .client-condition-table td:nth-child(1)::before { content: "법인 여부"; }
+        .client-condition-table td:nth-child(2)::before { content: "할부 선납금"; }
+        .client-condition-table td:nth-child(3)::before { content: "할부 금리"; }
+        .client-condition-table td:nth-child(4)::before { content: "연 보험료"; }
+        .client-condition-table td:nth-child(5)::before { content: "할부 잔존"; }
+        .client-condition-table td:nth-child(6)::before { content: "렌트 잔존"; }
+    }
     </style>
 """, unsafe_allow_html=True)
 
@@ -631,6 +685,39 @@ st.markdown(f"""
         </table>
     </div>
 """, unsafe_allow_html=True)
+
+
+# 고객용 링크에서만 조건 설정표 노출
+if IS_CLIENT_VIEW:
+    st.markdown(f"""
+        <div class="common-info-box" style="margin-top:-8px; margin-bottom:20px;">
+            <div style="font-size:15px; font-weight:bold; margin-bottom:10px; color:#0b3873;">
+                📋 비교 조건 설정
+            </div>
+            <table class="common-table client-condition-table">
+                <thead>
+                    <tr>
+                        <th>법인 여부</th>
+                        <th>할부 선납금</th>
+                        <th>할부 금리</th>
+                        <th>연 보험료</th>
+                        <th>할부 잔존가치</th>
+                        <th class="rent-highlight">렌트 잔존가치</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>{"O" if is_corporate else "X"}</td>
+                        <td>{installment_prepaid:,} 원</td>
+                        <td>{installment_rate:g}%</td>
+                        <td>{insurance_annual:,} 원</td>
+                        <td>{installment_resale_pct:g}%</td>
+                        <td class="rent-highlight">{rent_resale_pct:g}%</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    """, unsafe_allow_html=True)
 
 # ==========================================
 # [📊 MAIN VISUAL] 대칭형 비교 테이블
