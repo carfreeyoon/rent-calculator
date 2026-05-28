@@ -355,24 +355,18 @@ st.markdown("""
 
     /* 다크모드 - 할부·렌트·리스 비교표 셀 클래스 기반 최종 보정 */
     html.caprio-dark .compare-summary-table .compare-cat {
-        background:#144b96 !important;
-        background-color:#144b96 !important;
-        color:#ffffff !important;
-        font-weight:900 !important;
-    }
-
-    html.caprio-dark .compare-summary-table .compare-legal {
-        background:#6d9a2e !important;
-        background-color:#6d9a2e !important;
-        color:#ffffff !important;
-        font-weight:900 !important;
+        background:#0b3873 !important;
+        background-color:#0b3873 !important;
     }
 
     html.caprio-dark .compare-summary-table .compare-item {
-        background:#2b4461 !important;
-        background-color:#2b4461 !important;
-        color:#ffffff !important;
-        font-weight:800 !important;
+        background:#0b3873 !important;
+        background-color:#0b3873 !important;
+    }
+
+    html.caprio-dark .compare-summary-table .compare-legal {
+        background:#7fb52b !important;
+        background-color:#7fb52b !important;
     }
     </style>
 """, unsafe_allow_html=True)
