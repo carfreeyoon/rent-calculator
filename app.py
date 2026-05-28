@@ -273,10 +273,17 @@ st.markdown("""
         font-weight: 800 !important;
     }
 
-    html.caprio-dark .compare-summary-table td:not([style*="background:#0b3873"]):not([style*="background: #0b3873"]):not([style*="background:#6b8e23"]):not([style*="background: #6b8e23"]):not([style*="background:#ddebf7"]):not([style*="background: #ddebf7"]) {
-        background-color: #0e141c !important;
-        color: #f3f6fb !important;
-    }
+html.caprio-dark .compare-summary-table td[style*="background:#ddebf7"],
+html.caprio-dark .compare-summary-table td[style*="background: #ddebf7"] {
+    background-color: #22364d !important;
+    color: #ffffff !important;
+    font-weight: 800 !important;
+}
+
+html.caprio-dark .compare-summary-table td:not([style*="background:#0b3873"]):not([style*="background: #0b3873"]):not([style*="background:#6b8e23"]):not([style*="background: #6b8e23"]):not([style*="background:#ddebf7"]):not([style*="background: #ddebf7"]) {
+    background-color: #0e141c !important;
+    color: #f3f6fb !important;
+}
 
     html.caprio-dark .guide-card {
         background-color: #111821 !important;
