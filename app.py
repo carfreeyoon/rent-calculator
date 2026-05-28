@@ -1416,7 +1416,7 @@ O
 <td class="compare-item">사고 비용·리스크</td>
 <td>수리비·감가 부담</td>
 <td>면책금 처리</td>
-<td>감가·보험료 영향</td>
+<td>수리비·감가 부담</td>
 </tr>
 
 <tr>
@@ -1436,9 +1436,9 @@ O
 <tr>
 <td class="compare-cat">관리</td>
 <td class="compare-item">정비 선택 가능</td>
-<td>X</td>
 <td>O</td>
-<td>X</td>
+<td>O</td>
+<td>O</td>
 </tr>
 
 <tr>
