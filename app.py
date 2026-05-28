@@ -592,7 +592,7 @@ with m_col4:
 st.markdown("""
 <style>
 .guide-wrap{
-    width:55%;
+    width:100%;
     display:grid;
     grid-template-columns:1fr 1fr;
     gap:16px;
@@ -759,7 +759,7 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 
-st.markdown('<div class="excel-header-gray" style="width:55%;">🚗 나에게 맞는 방식 선택 가이드</div>', unsafe_allow_html=True)
+st.markdown('<div class="excel-header-gray" style="width:100%;">🚗 나에게 맞는 방식 선택 가이드</div>', unsafe_allow_html=True)
 
 st.markdown("""
 <div class="guide-wrap">
