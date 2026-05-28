@@ -441,23 +441,28 @@ if not IS_CLIENT_VIEW:
 
         for idx, item in enumerate(st.session_state.quote_history):
 
-            history_col1, history_col2 = st.sidebar.columns([1.85, 0.42])
+            history_col1, history_col2 = st.sidebar.columns([0.74, 0.26], gap="small")
 
             with history_col1:
                 if st.button(
                     f"📄 견적 {idx+1}",
                     key=f"history_{idx}",
-                    help=item["title"]
+                    help=item["title"],
+                    use_container_width=True
                 ):
                     st.session_state.pending_quote_input = item["raw"]
                     st.rerun()
 
             with history_col2:
-                st.link_button(
+                copied = st.button(
                     "🔗",
-                    item.get("share_url", "#"),
+                    key=f"copy_share_{idx}",
                     use_container_width=True
                 )
+
+                if copied:
+                    st.session_state[f"copied_{idx}"] = True
+                    st.session_state.copy_text = item["share_url"]
 
         if st.sidebar.button("🗑️ 이력 전체 삭제"):
             st.session_state.quote_history = []
