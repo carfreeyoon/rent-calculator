@@ -100,21 +100,58 @@ st.markdown("""
             margin-bottom: 16px !important;
         }
 
+        .common-table {
+            display: block !important;
+            width: 100% !important;
+            border-collapse: collapse !important;
+        }
+
         .common-table thead {
             display: none !important;
         }
 
-        .common-table,
         .common-table tbody {
             display: block !important;
             width: 100% !important;
         }
 
         .common-table tr {
-            display: grid !important;
-            grid-template-columns: 92px 1fr !important;
+            display: block !important;
             width: 100% !important;
-            border-bottom: 1px solid #dee2e6 !important;
+        }
+
+        .common-table tr:nth-child(2) {
+            display: none !important;
+        }
+
+        .common-table td,
+        .common-table th {
+            display: flex !important;
+            align-items: center !important;
+            width: 100% !important;
+            min-height: 42px !important;
+            padding: 0 !important;
+            border: 1px solid #dee2e6 !important;
+            box-sizing: border-box !important;
+            text-align: left !important;
+            font-size: 13px !important;
+            word-break: keep-all !important;
+        }
+
+        .common-table td::before {
+            width: 92px !important;
+            min-width: 92px !important;
+            align-self: stretch !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            padding: 8px !important;
+            margin-right: 10px !important;
+            background: #f1f3f5 !important;
+            color: #0b3873 !important;
+            font-weight: 800 !important;
+            border-right: 1px solid #dee2e6 !important;
+            box-sizing: border-box !important;
         }
 
         .common-table tr:first-child td:nth-child(1)::before { content: "차량명"; }
@@ -123,47 +160,12 @@ st.markdown("""
         .common-table tr:first-child td:nth-child(4)::before { content: "계약기간"; }
         .common-table tr:first-child td:nth-child(5)::before { content: "약정거리"; }
 
-        .common-table tr:nth-child(2) {
-            display: none !important;
-        }
-
         .common-table tr:nth-child(3) td:nth-child(1)::before { content: "유종"; }
         .common-table tr:nth-child(3) td:nth-child(2)::before { content: "CC"; }
-
-        .common-table th {
-            display: none !important;
-        }
-
-        .common-table td {
-            font-size: 13px !important;
-            word-break: keep-all !important;
-            padding: 8px !important;
-            border: 1px solid #dee2e6 !important;
-            box-sizing: border-box !important;
-            min-height: 42px !important;
-            display: flex !important;
-            align-items: center !important;
-            justify-content: center !important;
-            text-align: center !important;
-        }
-
-        .common-table td::before {
-            display: flex !important;
-            align-items: center !important;
-            justify-content: center !important;
-            min-height: 42px !important;
-            padding: 8px !important;
-            background: #f1f3f5 !important;
-            color: #0b3873 !important;
-            font-weight: 800 !important;
-            border: 1px solid #dee2e6 !important;
-            box-sizing: border-box !important;
-        }
 
         .common-table td:empty {
             display: none !important;
         }
-
         
 
         /* 결과 박스와 다음 파란 헤더 간격 분리 */
