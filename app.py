@@ -1412,3 +1412,201 @@ st.markdown("""
 
 </div>
 """, unsafe_allow_html=True)
+
+
+# ==========================================
+# [최종 다크모드 보정 - 1차]
+# ==========================================
+st.markdown("""
+<style>
+@media (prefers-color-scheme: dark) {
+    :root {
+        color-scheme: dark;
+    }
+
+    html, body,
+    .stApp,
+    [data-testid="stAppViewContainer"],
+    [data-testid="stHeader"],
+    [data-testid="stToolbar"],
+    div.block-container {
+        background-color: #0b0f16 !important;
+        color: #e8edf6 !important;
+    }
+
+    [data-testid="stSidebar"] {
+        background-color: #0f172a !important;
+        border-right: 1px solid #263244 !important;
+    }
+
+    [data-testid="stSidebar"] * {
+        color: #e8edf6 !important;
+    }
+
+    [data-testid="stSidebar"] input,
+    [data-testid="stSidebar"] textarea,
+    [data-testid="stSidebar"] [data-baseweb="input"] input {
+        background-color: #111827 !important;
+        color: #e8edf6 !important;
+        border-color: #334155 !important;
+    }
+
+    .common-info-box,
+    .guide-card,
+    .reality-box {
+        background-color: #111827 !important;
+        border: 1px solid #2f3b4f !important;
+        color: #e8edf6 !important;
+        box-shadow: none !important;
+    }
+
+    .common-info-box > div,
+    .guide-title,
+    .reality-title {
+        color: #bfdbfe !important;
+    }
+
+    .guide-copy,
+    .guide-subtitle,
+    .guide-list,
+    .guide-list li,
+    .reality-item,
+    .reality-item b {
+        color: #e8edf6 !important;
+    }
+
+    .reality-box {
+        background-color: #162033 !important;
+        border-color: #344155 !important;
+    }
+
+    .excel-header-blue {
+        background-color: #0b3a75 !important;
+        color: #ffffff !important;
+        border: 1px solid #214d86 !important;
+    }
+
+    .excel-header-gray {
+        background-color: #374151 !important;
+        color: #ffffff !important;
+        border: 1px solid #4b5563 !important;
+    }
+
+    .common-table,
+    .pure-table,
+    .matrix-table {
+        background-color: #0b0f16 !important;
+        color: #e8edf6 !important;
+    }
+
+    .common-table th,
+    .pure-table th,
+    .matrix-table th {
+        background-color: #0b3a75 !important;
+        color: #ffffff !important;
+        border-color: #435168 !important;
+    }
+
+    .common-table td,
+    .pure-table td,
+    .matrix-table td {
+        background-color: #0b0f16 !important;
+        color: #e8edf6 !important;
+        border-color: #435168 !important;
+    }
+
+    .common-table td[style*="color:#111"],
+    .common-table td[style*="color: #111"],
+    .pure-table td[style*="color:#111"],
+    .matrix-table td[style*="color:#111"] {
+        color: #e8edf6 !important;
+    }
+
+    .matrix-table td[style*="background:#ddebf7"],
+    .matrix-table td[style*="background: #ddebf7"],
+    .matrix-table td[style*="background-color:#ddebf7"],
+    .matrix-table td[style*="background-color: #ddebf7"] {
+        background-color: #182638 !important;
+        color: #e8edf6 !important;
+    }
+
+    .matrix-table td[style*="background:#0b3873"],
+    .matrix-table td[style*="background: #0b3873"],
+    .matrix-table td[style*="background-color:#0b3873"],
+    .matrix-table td[style*="background-color: #0b3873"] {
+        background-color: #0b3a75 !important;
+        color: #ffffff !important;
+    }
+
+    .matrix-table td[style*="background:#6b8e23"],
+    .matrix-table td[style*="background: #6b8e23"],
+    .matrix-table td[style*="background-color:#6b8e23"],
+    .matrix-table td[style*="background-color: #6b8e23"] {
+        background-color: #4f6f1f !important;
+        color: #ffffff !important;
+    }
+
+    .bg-light,
+    .pure-table td.bg-light,
+    .pure-table tr.bg-light td,
+    .pure-table tr[style*="background-color:#e9ecef"] td,
+    .pure-table tr[style*="background-color: #e9ecef"] td,
+    .pure-table tr[style*="background-color:#e9ecef"],
+    .pure-table tr[style*="background-color: #e9ecef"] {
+        background-color: #162033 !important;
+        color: #e8edf6 !important;
+    }
+
+    .text-blue {
+        color: #93c5fd !important;
+    }
+
+    .font-bold {
+        color: inherit !important;
+    }
+
+    .td-highlight,
+    .rent-highlight,
+    .matrix-table tr.td-highlight td,
+    .matrix-table td.td-highlight,
+    .common-table th.rent-highlight,
+    .common-table td.rent-highlight {
+        background-color: #1f3a2d !important;
+        color: #bbf7d0 !important;
+        font-weight: 800 !important;
+    }
+
+    .excel-green {
+        background-color: #142b1c !important;
+        color: #bbf7d0 !important;
+        border-color: #2f855a !important;
+    }
+
+    .excel-red {
+        background-color: #351818 !important;
+        color: #fecaca !important;
+        border-color: #b91c1c !important;
+    }
+
+    .common-table:not(.client-condition-table) td::before,
+    .client-condition-table td::before {
+        background: #182638 !important;
+        color: #bfdbfe !important;
+        border-color: #435168 !important;
+    }
+
+    input, textarea, select,
+    [data-baseweb="input"] input,
+    [data-baseweb="textarea"] textarea {
+        background-color: #111827 !important;
+        color: #e8edf6 !important;
+        border-color: #334155 !important;
+    }
+
+    a, a:visited {
+        color: #93c5fd !important;
+    }
+}
+</style>
+""", unsafe_allow_html=True)
+
