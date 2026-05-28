@@ -258,19 +258,19 @@ st.markdown("""
 
     /* 할부·렌트·리스 비교표 - class 기반 다크모드 */
     html.caprio-dark .compare-cat{
-        background:#0b3873 !important;
+        background:#144b96 !important;
         color:#ffffff !important;
         font-weight:900 !important;
     }
 
     html.caprio-dark .compare-item{
-        background:#22364d !important;
+        background:#2b4461 !important;
         color:#ffffff !important;
         font-weight:700 !important;
     }
 
     html.caprio-dark .compare-legal{
-        background:#4f741a !important;
+        background:#6d9a2e !important;
         color:#ffffff !important;
         font-weight:900 !important;
     }
