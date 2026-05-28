@@ -3,7 +3,6 @@ import streamlit.components.v1 as components
 import re
 import json
 import base64
-import zlib
 
 st.set_page_config(page_title="카프리오 비교 프로그램", layout="wide")
 
@@ -38,58 +37,15 @@ def hangul_to_eng(text):
     return result.lower()
 
 
-SHARE_KEY_MAP = {
-    "n": "car_name",
-    "o": "car_option",
-    "p": "car_price",
-    "m": "months",
-    "km": "mileage",
-    "rp": "rent_monthly_pay",
-    "rd": "rent_deposit",
-    "ct": "cc_text",
-    "cr": "cc_raw_text",
-    "f": "fuel_text",
-    "pc": "passenger_count",
-    "s": "car_shape",
-    "ir": "installment_resale_pct",
-    "ia": "insurance_annual",
-    "rt": "installment_rate",
-    "ip": "installment_prepaid",
-    "co": "is_corporate",
-    "rr": "rent_resale_pct"
-}
-
-SHARE_KEY_REVERSE = {v: k for k, v in SHARE_KEY_MAP.items()}
-
 def encode_share_data(data):
-    compact_data = {
-        SHARE_KEY_REVERSE.get(k, k): v
-        for k, v in data.items()
-        if v is not None
-    }
-    json_text = json.dumps(compact_data, ensure_ascii=False, separators=(",", ":"))
-    compressed = zlib.compress(json_text.encode("utf-8"), level=9)
-    return base64.urlsafe_b64encode(compressed).decode("utf-8").rstrip("=")
+    json_text = json.dumps(data, ensure_ascii=False)
+    return base64.urlsafe_b64encode(json_text.encode("utf-8")).decode("utf-8")
 
 def decode_share_data(encoded_text):
     try:
         padding = "=" * (-len(encoded_text) % 4)
-        raw = base64.urlsafe_b64decode((encoded_text + padding).encode("utf-8"))
-
-        try:
-            json_text = zlib.decompress(raw).decode("utf-8")
-        except Exception:
-            json_text = raw.decode("utf-8")
-
-        data = json.loads(json_text)
-
-        if any(key in SHARE_KEY_MAP for key in data.keys()):
-            return {
-                SHARE_KEY_MAP.get(k, k): v
-                for k, v in data.items()
-            }
-
-        return data
+        decoded = base64.urlsafe_b64decode((encoded_text + padding).encode("utf-8"))
+        return json.loads(decoded.decode("utf-8"))
     except Exception:
         return {}
 
@@ -209,254 +165,187 @@ st.markdown("""
         .client-condition-table td:nth-child(6)::before { content: "렌트 잔존"; }
     }
 
-    /* 모바일 전용 보정 */
+
+    /* 실제 다크 테마에서만 적용되는 보정: 라이트 모드 영향 없음 */
+    html.caprio-dark .common-info-box {
+        background-color: #111821 !important;
+        border-color: #2f3b4a !important;
+        color: #f3f6fb !important;
+    }
+
+    html.caprio-dark .common-info-box div,
+    html.caprio-dark .common-info-box b {
+        color: #f3f6fb !important;
+    }
+
+    html.caprio-dark .common-info-box div[style*="color:#0b3873"],
+    html.caprio-dark .common-info-box div[style*="color: #0b3873"] {
+        color: #9fc7ff !important;
+    }
+
+    html.caprio-dark .common-table,
+    html.caprio-dark .common-table tbody,
+    html.caprio-dark .common-table tr {
+        background-color: #0e141c !important;
+        color: #f3f6fb !important;
+    }
+
+    html.caprio-dark .common-table th {
+        background-color: #0b3873 !important;
+        color: #ffffff !important;
+        border-color: #354255 !important;
+    }
+
+    html.caprio-dark .common-table td {
+        background-color: #0e141c !important;
+        color: #f3f6fb !important;
+        border-color: #354255 !important;
+    }
+
+    html.caprio-dark .common-table td.font-bold,
+    html.caprio-dark .common-table td[style*="color:#111"],
+    html.caprio-dark .common-table td[style*="color: #111"] {
+        color: #ffffff !important;
+    }
+
+    html.caprio-dark .pure-table,
+    html.caprio-dark .matrix-table {
+        background-color: #0e141c !important;
+        color: #f3f6fb !important;
+        border-color: #354255 !important;
+    }
+
+    html.caprio-dark .pure-table th,
+    html.caprio-dark .matrix-table th {
+        background-color: #0b3873 !important;
+        color: #ffffff !important;
+        border-color: #46566d !important;
+    }
+
+    html.caprio-dark .pure-table td,
+    html.caprio-dark .matrix-table td {
+        background-color: #0e141c !important;
+        color: #f3f6fb !important;
+        border-color: #46566d !important;
+    }
+
+    html.caprio-dark .bg-light,
+    html.caprio-dark tr.bg-light td {
+        background-color: #151f2b !important;
+        color: #f3f6fb !important;
+    }
+
+    html.caprio-dark .text-blue {
+        color: #9fc7ff !important;
+    }
+
+    html.caprio-dark .td-highlight {
+        background-color: #253b24 !important;
+        color: #c9f5bf !important;
+        font-weight: 800 !important;
+    }
+
+    html.caprio-dark .rent-highlight {
+        background-color: #253b24 !important;
+        color: #c9f5bf !important;
+        font-weight: 800 !important;
+    }
+
+    /* 할부·렌트·리스 비교표 전용: 분류/항목/값 영역 명확히 분리 */
+    html.caprio-dark .compare-summary-table td[style*="background:#0b3873"],
+    html.caprio-dark .compare-summary-table td[style*="background: #0b3873"] {
+        background-color: #0b3873 !important;
+        color: #ffffff !important;
+        font-weight: 900 !important;
+    }
+
+    html.caprio-dark .compare-summary-table td[style*="background:#6b8e23"],
+    html.caprio-dark .compare-summary-table td[style*="background: #6b8e23"] {
+        background-color: #4f741a !important;
+        color: #ffffff !important;
+        font-weight: 900 !important;
+    }
+
+    html.caprio-dark .compare-summary-table td[style*="background:#ddebf7"],
+    html.caprio-dark .compare-summary-table td[style*="background: #ddebf7"] {
+        background-color: #1b2a3c !important;
+        color: #eaf2ff !important;
+        font-weight: 800 !important;
+    }
+
+    html.caprio-dark .compare-summary-table td:not([style*="background:#0b3873"]):not([style*="background: #0b3873"]):not([style*="background:#6b8e23"]):not([style*="background: #6b8e23"]):not([style*="background:#ddebf7"]):not([style*="background: #ddebf7"]) {
+        background-color: #0e141c !important;
+        color: #f3f6fb !important;
+    }
+
+    html.caprio-dark .guide-card {
+        background-color: #111821 !important;
+        border-color: #2f3b4a !important;
+        color: #f3f6fb !important;
+    }
+
+    html.caprio-dark .guide-title {
+        color: #9fc7ff !important;
+    }
+
+    html.caprio-dark .guide-copy,
+    html.caprio-dark .guide-subtitle,
+    html.caprio-dark .guide-list,
+    html.caprio-dark .guide-list li,
+    html.caprio-dark .reality-item,
+    html.caprio-dark .reality-item b {
+        color: #f3f6fb !important;
+    }
+
+    html.caprio-dark .reality-box {
+        background-color: #151f2b !important;
+        border-color: #344255 !important;
+        color: #f3f6fb !important;
+    }
+
+    html.caprio-dark .reality-title {
+        color: #ffffff !important;
+    }
+
+    html.caprio-dark .excel-header-gray {
+        background-color: #243142 !important;
+        color: #ffffff !important;
+        border: 1px solid #46566d !important;
+    }
+
+    html.caprio-dark .excel-green {
+        background-color: #20391f !important;
+        color: #d8ffd2 !important;
+        border-color: #4f7f46 !important;
+    }
+
+    html.caprio-dark .excel-red {
+        background-color: #3b2323 !important;
+        color: #ffd0d0 !important;
+        border-color: #7a4040 !important;
+    }
+
+    html.caprio-dark span[style*="color:red"],
+    html.caprio-dark span[style*="color: red"],
+    html.caprio-dark div[style*="color:red"],
+    html.caprio-dark div[style*="color: red"] {
+        color: #ff7777 !important;
+        white-space: nowrap !important;
+    }
+
+    html.caprio-dark .readonly-sidebar-value {
+        background-color: #101722 !important;
+        border: 1px solid #46566d !important;
+        color: #f3f6fb !important;
+    }
+
     @media (max-width: 768px) {
-
-        .common-info-box {
-            padding: 12px !important;
-            margin-bottom: 16px !important;
-        }
-
-        .common-table:not(.client-condition-table),
-        .common-table:not(.client-condition-table) thead,
-        .common-table:not(.client-condition-table) tbody,
-        .common-table:not(.client-condition-table) tr,
-        .common-table:not(.client-condition-table) th,
-        .common-table:not(.client-condition-table) td {
-            display: block !important;
-            width: 100% !important;
-            box-sizing: border-box !important;
-        }
-
-        .common-table:not(.client-condition-table) thead {
-            display: none !important;
-        }
-
-        .common-table:not(.client-condition-table) tr {
-            display: block !important;
-            border-bottom: 1px solid #dee2e6 !important;
-        }
-
-        .common-table:not(.client-condition-table) tr:nth-child(2) {
-            display: none !important;
-        }
-
-        .common-table:not(.client-condition-table) tr:first-child td:nth-child(1)::before { content: "차량명"; }
-        .common-table:not(.client-condition-table) tr:first-child td:nth-child(2)::before { content: "옵션"; }
-        .common-table:not(.client-condition-table) tr:first-child td:nth-child(3)::before { content: "차량가격"; }
-        .common-table:not(.client-condition-table) tr:first-child td:nth-child(4)::before { content: "계약기간"; }
-        .common-table:not(.client-condition-table) tr:first-child td:nth-child(5)::before { content: "약정거리"; }
-        .common-table:not(.client-condition-table) tr:nth-child(3) td:nth-child(1)::before { content: "유종"; }
-        .common-table:not(.client-condition-table) tr:nth-child(3) td:nth-child(2)::before { content: "CC"; }
-
-        .common-table:not(.client-condition-table) td {
-            display: grid !important;
-            grid-template-columns: 90px 1fr !important;
-            align-items: center !important;
-            text-align: left !important;
-            padding: 8px !important;
-            min-height: 38px !important;
-            font-size: 13px !important;
-            word-break: keep-all !important;
-            border-bottom: 1px solid #dee2e6 !important;
-        }
-
-        .common-table:not(.client-condition-table) td::before {
-            font-weight: 800 !important;
-            color: #0b3873 !important;
-            background: #f1f3f5 !important;
-            padding: 8px !important;
-            margin: -8px 8px -8px -8px !important;
-            min-height: 38px !important;
-            display: flex !important;
-            align-items: center !important;
-        }
-
-        .common-table:not(.client-condition-table) td:empty,
-        .common-table:not(.client-condition-table) td[colspan="3"] {
-            display: none !important;
-        }
-
-        .excel-green,
-        .excel-red {
-            margin-bottom: 18px !important;
-        }
-
-        .excel-header-blue {
-            margin-top: 12px !important;
-        }
-
-        .excel-header-gray,
-        .matrix-table {
-            width: 100% !important;
-        }
-
-        .matrix-table {
-            font-size: 11px !important;
-        }
-
-        .matrix-table th,
-        .matrix-table td {
-            padding: 4px !important;
-            word-break: keep-all !important;
-        }
-
-        .guide-card {
-            padding: 16px !important;
-        }
-
-        .guide-title {
-            font-size: 21px !important;
-            word-break: keep-all !important;
-        }
-
-        .guide-copy {
-            font-size: 16px !important;
-            line-height: 1.65 !important;
-            word-break: keep-all !important;
-        }
-
-        .guide-subtitle {
-            font-size: 15px !important;
-        }
-
-        .guide-list {
-            font-size: 14px !important;
-            line-height: 2.0 !important;
-            word-break: keep-all !important;
-            padding-left: 20px !important;
-        }
-
-        .reality-title {
-            font-size: 16px !important;
-        }
-
-        .reality-item {
-            font-size: 14px !important;
-            line-height: 1.85 !important;
-            word-break: keep-all !important;
+        html.caprio-dark .common-table td::before,
+        html.caprio-dark .client-condition-table td::before {
+            background-color: #1b2a3c !important;
+            color: #9fc7ff !important;
         }
     }
-
-    /* 다크모드 전용 보정 */
-    @media (prefers-color-scheme: dark) {
-        html, body,
-        [data-testid="stAppViewContainer"],
-        [data-testid="stHeader"],
-        [data-testid="stToolbar"] {
-            background-color: #0f172a !important;
-            color: #e5e7eb !important;
-        }
-
-        div.block-container {
-            background-color: #0f172a !important;
-        }
-
-        .common-info-box,
-        .guide-card,
-        .reality-box {
-            background-color: #111827 !important;
-            border-color: #334155 !important;
-            color: #e5e7eb !important;
-        }
-
-        .common-info-box > div,
-        .guide-title,
-        .reality-title {
-            color: #93c5fd !important;
-        }
-
-        .guide-copy,
-        .guide-subtitle,
-        .guide-list,
-        .reality-item {
-            color: #e5e7eb !important;
-        }
-
-        .common-table,
-        .pure-table,
-        .matrix-table {
-            background-color: #111827 !important;
-            color: #e5e7eb !important;
-        }
-
-        .common-table th,
-        .matrix-table th,
-        .pure-table th {
-            background-color: #0b3873 !important;
-            color: #ffffff !important;
-            border-color: #334155 !important;
-        }
-
-        .common-table td,
-        .matrix-table td,
-        .pure-table td {
-            background-color: #111827 !important;
-            color: #e5e7eb !important;
-            border-color: #334155 !important;
-        }
-
-        .common-table td[style*="color:#111"],
-        .common-table td[style*="color: #111"] {
-            color: #e5e7eb !important;
-        }
-
-        .bg-light {
-            background-color: #1e293b !important;
-        }
-
-        .text-blue {
-            color: #93c5fd !important;
-        }
-
-        .excel-header-gray {
-            background-color: #334155 !important;
-            color: #ffffff !important;
-        }
-
-        .excel-header-blue {
-            background-color: #0b3873 !important;
-            color: #ffffff !important;
-        }
-
-        .excel-green {
-            background-color: #14351f !important;
-            color: #bbf7d0 !important;
-            border-color: #2f855a !important;
-        }
-
-        .excel-red {
-            background-color: #3b1d1d !important;
-            color: #fecaca !important;
-            border-color: #b91c1c !important;
-        }
-
-        .td-highlight,
-        .rent-highlight {
-            background-color: #1f3a2d !important;
-            color: #bbf7d0 !important;
-            font-weight: bold !important;
-        }
-
-        .common-table:not(.client-condition-table) td::before,
-        .client-condition-table td::before {
-            background: #1e293b !important;
-            color: #93c5fd !important;
-        }
-
-        input, textarea, select,
-        [data-baseweb="input"] input,
-        [data-baseweb="textarea"] textarea {
-            background-color: #111827 !important;
-            color: #e5e7eb !important;
-            border-color: #334155 !important;
-        }
-
-        [data-testid="stSidebar"] {
-            background-color: #0b1220 !important;
-        }
-    }
-
     </style>
 """, unsafe_allow_html=True)
 
@@ -467,6 +356,31 @@ if IS_CLIENT_VIEW:
     [data-testid="stSidebarCollapsedControl"] { display: none !important; }
     </style>
     """, unsafe_allow_html=True)
+
+# 실제 Streamlit 테마 배경을 감지해 다크모드일 때만 보정 클래스 부여
+components.html("""
+<script>
+(function(){
+    const doc = window.parent.document;
+    function isDarkColor(color){
+        const nums = color.match(/\d+/g);
+        if(!nums || nums.length < 3) return false;
+        const r = parseInt(nums[0]), g = parseInt(nums[1]), b = parseInt(nums[2]);
+        const brightness = (r * 299 + g * 587 + b * 114) / 1000;
+        return brightness < 140;
+    }
+    function applyDarkClass(){
+        const app = doc.querySelector('.stApp') || doc.body;
+        const bg = window.parent.getComputedStyle(app).backgroundColor;
+        const isDark = isDarkColor(bg);
+        doc.documentElement.classList.toggle('caprio-dark', isDark);
+        doc.body.classList.toggle('caprio-dark', isDark);
+    }
+    applyDarkClass();
+    setInterval(applyDarkClass, 1000);
+})();
+</script>
+""", height=0, width=0)
 
 
 # 초기 기본값 설정
@@ -747,7 +661,7 @@ if not IS_CLIENT_VIEW:
         unsafe_allow_html=True
     )
     st.sidebar.markdown(f"""
-    <div style="background-color:white; padding:9px 13px; border-radius:8px; font-size:14px; color:#111; height:38px; display:flex; align-items:center;">
+    <div class="readonly-sidebar-value" style="background-color:white; padding:9px 13px; border-radius:8px; font-size:14px; color:#111; height:38px; display:flex; align-items:center;">
     {rent_resale_pct:g}
     </div>
     """, unsafe_allow_html=True)
@@ -1168,7 +1082,7 @@ st.write("")
 st.markdown('<div class="excel-header-gray" style="width:55%;">🚗 할부 · 렌트 · 리스 비교표</div>', unsafe_allow_html=True)
 
 st.markdown("""
-<table class="matrix-table" style="width:55%; font-size:13px;">
+<table class="matrix-table compare-summary-table" style="width:55%; font-size:13px;">
 <tr>
 <th style="width:12%;">분류</th>
 <th style="width:18%;">항목</th>
@@ -1411,256 +1325,4 @@ st.markdown("""
 </div>
 
 </div>
-""", unsafe_allow_html=True)
-# ==========================================
-# [FORCED DARK THEME OVERRIDE - v3]
-# ==========================================
-st.markdown("""
-<style>
-/* 강제 다크 적용: @media 제거 */
-html, body,
-.stApp,
-[data-testid="stAppViewContainer"],
-[data-testid="stMain"],
-[data-testid="stMainBlockContainer"],
-div.block-container {
-    background-color: #0b0f16 !important;
-    color: #eef3f8 !important;
-}
-
-/* 기본 텍스트 */
-.stMarkdown, .stMarkdown p, .stMarkdown div, .stMarkdown span,
-.stMarkdown li, .stMarkdown ol, .stMarkdown ul,
-label, p, span, div {
-    color: inherit;
-}
-
-/* 사이드바 */
-[data-testid="stSidebar"],
-[data-testid="stSidebarContent"] {
-    background-color: #111827 !important;
-    color: #eef3f8 !important;
-}
-
-[data-testid="stSidebar"] label,
-[data-testid="stSidebar"] p,
-[data-testid="stSidebar"] span,
-[data-testid="stSidebar"] div {
-    color: #eef3f8 !important;
-}
-
-[data-testid="stSidebar"] input,
-[data-testid="stSidebar"] textarea,
-textarea,
-input {
-    background-color: #172235 !important;
-    color: #f8fafc !important;
-    border: 1px solid #334155 !important;
-}
-
-textarea::placeholder,
-input::placeholder {
-    color: #94a3b8 !important;
-}
-
-[data-testid="stSidebar"] button,
-button[kind="secondary"] {
-    background-color: #172235 !important;
-    color: #f8fafc !important;
-    border: 1px solid #334155 !important;
-}
-
-/* 큰 박스/카드 */
-.common-info-box,
-.guide-card,
-.reality-box,
-.capture-box {
-    background-color: #111827 !important;
-    border: 1px solid #2f3b4c !important;
-    color: #eef3f8 !important;
-    box-shadow: none !important;
-}
-
-.common-info-box * ,
-.guide-card * ,
-.reality-box * ,
-.capture-box * {
-    color: #eef3f8 !important;
-}
-
-.common-info-box > div:first-child,
-.guide-title {
-    color: #9cc7ff !important;
-}
-
-.reality-box {
-    background-color: #172235 !important;
-    border-color: #344255 !important;
-}
-
-/* 헤더 */
-.excel-header-blue {
-    background-color: #0b3f7a !important;
-    color: #ffffff !important;
-    border: 1px solid #2f5f99 !important;
-}
-
-.excel-header-gray {
-    background-color: #263241 !important;
-    color: #ffffff !important;
-    border: 1px solid #3c4654 !important;
-}
-
-/* 테이블 전체 */
-table,
-.common-table,
-.pure-table,
-.matrix-table,
-.client-condition-table {
-    background-color: #0f141d !important;
-    color: #eef3f8 !important;
-    border-collapse: collapse !important;
-}
-
-.common-table th,
-.pure-table th,
-.matrix-table th,
-.client-condition-table th,
-th {
-    background-color: #0b3f7a !important;
-    color: #ffffff !important;
-    border: 1px solid #526173 !important;
-}
-
-.common-table td,
-.pure-table td,
-.matrix-table td,
-.client-condition-table td,
-td {
-    background-color: #0f141d !important;
-    color: #eef3f8 !important;
-    border: 1px solid #526173 !important;
-}
-
-/* inline style 라이트 색 강제 제거 */
-td[style*="background:#ddebf7"],
-td[style*="background: #ddebf7"],
-td[style*="background-color:#ddebf7"],
-td[style*="background-color: #ddebf7"],
-th[style*="background:#ddebf7"],
-th[style*="background: #ddebf7"],
-th[style*="background-color:#ddebf7"],
-th[style*="background-color: #ddebf7"] {
-    background-color: #1b2533 !important;
-    color: #dbeafe !important;
-    border-color: #526173 !important;
-}
-
-td[style*="background:#0b3873"],
-td[style*="background: #0b3873"],
-td[style*="background-color:#0b3873"],
-td[style*="background-color: #0b3873"] {
-    background-color: #0b3f7a !important;
-    color: #ffffff !important;
-    border-color: #526173 !important;
-}
-
-td[style*="background:#6b8e23"],
-td[style*="background: #6b8e23"],
-td[style*="background-color:#6b8e23"],
-td[style*="background-color: #6b8e23"] {
-    background-color: #42691c !important;
-    color: #ffffff !important;
-    border-color: #526173 !important;
-}
-
-/* 할부·렌트·리스 비교표: 항목열 */
-.matrix-table td:nth-child(2) {
-    background-color: #1b2533 !important;
-    color: #dbeafe !important;
-    font-weight: 800 !important;
-}
-
-/* 일반 값 셀 */
-.matrix-table td:nth-child(n+3),
-.pure-table td:nth-child(n+2),
-.common-table td,
-.client-condition-table td {
-    background-color: #0f141d !important;
-    color: #eef3f8 !important;
-}
-
-/* 공통조건/조건설정 표 안의 헤더성 행 */
-.common-table tbody th,
-.common-table tr:nth-child(2) th,
-.client-condition-table th {
-    background-color: #1b2533 !important;
-    color: #9cc7ff !important;
-}
-
-/* 라이트/합계/포함 셀 */
-.bg-light,
-tr.bg-light td,
-.pure-table tr.bg-light td,
-.matrix-table tr.bg-light td,
-td.bg-light,
-td[style*="background-color:#e9ecef"],
-td[style*="background-color: #e9ecef"] {
-    background-color: #172235 !important;
-    color: #eef3f8 !important;
-}
-
-.text-blue,
-td.text-blue,
-.bg-light.text-blue {
-    color: #9cc7ff !important;
-    background-color: #172235 !important;
-    font-weight: 800 !important;
-}
-
-/* 하이라이트 */
-.td-highlight,
-.rent-highlight,
-td.td-highlight,
-td.rent-highlight,
-tr.td-highlight td,
-tr.rent-highlight td {
-    background-color: #20351f !important;
-    color: #c8f7c5 !important;
-    font-weight: 800 !important;
-}
-
-/* 결과 박스 */
-.excel-green {
-    background-color: #17351d !important;
-    color: #c8f7c5 !important;
-    border-color: #3f7a48 !important;
-}
-
-.excel-red {
-    background-color: #3a1d16 !important;
-    color: #ffd2c2 !important;
-    border-color: #8a4b38 !important;
-}
-
-/* 빨간 보조 텍스트는 유지 */
-span[style*="color:red"],
-div[style*="color:red"],
-span[style*="color:#ff3b30"],
-div[style*="color:#ff3b30"] {
-    color: #ff6b6b !important;
-}
-
-/* 모바일 2열 라벨 */
-.common-table td::before,
-.client-condition-table td::before {
-    background-color: #1b2533 !important;
-    color: #9cc7ff !important;
-    border-color: #526173 !important;
-}
-
-a {
-    color: #9cc7ff !important;
-}
-</style>
 """, unsafe_allow_html=True)
