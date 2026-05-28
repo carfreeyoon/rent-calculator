@@ -1727,7 +1727,6 @@ if not IS_CLIENT_VIEW:
 
     st.markdown('</div>', unsafe_allow_html=True)
 
-    if quick_edit_submitted:
 
     if quick_edit_submitted:
         st.session_state.quick_edit_applied = True
