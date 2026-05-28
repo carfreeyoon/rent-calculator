@@ -594,9 +594,10 @@ st.markdown("""
 .guide-wrap{
     width:100%;
     display:grid;
-    grid-template-columns:1fr 1fr;
-    gap:16px;
+    grid-template-columns:repeat(2,minmax(0,1fr));
+    gap:18px;
     margin-top:10px;
+    align-items:start;
 }
 
 .guide-card{
@@ -605,10 +606,11 @@ st.markdown("""
     border-radius:8px;
     padding:18px;
     box-sizing:border-box;
+    width:100%;
 }
 
 .guide-card.full{
-    grid-column:1;
+    grid-column:1 / 2;
 }
 
 .guide-title{
@@ -623,6 +625,7 @@ st.markdown("""
     font-weight:700;
     color:#444;
     margin-bottom:12px;
+    line-height:1.5;
 }
 
 .guide-subtitle{
@@ -633,8 +636,8 @@ st.markdown("""
 
 .guide-list{
     font-size:12px;
-    line-height:1.8;
-    padding-left:18px;
+    line-height:1.9;
+    padding-left:20px;
     margin-bottom:12px;
 }
 
@@ -653,23 +656,25 @@ st.markdown("""
 
 .reality-item{
     font-size:12px;
-    line-height:1.7;
+    line-height:1.75;
     margin-bottom:5px;
 }
 
 @media (max-width:768px){
+
     .guide-wrap{
-        width:100%;
         grid-template-columns:1fr;
+        width:100%;
     }
 
+    .guide-card,
     .guide-card.full{
         grid-column:auto;
+        width:100%;
     }
 }
 </style>
 """, unsafe_allow_html=True)
-
 
 
 
@@ -757,6 +762,8 @@ st.markdown("""
 }
 </style>
 """, unsafe_allow_html=True)
+
+
 
 
 st.markdown('<div class="excel-header-gray" style="width:100%;">🚗 나에게 맞는 방식 선택 가이드</div>', unsafe_allow_html=True)
