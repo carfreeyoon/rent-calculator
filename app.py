@@ -92,6 +92,141 @@ st.markdown("""
     .bg-light { background-color: #f8f9fa; }
     .text-blue { color: #0b3873; font-weight: bold; }
     .font-bold { font-weight: bold; }
+
+
+    /* 모바일 전용 보정 */
+    @media (max-width: 768px) {
+
+        /* 공통 조건 표: 모바일에서는 2열 정보표처럼 정리 */
+        .common-info-box {
+            padding: 12px !important;
+            margin-bottom: 16px !important;
+        }
+
+        .common-table,
+        .common-table thead,
+        .common-table tbody,
+        .common-table tr,
+        .common-table th,
+        .common-table td {
+            display: block !important;
+            width: 100% !important;
+            box-sizing: border-box !important;
+        }
+
+        .common-table thead {
+            display: none !important;
+        }
+
+        .common-table tr {
+            display: grid !important;
+            grid-template-columns: 82px 1fr !important;
+            border-bottom: 1px solid #dee2e6 !important;
+        }
+
+        .common-table tr:first-child td:nth-child(1)::before { content: "차량명"; }
+        .common-table tr:first-child td:nth-child(2)::before { content: "옵션"; }
+        .common-table tr:first-child td:nth-child(3)::before { content: "차량가격"; }
+        .common-table tr:first-child td:nth-child(4)::before { content: "계약기간"; }
+        .common-table tr:first-child td:nth-child(5)::before { content: "약정거리"; }
+
+        .common-table tr:nth-child(2) {
+            display: none !important;
+        }
+
+        .common-table tr:nth-child(3) td:nth-child(1)::before { content: "유종"; }
+        .common-table tr:nth-child(3) td:nth-child(2)::before { content: "CC"; }
+
+        .common-table td {
+            display: grid !important;
+            grid-template-columns: 82px 1fr !important;
+            align-items: center !important;
+            text-align: left !important;
+            padding: 8px !important;
+            min-height: 38px !important;
+            font-size: 13px !important;
+            word-break: keep-all !important;
+            border-bottom: 1px solid #dee2e6 !important;
+        }
+
+        .common-table td::before {
+            font-weight: 800 !important;
+            color: #0b3873 !important;
+            background: #f1f3f5 !important;
+            padding: 8px !important;
+            margin: -8px 8px -8px -8px !important;
+            height: 100% !important;
+            display: flex !important;
+            align-items: center !important;
+        }
+
+        .common-table td:empty {
+            display: none !important;
+        }
+
+        /* 결과 박스와 다음 파란 헤더 간격 분리 */
+        .excel-green,
+        .excel-red {
+            margin-bottom: 14px !important;
+        }
+
+        .excel-header-blue {
+            margin-top: 10px !important;
+        }
+
+        /* 모바일에서 하단 비교표/검증표 폭 꽉 채우기 */
+        .excel-header-gray,
+        .matrix-table {
+            width: 100% !important;
+        }
+
+        .matrix-table {
+            font-size: 11px !important;
+        }
+
+        .matrix-table th,
+        .matrix-table td {
+            padding: 4px !important;
+            word-break: keep-all !important;
+        }
+
+        /* 선택 가이드 줄바꿈 보정 */
+        .guide-card {
+            padding: 16px !important;
+        }
+
+        .guide-title {
+            font-size: 21px !important;
+            word-break: keep-all !important;
+        }
+
+        .guide-copy {
+            font-size: 16px !important;
+            line-height: 1.65 !important;
+            word-break: keep-all !important;
+        }
+
+        .guide-subtitle {
+            font-size: 15px !important;
+        }
+
+        .guide-list {
+            font-size: 14px !important;
+            line-height: 2.0 !important;
+            word-break: keep-all !important;
+            padding-left: 20px !important;
+        }
+
+        .reality-title {
+            font-size: 16px !important;
+        }
+
+        .reality-item {
+            font-size: 14px !important;
+            line-height: 1.85 !important;
+            word-break: keep-all !important;
+        }
+    }
     </style>
 """, unsafe_allow_html=True)
 
@@ -913,7 +1048,7 @@ st.markdown("""
 </ol>
 <div class="reality-box">
 <div class="reality-title">💡 현실 체크</div>
-<div class="reality-item">📉 <b>개인 보험요율 유지</b> : 개인보험료가 낮다면? 보험료를 그대로 적용받아 수입차 운용 시 경제적이에요.</div>
+<div class="reality-item">📉 <b>개인 보험요율 유지</b> : 개인의 낮다면? 보험료를 그대로 적용받아 수입차 운용 시 경제적이에요.</div>
 <div class="reality-item">✨ <b>일반 번호판</b> : 자가용과 동일한 번호판을 유지해요.</div>
 <div class="reality-item">💰 <b>효율적 비용 구성</b> : 자동차세 포함 + 초기비용 부담을 낮출 수 있어요.</div>
 <div class="reality-item">💵 <b>세금 인상</b> : 재산세 등 세금 인상은 걱정하지 않으셔도 괜찮아요!</div>
