@@ -846,6 +846,55 @@ st.markdown("""
         visibility: hidden !important;
         pointer-events: none !important;
     }
+
+    /* ==============================
+       보안 보조: 화면 복사/개발 버튼 노출 억제
+       - 완전 보안은 아니며, 코드/키 보호는 GitHub Private + st.secrets가 핵심
+       ============================== */
+    html, body, .stApp {
+        -webkit-user-select: none !important;
+        -moz-user-select: none !important;
+        -ms-user-select: none !important;
+        user-select: none !important;
+        -webkit-touch-callout: none !important;
+    }
+
+    input, textarea,
+    [contenteditable="true"],
+    [data-testid="stTextArea"] textarea,
+    [data-testid="stTextInput"] input,
+    [data-baseweb="input"] input,
+    [data-baseweb="textarea"] textarea {
+        -webkit-user-select: text !important;
+        -moz-user-select: text !important;
+        -ms-user-select: text !important;
+        user-select: text !important;
+        -webkit-touch-callout: default !important;
+    }
+
+    header a[href],
+    header [href*="github"],
+    header [href*="streamlit"],
+    header [href*="share"],
+    header button[title*="GitHub"],
+    header button[title*="Fork"],
+    header button[title*="Share"],
+    header button[title*="Source"],
+    header button[title*="Edit"],
+    header button[title*="Rerun"],
+    header button[title*="Record"],
+    header button[aria-label*="GitHub"],
+    header button[aria-label*="Fork"],
+    header button[aria-label*="Share"],
+    header button[aria-label*="Source"],
+    header button[aria-label*="Edit"],
+    header button[aria-label*="Rerun"],
+    header button[aria-label*="Record"] {
+        display: none !important;
+        visibility: hidden !important;
+        pointer-events: none !important;
+    }
+
     </style>
 """, unsafe_allow_html=True)
 
@@ -886,50 +935,108 @@ components.html("""
 <script>
 (function(){
     const doc = window.parent.document;
-    const banWords = [
-        'fork','github','share','edit','source','star','favorite',
-        'rerun','clear cache','record a screencast','record screencast','print','about'
+
+    const bannedWords = [
+        'fork', 'github', 'share', 'edit', 'source', 'star', 'favorite',
+        'rerun', 'clear cache', 'record', 'screencast', 'print', 'about',
+        'deploy', 'manage app', 'repository', 'view source', 'open in github'
     ];
-    function txtOf(el){
+
+    const allowedThemeWords = [
+        'theme', 'light', 'dark', 'system', '설정', '테마', '라이트', '다크', '시스템'
+    ];
+
+    function textOf(el){
+        if(!el) return '';
         return [
             el.innerText,
             el.textContent,
-            el.getAttribute('aria-label'),
-            el.getAttribute('title'),
-            el.getAttribute('href'),
-            el.getAttribute('data-testid')
+            el.getAttribute && el.getAttribute('aria-label'),
+            el.getAttribute && el.getAttribute('title'),
+            el.getAttribute && el.getAttribute('href'),
+            el.getAttribute && el.getAttribute('data-testid'),
+            el.className && String(el.className)
         ].filter(Boolean).join(' ').toLowerCase();
     }
-    function hideEl(el){
-        el.style.setProperty('display','none','important');
-        el.style.setProperty('visibility','hidden','important');
-        el.style.setProperty('pointer-events','none','important');
-        el.setAttribute('aria-hidden','true');
+
+    function hideElement(el){
+        if(!el || el.dataset.caprioKeepTheme === '1') return;
+        el.style.setProperty('display', 'none', 'important');
+        el.style.setProperty('visibility', 'hidden', 'important');
+        el.style.setProperty('pointer-events', 'none', 'important');
+        el.setAttribute('aria-hidden', 'true');
     }
-    function hideToolbarNoise(){
+
+    function shouldHide(el){
+        const t = textOf(el);
+        if(!t) return false;
+        if(allowedThemeWords.some(w => t.includes(w)) && !bannedWords.some(w => t.includes(w))) return false;
+        return bannedWords.some(w => t.includes(w));
+    }
+
+    function cleanToolbarAndMenus(){
         try{
-            doc.querySelectorAll('header a, header button, header [role="button"]').forEach(el => {
-                const t = txtOf(el);
-                if(banWords.some(w => t.includes(w))){
-                    hideEl(el);
-                }
+            // Header anchors are not needed for theme switching and may expose GitHub/source/share.
+            doc.querySelectorAll('header a[href]').forEach(hideElement);
+
+            // Hide toolbar buttons/items by text, title, aria-label, href, or data-testid.
+            doc.querySelectorAll('header button, header [role="button"], header [data-testid], header svg').forEach(el => {
+                const target = el.closest('button, a, [role="button"], [data-testid]') || el;
+                if(shouldHide(target) || shouldHide(el)) hideElement(target);
             });
-            doc.querySelectorAll('a[href*="github"], a[href*="share"], a[href*="streamlit"]')
-                .forEach(hideEl);
-            doc.querySelectorAll('[role="menuitem"], [data-testid*="menu"], [class*="menu"] div').forEach(el => {
-                const t = txtOf(el);
-                if(banWords.some(w => t.includes(w))){
-                    hideEl(el);
-                }
+
+            // Menu/popover items appear after the kebab menu opens. Remove only banned items, keep Theme/Light/Dark/System.
+            doc.querySelectorAll('[role="menuitem"], [role="option"], [data-testid*="menu"], [data-testid*="Menu"], [data-baseweb="popover"] *, [data-baseweb="menu"] *').forEach(el => {
+                if(shouldHide(el)) hideElement(el);
             });
-            Array.from(doc.querySelectorAll('header *')).forEach(el => {
-                const t = txtOf(el);
-                if(t === 'fork' || t.includes('github')) hideEl(el);
-            });
+
+            // Extra safety: any visible link to GitHub/Streamlit source/share anywhere in header/popover.
+            doc.querySelectorAll('a[href*="github"], a[href*="streamlit"], a[href*="share"]').forEach(hideElement);
         }catch(e){}
     }
-    hideToolbarNoise();
-    setInterval(hideToolbarNoise, 500);
+
+    function blockCopyAndDevTools(){
+        try{
+            doc.addEventListener('contextmenu', function(e){
+                const tag = (e.target && e.target.tagName || '').toLowerCase();
+                if(tag !== 'input' && tag !== 'textarea') e.preventDefault();
+            }, true);
+
+            doc.addEventListener('copy', function(e){
+                const tag = (e.target && e.target.tagName || '').toLowerCase();
+                if(tag !== 'input' && tag !== 'textarea') e.preventDefault();
+            }, true);
+
+            doc.addEventListener('cut', function(e){
+                const tag = (e.target && e.target.tagName || '').toLowerCase();
+                if(tag !== 'input' && tag !== 'textarea') e.preventDefault();
+            }, true);
+
+            doc.addEventListener('keydown', function(e){
+                const key = (e.key || '').toLowerCase();
+                const tag = (e.target && e.target.tagName || '').toLowerCase();
+                const inInput = tag === 'input' || tag === 'textarea';
+
+                const blocked =
+                    e.key === 'F12' ||
+                    (e.ctrlKey && e.shiftKey && ['i','j','c'].includes(key)) ||
+                    (e.metaKey && e.altKey && ['i','j','c'].includes(key)) ||
+                    (e.ctrlKey && ['u','s','p'].includes(key)) ||
+                    (e.metaKey && ['u','s','p'].includes(key)) ||
+                    (!inInput && (e.ctrlKey || e.metaKey) && ['c','x'].includes(key));
+
+                if(blocked){
+                    e.preventDefault();
+                    e.stopPropagation();
+                    return false;
+                }
+            }, true);
+        }catch(e){}
+    }
+
+    cleanToolbarAndMenus();
+    blockCopyAndDevTools();
+    setInterval(cleanToolbarAndMenus, 300);
 })();
 </script>
 """, height=0, width=0)
