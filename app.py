@@ -388,6 +388,17 @@ st.markdown("""
         overflow: visible !important;
     }
 
+    /* 모바일 - 반납형/인수형 비교표 사이 간격 */
+    .mobile-compare-gap {
+        display: none;
+    }
+
+    @media (max-width: 768px) {
+        .mobile-compare-gap {
+            display: block;
+            height: 18px;
+        }
+    }
     
     </style>
 """, unsafe_allow_html=True)
