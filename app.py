@@ -350,6 +350,11 @@ st.markdown("""
             background-color: #1b2a3c !important;
             color: #9fc7ff !important;
         }
+
+        /* 모바일 - 인수형 상단 간격 */
+        .compare-card {
+            margin-top: 18px !important;
+        }
     }
 
 
