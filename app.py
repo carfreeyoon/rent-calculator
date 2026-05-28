@@ -1725,7 +1725,9 @@ if not IS_CLIENT_VIEW:
             st.markdown("<div style='height:28px;'></div>", unsafe_allow_html=True)
             quick_edit_submitted = st.form_submit_button("적용", use_container_width=True)
 
-        st.markdown('</div>', unsafe_allow_html=True)
+    st.markdown('</div>', unsafe_allow_html=True)
+
+    if quick_edit_submitted:
 
     if quick_edit_submitted:
         st.session_state.quick_edit_applied = True
