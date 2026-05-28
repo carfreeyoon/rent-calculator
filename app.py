@@ -1231,6 +1231,31 @@ st.markdown("""
         -webkit-text-fill-color: #111827 !important;
     }
 
+    /* [PATCH] 견적 이력 버튼/공유 버튼 높이·정렬 복구 */
+    [data-testid="stSidebar"] div[data-testid="stButton"] button {
+        min-height: 38px !important;
+        height: 38px !important;
+        padding: 0 12px !important;
+        line-height: 38px !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        overflow: visible !important;
+        box-sizing: border-box !important;
+    }
+
+    [data-testid="stSidebar"] div[data-testid="stButton"] button p {
+        margin: 0 !important;
+        line-height: 38px !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+    }
+
+    [data-testid="stSidebar"] div[data-testid="stButton"] {
+        overflow: visible !important;
+    }
+
     html.caprio-dark div[data-testid="stTextArea"] label,
     html.caprio-dark div[data-testid="stTextArea"] label p,
     html.caprio-dark div[data-testid="stTextInput"] label,
