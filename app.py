@@ -245,9 +245,9 @@ st.markdown("""
     }
 
     html.caprio-dark .td-highlight {
-        background-color: #253b24 !important;
-        color: #c9f5bf !important;
-        font-weight: 800 !important;
+        background-color: #dbe7d3 !important;
+        color: #4d6b2c !important;
+        font-weight: 900 !important;
     }
 
     html.caprio-dark .rent-highlight {
