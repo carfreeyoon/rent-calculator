@@ -399,6 +399,42 @@ st.markdown("""
             display: block;
             height: 18px;
         }
+
+        /* 모바일 - 할부·렌트·리스 비교표 가로폭 보정 */
+        .compare-summary-table {
+            width: 100% !important;
+            table-layout: fixed !important;
+            font-size: 11px !important;
+        }
+
+        .compare-summary-table th,
+        .compare-summary-table td {
+            writing-mode: horizontal-tb !important;
+            white-space: normal !important;
+            word-break: keep-all !important;
+            overflow-wrap: normal !important;
+            line-height: 1.35 !important;
+            padding: 6px 4px !important;
+        }
+
+        .compare-summary-table th:nth-child(1),
+        .compare-summary-table td:nth-child(1) {
+            width: 13% !important;
+        }
+
+        .compare-summary-table th:nth-child(2),
+        .compare-summary-table td:nth-child(2) {
+            width: 24% !important;
+        }
+
+        .compare-summary-table th:nth-child(3),
+        .compare-summary-table td:nth-child(3),
+        .compare-summary-table th:nth-child(4),
+        .compare-summary-table td:nth-child(4),
+        .compare-summary-table th:nth-child(5),
+        .compare-summary-table td:nth-child(5) {
+            width: 21% !important;
+        }
     }
     
     </style>
@@ -1247,13 +1283,22 @@ st.markdown("""
 <tr>
 <td rowspan="2" class="compare-cat">재무/신용</td>
 <td class="compare-item">금융·부채 영향</td>
-<td>O</td>
+<td>
+O
+<br><span style="color:red; font-size:10px; display:block; margin-top:-2px; line-height:1;">(대출한도 영향)</span>
+</td>
 <td>X</td>
-<td>O</td>
+<td>
+△
+<br><span style="color:red; font-size:10px; display:block; margin-top:-2px; line-height:1;">(대출한도 영향)</span>
+</td>
 </tr>
 <tr>
 <td class="compare-item">차량 자산 인식</td>
-<td>O</td>
+<td>
+O
+<br><span style="color:red; font-size:10px; display:block; margin-top:-2px; line-height:1;">(재산세 등 인상)</span>
+</td>
 <td>X</td>
 <td>X</td>
 </tr>
@@ -1317,7 +1362,10 @@ st.markdown("""
 <tr>
 <td rowspan="2" class="compare-legal">법인</td>
 <td class="compare-item">비용처리</td>
-<td>O (최장 8년)</td>
+<td>
+O
+<br><span style="color:red; font-size:10px; display:block; margin-top:-2px; line-height:1;">(최장 8년)</span>
+</td>
 <td>O (납입기간 내)</td>
 <td>O (납입기간 내)</td>
 </tr>
@@ -1325,7 +1373,7 @@ st.markdown("""
 <td class="compare-item">판매 시</td>
 <td>
 부가세 10% 발생
-<br><span style="color:red; font-size:10px;">(경차, 승합차 제외)</span>
+<br><span style="color:red; font-size:10px; display:block; margin-top:-2px; line-height:1;">(경차, 승합차 제외)</span>
 </td>
 <td>인수·반납 자유</td>
 <td>인수·반납 자유</td>
