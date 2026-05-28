@@ -1124,9 +1124,15 @@ st.markdown("""
 <tr>
 <td rowspan="2" class="compare-cat">재무/신용</td>
 <td class="compare-item">금융·부채 영향</td>
-<td>O</td>
+<td>
+O
+<br><span style="color:red; font-size:10px; display:block; margin-top:-2px; line-height:1;">(대출한도 영향)</span>
+</td>
 <td>X</td>
-<td>O</td>
+<td>
+▲
+<br><span style="color:red; font-size:10px; display:block; margin-top:-2px; line-height:1;">(대출한도 영향)</span>
+</td>
 </tr>
 <tr>
 <td class="compare-item">차량 자산 인식</td>
@@ -1165,7 +1171,7 @@ st.markdown("""
 <tr>
 <td class="compare-item">사고 비용·리스크</td>
 <td>수리비·감가 부담</td>
-<td>면책금 중심</td>
+<td>면책금 처리</td>
 <td>감가·보험료 영향</td>
 </tr>
 
