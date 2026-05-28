@@ -268,8 +268,8 @@ st.markdown("""
 
     html.caprio-dark .compare-summary-table td[style*="background:#ddebf7"],
     html.caprio-dark .compare-summary-table td[style*="background: #ddebf7"] {
-        background-color: #1b2a3c !important;
-        color: #eaf2ff !important;
+        background-color: #0b3873 !important;
+        color: #ffffff !important;
         font-weight: 800 !important;
     }
 
