@@ -111,6 +111,11 @@ st.markdown("""
     .text-blue { color: #0b3873; font-weight: bold; }
     .font-bold { font-weight: bold; }
 
+    /* 할부·렌트·리스 비교표 셀 색상 클래스 */
+    .compare-cat { background:#0b3873; color:white; font-weight:bold; }
+    .compare-legal { background:#6b8e23; color:white; font-weight:bold; }
+    .compare-item { background:#ddebf7; font-weight:bold; }
+
     /* 고객용 비교 조건 설정표 */
     .rent-highlight {
         background-color: #e2efda !important;
@@ -347,14 +352,28 @@ st.markdown("""
         }
     }
 
-    /* 다크모드 - 할부·렌트·리스 비교표 2열(항목) 강제 보정 */
-    html.caprio-dark .compare-summary-table tr td:nth-child(2) {
-        background: #22364d !important;
-        background-color: #22364d !important;
-        color: #ffffff !important;
-        font-weight: 700 !important;
+
+    /* 다크모드 - 할부·렌트·리스 비교표 셀 클래스 기반 최종 보정 */
+    html.caprio-dark .compare-summary-table .compare-cat {
+        background:#0b3873 !important;
+        background-color:#0b3873 !important;
+        color:#ffffff !important;
+        font-weight:900 !important;
     }
 
+    html.caprio-dark .compare-summary-table .compare-legal {
+        background:#4f741a !important;
+        background-color:#4f741a !important;
+        color:#ffffff !important;
+        font-weight:900 !important;
+    }
+
+    html.caprio-dark .compare-summary-table .compare-item {
+        background:#22364d !important;
+        background-color:#22364d !important;
+        color:#ffffff !important;
+        font-weight:800 !important;
+    }
     </style>
 """, unsafe_allow_html=True)
 
@@ -1101,92 +1120,92 @@ st.markdown("""
 </tr>
 
 <tr>
-<td style="background:#0b3873;color:white;font-weight:bold;">번호판</td>
-<td style="background:#ddebf7;font-weight:bold;">일반번호판</td>
+<td class="compare-cat">번호판</td>
+<td class="compare-item">일반번호판</td>
 <td>O</td>
 <td>X</td>
 <td>O</td>
 </tr>
 
 <tr>
-<td rowspan="2" style="background:#0b3873;color:white;font-weight:bold;">재무/신용</td>
-<td style="background:#ddebf7;font-weight:bold;">금융·부채 영향</td>
+<td rowspan="2" class="compare-cat">재무/신용</td>
+<td class="compare-item">금융·부채 영향</td>
 <td>O</td>
 <td>X</td>
 <td>O</td>
 </tr>
 <tr>
-<td style="background:#ddebf7;font-weight:bold;">차량 자산 인식</td>
+<td class="compare-item">차량 자산 인식</td>
 <td>O</td>
 <td>X</td>
 <td>X</td>
 </tr>
 
 <tr>
-<td rowspan="2" style="background:#0b3873;color:white;font-weight:bold;">비용</td>
-<td style="background:#ddebf7;font-weight:bold;">세금·보험 납부</td>
+<td rowspan="2" class="compare-cat">비용</td>
+<td class="compare-item">세금·보험 납부</td>
 <td>별도 납부</td>
 <td>월납입 포함</td>
 <td>보험 별도</td>
 </tr>
 <tr>
-<td style="background:#ddebf7;font-weight:bold;">초기비용</td>
+<td class="compare-item">초기비용</td>
 <td>차량가·취등록세 부담</td>
 <td>선택 가능</td>
 <td>선택 가능</td>
 </tr>
 
 <tr>
-<td rowspan="3" style="background:#0b3873;color:white;font-weight:bold;">보험·사고</td>
-<td style="background:#ddebf7;font-weight:bold;">보험 포함</td>
+<td rowspan="3" class="compare-cat">보험·사고</td>
+<td class="compare-item">보험 포함</td>
 <td>X</td>
 <td>O</td>
 <td>X</td>
 </tr>
 <tr>
-<td style="background:#ddebf7;font-weight:bold;">보험·사고 처리</td>
+<td class="compare-item">보험·사고 처리</td>
 <td>직접 가입·처리</td>
 <td>보험 포함·지원</td>
 <td>직접 가입·처리</td>
 </tr>
 <tr>
-<td style="background:#ddebf7;font-weight:bold;">사고 비용·리스크</td>
+<td class="compare-item">사고 비용·리스크</td>
 <td>수리비·감가 부담</td>
 <td>면책금 중심</td>
 <td>감가·보험료 영향</td>
 </tr>
 
 <tr>
-<td rowspan="2" style="background:#0b3873;color:white;font-weight:bold;">이력 관리</td>
-<td style="background:#ddebf7;font-weight:bold;">보험경력 인정</td>
+<td rowspan="2" class="compare-cat">이력 관리</td>
+<td class="compare-item">보험경력 인정</td>
 <td>O</td>
 <td>O</td>
 <td>O</td>
 </tr>
 <tr>
-<td style="background:#ddebf7;font-weight:bold;">사고이력·보험할증</td>
+<td class="compare-item">사고이력·보험할증</td>
 <td>O</td>
 <td>X</td>
 <td>O</td>
 </tr>
 
 <tr>
-<td style="background:#0b3873;color:white;font-weight:bold;">관리</td>
-<td style="background:#ddebf7;font-weight:bold;">정비 선택 가능</td>
+<td class="compare-cat">관리</td>
+<td class="compare-item">정비 선택 가능</td>
 <td>X</td>
 <td>O</td>
 <td>X</td>
 </tr>
 
 <tr>
-<td rowspan="2" style="background:#6b8e23;color:white;font-weight:bold;">법인</td>
-<td style="background:#ddebf7;font-weight:bold;">비용처리</td>
+<td rowspan="2" class="compare-legal">법인</td>
+<td class="compare-item">비용처리</td>
 <td>O (최장 8년)</td>
 <td>O (납입기간 내)</td>
 <td>O (납입기간 내)</td>
 </tr>
 <tr>
-<td style="background:#ddebf7;font-weight:bold;">판매 시</td>
+<td class="compare-item">판매 시</td>
 <td>
 부가세 10% 발생
 <br><span style="color:red; font-size:10px;">(경차, 승합차 제외)</span>
