@@ -1693,8 +1693,12 @@ if not IS_CLIENT_VIEW:
     if st.session_state.quick_mileage not in quick_mileage_options:
         quick_mileage_options.append(st.session_state.quick_mileage)
 
-    with st.form("quick_rent_edit_form"):
-        st.markdown("#### 🛠️ 렌트 조건 빠른 수정")
+        st.markdown('<div class="quick-rent-condition">', unsafe_allow_html=True)
+
+        with st.form("quick_rent_edit_form"):
+            st.markdown("#### 🛠️ 렌트 조건 빠른 수정")
+
+        
         quick_col1, quick_col2, quick_col3, quick_col4, quick_col5 = st.columns([1.2, 1.1, 0.9, 1.0, 0.7])
 
         with quick_col1:
@@ -1720,6 +1724,8 @@ if not IS_CLIENT_VIEW:
         with quick_col5:
             st.markdown("<div style='height:28px;'></div>", unsafe_allow_html=True)
             quick_edit_submitted = st.form_submit_button("적용", use_container_width=True)
+
+        st.markdown('</div>', unsafe_allow_html=True)
 
     if quick_edit_submitted:
         st.session_state.quick_edit_applied = True
