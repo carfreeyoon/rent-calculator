@@ -94,33 +94,26 @@ st.markdown("""
     .font-bold { font-weight: bold; }
 
 
-    /* 모바일 전용 보정 */
-    @media (max-width: 768px) {
-
         /* 공통 조건 표: 모바일에서는 2열 정보표처럼 정리 */
         .common-info-box {
             padding: 12px !important;
             margin-bottom: 16px !important;
         }
 
-        .common-table,
-        .common-table thead,
-        .common-table tbody,
-        .common-table tr,
-        .common-table th,
-        .common-table td {
-            display: block !important;
-            width: 100% !important;
-            box-sizing: border-box !important;
-        }
-
         .common-table thead {
             display: none !important;
         }
 
+        .common-table,
+        .common-table tbody {
+            display: block !important;
+            width: 100% !important;
+        }
+
         .common-table tr {
             display: grid !important;
-            grid-template-columns: 82px 1fr !important;
+            grid-template-columns: 92px 1fr !important;
+            width: 100% !important;
             border-bottom: 1px solid #dee2e6 !important;
         }
 
@@ -137,32 +130,41 @@ st.markdown("""
         .common-table tr:nth-child(3) td:nth-child(1)::before { content: "유종"; }
         .common-table tr:nth-child(3) td:nth-child(2)::before { content: "CC"; }
 
+        .common-table th {
+            display: none !important;
+        }
+
         .common-table td {
-            display: grid !important;
-            grid-template-columns: 82px 1fr !important;
-            align-items: center !important;
-            text-align: left !important;
-            padding: 8px !important;
-            min-height: 38px !important;
             font-size: 13px !important;
             word-break: keep-all !important;
-            border-bottom: 1px solid #dee2e6 !important;
+            padding: 8px !important;
+            border: 1px solid #dee2e6 !important;
+            box-sizing: border-box !important;
+            min-height: 42px !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            text-align: center !important;
         }
 
         .common-table td::before {
-            font-weight: 800 !important;
-            color: #0b3873 !important;
-            background: #f1f3f5 !important;
-            padding: 8px !important;
-            margin: -8px 8px -8px -8px !important;
-            height: 100% !important;
             display: flex !important;
             align-items: center !important;
+            justify-content: center !important;
+            min-height: 42px !important;
+            padding: 8px !important;
+            background: #f1f3f5 !important;
+            color: #0b3873 !important;
+            font-weight: 800 !important;
+            border: 1px solid #dee2e6 !important;
+            box-sizing: border-box !important;
         }
 
         .common-table td:empty {
             display: none !important;
         }
+
+        
 
         /* 결과 박스와 다음 파란 헤더 간격 분리 */
         .excel-green,
