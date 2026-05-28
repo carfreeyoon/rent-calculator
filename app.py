@@ -259,10 +259,28 @@ CC원문\t{cc_raw_val}
 인승\t{passenger_val}
 형태\t{shape_val}"""
 
+
+# ==========================================
+# [견적 이력 저장]
+# ==========================================
+if "quote_history" not in st.session_state:
+    st.session_state.quote_history = []
+
+if "raw_quote_input" not in st.session_state:
+    st.session_state.raw_quote_input = ""
+
+
 # ==========================================
 # [TOP MAIN] 타사 견적 파싱 구역
 # ==========================================
-raw_data = st.text_area("📋 렌트 견적 복사 붙여넣기", placeholder="견적 텍스트를 입력하세요.", height=80)
+
+raw_data = st.text_area(
+    "📋 렌트 견적 복사 붙여넣기",
+    placeholder="견적 텍스트를 입력하세요.",
+    height=80,
+    key="raw_quote_input"
+)
+
 
 if raw_data:
     parsed_data = auto_convert_quote(raw_data)
@@ -297,6 +315,55 @@ st.sidebar.markdown(f"""
 {rent_resale_pct:g}
 </div>
 """, unsafe_allow_html=True)
+
+
+# ==========================================
+# [견적 이력]
+# ==========================================
+st.sidebar.markdown("---")
+st.sidebar.markdown("### 🕘 견적 이력")
+
+if st.sidebar.button("➕ 현재 견적 저장"):
+
+    if raw_data.strip():
+
+        history_title = (
+            f"월 {rent_monthly_pay:,}원"
+            f"｜{months}개월"
+            f"｜{mileage}"
+        )
+
+        st.session_state.quote_history.insert(
+            0,
+            {
+                "title": history_title,
+                "raw": raw_data
+            }
+        )
+
+        st.session_state.quote_history = st.session_state.quote_history[:5]
+        st.rerun()
+
+if st.session_state.quote_history:
+
+    for idx, item in enumerate(st.session_state.quote_history):
+
+        if st.sidebar.button(
+            item["title"],
+            key=f"history_{idx}"
+        ):
+            st.session_state.raw_quote_input = item["raw"]
+            st.rerun()
+
+    if st.sidebar.button("🗑️ 이력 전체 삭제"):
+        st.session_state.quote_history = []
+        st.session_state.raw_quote_input = ""
+        st.rerun()
+
+else:
+    st.sidebar.caption("저장된 견적이 없습니다.")
+
+
 
 # ==========================================
 # [BACKEND] 연산 로직
