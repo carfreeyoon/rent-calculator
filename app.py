@@ -506,6 +506,24 @@ st.markdown("""
         color: #f3f6fb !important;
     }
 
+.rent-fixed-resale-label {
+    color: var(--text-color) !important;
+}
+
+.rent-fixed-resale-value {
+    background-color: var(--input-bg) !important;
+    color: var(--text-color) !important;
+    border: 1px solid var(--input-border) !important;
+    padding: 9px 13px !important;
+    border-radius: 8px !important;
+    font-size: 16px !important;
+    height: 38px !important;
+    display: flex !important;
+    align-items: center !important;
+    box-sizing: border-box !important;
+}
+    
+
     @media (max-width: 768px) {
         html.caprio-dark .common-table td::before,
         html.caprio-dark .client-condition-table td::before {
@@ -1713,11 +1731,11 @@ if not IS_CLIENT_VIEW:
         mileage = st.session_state.quick_mileage
 
     st.sidebar.markdown(
-        '<div style="font-size:14px; font-weight:400; color:#262730;">📉 렌트 고정 잔존가치 (%)</div>',
+        '<div class="rent-fixed-resale-label" style="font-size:14px; font-weight:400;">📉 렌트 고정 잔존가치 (%)</div>',
         unsafe_allow_html=True
     )
     st.sidebar.markdown(f"""
-    <div class="readonly-sidebar-value" style="background-color:white; padding:9px 13px; border-radius:8px; font-size:14px; color:#111; height:38px; display:flex; align-items:center;">
+    <div class="readonly-sidebar-value rent-fixed-resale-value">
     {rent_resale_pct:g}
     </div>
     """, unsafe_allow_html=True)
