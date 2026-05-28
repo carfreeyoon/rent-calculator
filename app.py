@@ -1231,31 +1231,28 @@ st.markdown("""
         -webkit-text-fill-color: #111827 !important;
     }
 
-    /* [PATCH] 견적이력/공유버튼 높이 동일 + 견적1 너비 복구 */
-    [data-testid="stSidebar"] div[data-testid="stButton"] button,
-    [data-testid="stSidebar"] div[data-testid="stLinkButton"] a,
-    [data-testid="stSidebar"] a[data-testid="stLinkButton"] {
+    /* [PATCH] 견적 이력 버튼 높이/정렬 고정 */
+    [data-testid="stSidebar"] div[data-testid="stButton"] button {
         min-height: 40px !important;
         height: 40px !important;
         padding-top: 0 !important;
         padding-bottom: 0 !important;
-        overflow: visible !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
         box-sizing: border-box !important;
+        overflow: hidden !important;
     }
 
-    [data-testid="stSidebar"] div[data-testid="stButton"] button {
-        width: 100% !important;
-    }
-
-    [data-testid="stSidebar"] div[data-testid="stButton"] button p,
-    [data-testid="stSidebar"] div[data-testid="stLinkButton"] a p,
-    [data-testid="stSidebar"] a[data-testid="stLinkButton"] p {
+    [data-testid="stSidebar"] div[data-testid="stButton"] button p {
         margin: 0 !important;
         padding: 0 !important;
-        line-height: 1.2 !important;
+        line-height: 40px !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
     }
 
-    
     html.caprio-dark div[data-testid="stTextArea"] label,
     html.caprio-dark div[data-testid="stTextArea"] label p,
     html.caprio-dark div[data-testid="stTextInput"] label,
@@ -1874,31 +1871,55 @@ if not IS_CLIENT_VIEW:
 
                 components.html(
                     f"""
-                    <button
-                        onclick="
-                            navigator.clipboard.writeText({item['share_url']!r});
-                            this.innerText='✅';
-                            this.style.background='#dff3df';
-                            this.style.border='1px solid #86c986';
-                        "
-                        style="
-                            width:100%;
-                            height:40px;
-                            min-height:40px;
-                            padding:0;
-                            border-radius:8px;
-                            border:1px solid #e3c86a;
-                            background:#fff4c2;
-                            cursor:pointer;
-                            font-size:16px;
-                            line-height:40px;
-                            display:flex;
-                            align-items:center;
-                            justify-content:center;
-                            box-sizing:border-box;
-                            overflow:visible;
-                        "
-                    >🔗</button>
+                    <!doctype html>
+                    <html>
+                    <head>
+                        <meta charset="utf-8">
+                        <style>
+                            html, body {{
+                                width: 100%;
+                                height: 40px;
+                                margin: 0;
+                                padding: 0;
+                                overflow: hidden;
+                                background: transparent;
+                            }}
+
+                            .history-share-button {{
+                                width: 100%;
+                                height: 40px;
+                                min-height: 40px;
+                                padding: 0;
+                                margin: 0;
+                                border-radius: 8px;
+                                border: 1px solid #e3c86a;
+                                background: #fff4c2;
+                                color: #7a5b00;
+                                cursor: pointer;
+                                font-size: 16px;
+                                line-height: 40px;
+                                display: flex;
+                                align-items: center;
+                                justify-content: center;
+                                box-sizing: border-box;
+                                overflow: hidden;
+                                appearance: none;
+                                -webkit-appearance: none;
+                            }}
+                        </style>
+                    </head>
+                    <body>
+                        <button
+                            class="history-share-button"
+                            onclick="
+                                navigator.clipboard.writeText({item['share_url']!r});
+                                this.innerText='✅';
+                                this.style.background='#dff3df';
+                                this.style.border='1px solid #86c986';
+                            "
+                        >🔗</button>
+                    </body>
+                    </html>
                     """,
                     height=40
                 )
