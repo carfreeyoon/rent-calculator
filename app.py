@@ -256,26 +256,23 @@ st.markdown("""
         font-weight: 800 !important;
     }
 
-    /* 할부·렌트·리스 비교표 전용: 분류/항목/값 영역 명확히 분리 */
-    html.caprio-dark .compare-summary-table td[style*="background:#0b3873"],
-    html.caprio-dark .compare-summary-table td[style*="background: #0b3873"] {
-        background-color: #0b3873 !important;
-        color: #ffffff !important;
-        font-weight: 900 !important;
+    /* 할부·렌트·리스 비교표 - class 기반 다크모드 */
+    html.caprio-dark .compare-cat{
+        background:#0b3873 !important;
+        color:#ffffff !important;
+        font-weight:900 !important;
     }
 
-    html.caprio-dark .compare-summary-table td[style*="background:#6b8e23"],
-    html.caprio-dark .compare-summary-table td[style*="background: #6b8e23"] {
-        background-color: #4f741a !important;
-        color: #ffffff !important;
-        font-weight: 900 !important;
+    html.caprio-dark .compare-item{
+        background:#22364d !important;
+        color:#ffffff !important;
+        font-weight:700 !important;
     }
 
-    html.caprio-dark .compare-summary-table td[style*="background:#ddebf7"]:nth-child(2),
-    html.caprio-dark .compare-summary-table td[style*="background: #ddebf7"]:nth-child(2) {
-        background-color: #0b3873 !important;
-        color: #ffffff !important;
-        font-weight: 800 !important;
+    html.caprio-dark .compare-legal{
+        background:#4f741a !important;
+        color:#ffffff !important;
+        font-weight:900 !important;
     }
 
     html.caprio-dark .compare-summary-table td:not([style*="background:#0b3873"]):not([style*="background: #0b3873"]):not([style*="background:#6b8e23"]):not([style*="background: #6b8e23"]):not([style*="background:#ddebf7"]):not([style*="background: #ddebf7"]) {
