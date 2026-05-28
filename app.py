@@ -1883,19 +1883,24 @@ if not IS_CLIENT_VIEW:
                         "
                         style="
                             width:100%;
-                            height:38px;
+                            height:40px;
+                            min-height:40px;
+                            padding:0;
                             border-radius:8px;
                             border:1px solid #e3c86a;
                             background:#fff4c2;
                             cursor:pointer;
                             font-size:16px;
+                            line-height:40px;
                             display:flex;
                             align-items:center;
                             justify-content:center;
+                            box-sizing:border-box;
+                            overflow:visible;
                         "
                     >🔗</button>
                     """,
-                    height=42
+                    height=40
                 )
 
         if st.sidebar.button("🗑️ 이력 전체 삭제"):
