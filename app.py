@@ -1243,6 +1243,17 @@ st.markdown("""
         -webkit-text-fill-color: #ffffff !important;
     }
 
+    @media (max-width: 768px) {
+        html.caprio-dark .quick-rent-condition {
+            border: 1px solid #46566d !important;
+            border-radius: 12px !important;
+            padding: 16px !important;
+            background: transparent !important;
+            box-shadow: none !important;
+            margin-bottom: 12px !important;
+        }
+    }
+
     
     /* [PATCH] 다크모드 폼 입력칸/셀렉트 통일 (PC/MO) */
     html.caprio-dark div[data-testid="stForm"] div[data-baseweb="input"],
