@@ -9,7 +9,7 @@ import urllib.request
 import urllib.parse
 import urllib.error
 
-st.set_page_config(page_title="카프리오 렌트·할부 계산기", layout="wide")
+st.set_page_config(page_title="카프리오 비교 프로그램", layout="wide")
 
 APP_PASSWORD = st.secrets.get("APP_PASSWORD", "")
 SUPABASE_URL = st.secrets.get("SUPABASE_URL", "").rstrip("/")
@@ -1534,9 +1534,139 @@ st.markdown("""
     line-height:1.7;
     margin-bottom:5px;
 }
+.match-card{
+    margin-top:14px;
+    border-radius:14px;
+    padding:15px 16px;
+    display:grid;
+    grid-template-columns:76px 1fr;
+    gap:14px;
+    align-items:center;
+    box-sizing:border-box;
+    border:1px solid rgba(0,0,0,0.08);
+}
+.match-icon{
+    width:68px;
+    height:68px;
+    border-radius:999px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:33px;
+    box-shadow:inset 0 0 0 1px rgba(255,255,255,0.3);
+}
+.match-title{
+    font-size:18px;
+    font-weight:900;
+    margin-bottom:8px;
+}
+.match-list{
+    margin:0;
+    padding:0;
+    list-style:none;
+    font-size:14px;
+    line-height:1.72;
+}
+.match-list li{
+    margin-bottom:2px;
+}
+.match-result{
+    margin-top:9px;
+    padding-top:8px;
+    border-top:1px dashed rgba(255,255,255,0.35);
+    font-size:16px;
+    font-weight:900;
+}
+.match-installment{
+    background:linear-gradient(135deg,#eaf4ff 0%,#f7fbff 100%);
+    border-color:#b9d8ff;
+}
+.match-installment .match-icon{
+    background:linear-gradient(135deg,#79b8ff,#2478dc);
+}
+.match-installment .match-title,
+.match-installment .match-result,
+.match-installment .match-list li{
+    color:#0b4f9c;
+}
+.match-rent{
+    background:linear-gradient(135deg,#e8fff4 0%,#f7fffb 100%);
+    border-color:#aee8cc;
+}
+.match-rent .match-icon{
+    background:linear-gradient(135deg,#6fe7b2,#12a86f);
+}
+.match-rent .match-title,
+.match-rent .match-result,
+.match-rent .match-list li{
+    color:#08784f;
+}
+.match-lease{
+    background:linear-gradient(135deg,#f0ebff 0%,#fbf9ff 100%);
+    border-color:#cfc1ff;
+}
+.match-lease .match-icon{
+    background:linear-gradient(135deg,#a68cff,#5d3fd3);
+}
+.match-lease .match-title,
+.match-lease .match-result,
+.match-lease .match-list li{
+    color:#5a35c9;
+}
+html.caprio-dark .match-card{
+    border-color:#344255;
+    box-shadow:0 8px 22px rgba(0,0,0,0.18);
+}
+html.caprio-dark .match-installment{
+    background:linear-gradient(135deg,#0f3564 0%,#102337 100%);
+    border-color:#2f6eac;
+}
+html.caprio-dark .match-rent{
+    background:linear-gradient(135deg,#0c4a3d 0%,#102b26 100%);
+    border-color:#1a846b;
+}
+html.caprio-dark .match-lease{
+    background:linear-gradient(135deg,#2d256c 0%,#181d42 100%);
+    border-color:#6555c8;
+}
+html.caprio-dark .match-installment .match-title,
+html.caprio-dark .match-installment .match-result,
+html.caprio-dark .match-installment .match-list li{
+    color:#9fc7ff !important;
+}
+html.caprio-dark .match-rent .match-title,
+html.caprio-dark .match-rent .match-result,
+html.caprio-dark .match-rent .match-list li{
+    color:#76f0bd !important;
+}
+html.caprio-dark .match-lease .match-title,
+html.caprio-dark .match-lease .match-result,
+html.caprio-dark .match-lease .match-list li{
+    color:#b9a7ff !important;
+}
 @media (max-width:768px){
     .guide-wrap{
         grid-template-columns:1fr;
+    }
+    .match-card{
+        grid-template-columns:58px 1fr;
+        gap:11px;
+        padding:13px;
+    }
+    .match-icon{
+        width:54px;
+        height:54px;
+        font-size:27px;
+    }
+    .match-title{
+        font-size:16px;
+    }
+    .match-list{
+        font-size:13px;
+        line-height:1.65;
+    }
+    .match-result{
+        font-size:15px;
     }
 }
 </style>
@@ -1559,6 +1689,19 @@ st.markdown("""
 <div class="reality-item">🛡️ <b>자산 가치 관리</b> : 사고주의 & 관리를 통해 감가를 최소화하는게 중요해요.</div>
 <div class="reality-item">🏢 <b>법인 시 주의</b> : 판매 시 부가세 10%가 발생하니 미리 대비해야해요!</div>
 </div>
+<div class="match-card match-installment">
+<div class="match-icon">💳</div>
+<div>
+<div class="match-title">🔥 할부는 이런 경우 고민없이!</div>
+<ul class="match-list">
+<li>✔ 차량가의 30% 이상 초기비용 부담이 가능하고</li>
+<li>✔ 5년 이상 장기 보유 예정이며</li>
+<li>✔ 사고·감가 리스크가 크게 부담되지 않고</li>
+<li>✔ 대출한도 영향이 중요하지 않다면</li>
+</ul>
+<div class="match-result">→ 할부가 잘 맞아요.</div>
+</div>
+</div>
 </div>
 
 <div class="guide-card">
@@ -1577,6 +1720,19 @@ st.markdown("""
 <div class="reality-item">🚫 <b>보험·사고 기록</b> : 사고 시, 정해진 면책금으로 해결하고 개인 보험 이력에 남지 않아요.</div>
 <div class="reality-item">🗓️ <b>관리 비용 최소화</b> : 보험·세금이 모두 월 이용료에 포함되며 추가 비용 부담이 없어요!</div>
 </div>
+<div class="match-card match-rent">
+<div class="match-icon">🚗</div>
+<div>
+<div class="match-title">🔥 렌트는 이런 경우 고민없이!</div>
+<ul class="match-list">
+<li>✔ DSR·대출한도 보호가 중요하고</li>
+<li>✔ 보험료가 높거나 사고이력이 부담되며</li>
+<li>✔ 5년 이하 운행 또는 주기적 신차 교체를 선호하고</li>
+<li>✔ 사고·세금·보험 처리를 간편하게 맡기고 싶다면</li>
+</ul>
+<div class="match-result">→ 장기렌트가 잘 맞아요.</div>
+</div>
+</div>
 </div>
 
 <div class="guide-card">
@@ -1590,10 +1746,22 @@ st.markdown("""
 </ol>
 <div class="reality-box">
 <div class="reality-title">💡 현실 체크</div>
-<div class="reality-item">📉 <b>개인 보험요율 유지</b> : 개인의 낮다면? 보험료를 그대로 적용받아 수입차 운용 시 경제적이에요.</div>
+<div class="reality-item">📉 <b>개인 보험요율 유지</b> : 무사고 경력이 길고 보험료가 낮다면 유리할 수 있어요.</div>
 <div class="reality-item">✨ <b>일반 번호판</b> : 자가용과 동일한 번호판을 유지해요.</div>
 <div class="reality-item">💰 <b>효율적 비용 구성</b> : 자동차세 포함 + 초기비용 부담을 낮출 수 있어요.</div>
 <div class="reality-item">💵 <b>세금 인상</b> : 재산세 등 세금 인상은 걱정하지 않으셔도 괜찮아요!</div>
+</div>
+<div class="match-card match-lease">
+<div class="match-icon">✨</div>
+<div>
+<div class="match-title">🔥 리스는 이런 경우 고민없이!</div>
+<ul class="match-list">
+<li>✔ 초기비용은 줄이고 싶고</li>
+<li>✔ 무사고 경력이 길어 보험료가 낮으며</li>
+<li>✔ 할부보다 대출 영향은 줄이고 싶다면</li>
+</ul>
+<div class="match-result">→ 리스가 잘 맞아요.</div>
+</div>
 </div>
 </div>
 
