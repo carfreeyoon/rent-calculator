@@ -1231,19 +1231,20 @@ st.markdown("""
         -webkit-text-fill-color: #111827 !important;
     }
 
-    /* [PATCH] 견적 이력 버튼/공유 버튼 높이·정렬 복구 */
+    /* [PATCH] 견적이력/공유버튼 높이 동일 + 견적1 너비 복구 */
     [data-testid="stSidebar"] div[data-testid="stButton"] button,
     [data-testid="stSidebar"] div[data-testid="stLinkButton"] a,
     [data-testid="stSidebar"] a[data-testid="stLinkButton"] {
         min-height: 40px !important;
         height: 40px !important;
-        padding: 0 12px !important;
-        line-height: 1 !important;
-        display: flex !important;
-        align-items: center !important;
-        justify-content: center !important;
+        padding-top: 0 !important;
+        padding-bottom: 0 !important;
         overflow: visible !important;
         box-sizing: border-box !important;
+    }
+
+    [data-testid="stSidebar"] div[data-testid="stButton"] button {
+        width: 100% !important;
     }
 
     [data-testid="stSidebar"] div[data-testid="stButton"] button p,
@@ -1251,21 +1252,10 @@ st.markdown("""
     [data-testid="stSidebar"] a[data-testid="stLinkButton"] p {
         margin: 0 !important;
         padding: 0 !important;
-        line-height: 1 !important;
-        display: flex !important;
-        align-items: center !important;
-        justify-content: center !important;
+        line-height: 1.2 !important;
     }
 
-    [data-testid="stSidebar"] div[data-testid="stButton"],
-    [data-testid="stSidebar"] div[data-testid="stLinkButton"] {
-        min-height: 40px !important;
-        height: 40px !important;
-        overflow: visible !important;
-        display: flex !important;
-        align-items: center !important;
-    }
-
+    
     html.caprio-dark div[data-testid="stTextArea"] label,
     html.caprio-dark div[data-testid="stTextArea"] label p,
     html.caprio-dark div[data-testid="stTextInput"] label,
