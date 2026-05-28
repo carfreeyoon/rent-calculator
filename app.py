@@ -803,7 +803,7 @@ st.markdown("""
 </div>
 </div>
 
-<div class="guide-card full">
+<div class="guide-card">
 <div class="guide-title">✨ [이미지형] 리스</div>
 <div class="guide-copy">품격은 일반 번호판으로, 초기 비용은 리스로 합리적으로!</div>
 
