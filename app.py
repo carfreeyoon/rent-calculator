@@ -1362,10 +1362,7 @@ O
 <tr>
 <td rowspan="2" class="compare-legal">법인</td>
 <td class="compare-item">비용처리</td>
-<td>
-O
-<br><span style="color:red; font-size:10px;">(납입기간 내)</span>
-</td>
+<td>O (최장 8년)</td>
 <td>O (납입기간 내)</td>
 <td>O (납입기간 내)</td>
 </tr>
