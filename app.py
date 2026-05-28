@@ -515,7 +515,7 @@ m_col1, m_col2, m_col3, m_col4 = st.columns(4)
 with m_col1:
     st.markdown('''
 **■ 예상잔존가치(주행×개월수)** 
-<span style="color:red; font-size:10px;">*가솔린 기준</span>
+<span style="color:red; font-size:10px;">*가솔린 '무사고' 기준</span>
 ''', unsafe_allow_html=True)
 
     st.markdown(f"""
