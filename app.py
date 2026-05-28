@@ -371,6 +371,34 @@ st.markdown("""
         color:#ffffff !important;
         font-weight:800 !important;
     }
+
+    /* ↓ 바로 여기 추가 ↓ */
+
+    html.caprio-dark table.compare-summary-table.matrix-table td.compare-cat {
+        background:#144b96 !important;
+        background-color:#144b96 !important;
+        color:#ffffff !important;
+        font-weight:900 !important;
+    }
+
+    html.caprio-dark table.compare-summary-table.matrix-table td.compare-item {
+        background:#2b4461 !important;
+        background-color:#2b4461 !important;
+        color:#ffffff !important;
+        font-weight:800 !important;
+    }
+
+    html.caprio-dark table.compare-summary-table.matrix-table td.compare-legal {
+        background:#6d9a2e !important;
+        background-color:#6d9a2e !important;
+        color:#ffffff !important;
+        font-weight:900 !important;
+    }
+
+</style>
+
+
+    
     </style>
 """, unsafe_allow_html=True)
 
