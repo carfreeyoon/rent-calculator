@@ -1645,17 +1645,16 @@ html.caprio-dark .match-lease .match-result{
         grid-template-columns:1fr;
     }
     .match-card{
-        grid-template-columns:58px 1fr;
-        gap:11px;
-        padding:13px;
+        display:block;
+        padding:14px;
+        margin-top:12px;
     }
     .match-icon{
-        width:54px;
-        height:54px;
-        font-size:27px;
+        display:none;
     }
     .match-title{
         font-size:16px;
+        margin-bottom:8px;
     }
     .match-list{
         font-size:13px;
