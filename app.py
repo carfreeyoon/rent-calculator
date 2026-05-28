@@ -608,7 +608,7 @@ st.markdown("""
 }
 
 .guide-card.full{
-    grid-column:1 / 3;
+    grid-column:1;
 }
 
 .guide-title{
