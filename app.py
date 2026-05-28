@@ -3,6 +3,7 @@ import streamlit.components.v1 as components
 import re
 import json
 import base64
+import zlib
 
 st.set_page_config(page_title="카프리오 비교 프로그램", layout="wide")
 
@@ -37,15 +38,58 @@ def hangul_to_eng(text):
     return result.lower()
 
 
+SHARE_KEY_MAP = {
+    "n": "car_name",
+    "o": "car_option",
+    "p": "car_price",
+    "m": "months",
+    "km": "mileage",
+    "rp": "rent_monthly_pay",
+    "rd": "rent_deposit",
+    "ct": "cc_text",
+    "cr": "cc_raw_text",
+    "f": "fuel_text",
+    "pc": "passenger_count",
+    "s": "car_shape",
+    "ir": "installment_resale_pct",
+    "ia": "insurance_annual",
+    "rt": "installment_rate",
+    "ip": "installment_prepaid",
+    "co": "is_corporate",
+    "rr": "rent_resale_pct"
+}
+
+SHARE_KEY_REVERSE = {v: k for k, v in SHARE_KEY_MAP.items()}
+
 def encode_share_data(data):
-    json_text = json.dumps(data, ensure_ascii=False)
-    return base64.urlsafe_b64encode(json_text.encode("utf-8")).decode("utf-8")
+    compact_data = {
+        SHARE_KEY_REVERSE.get(k, k): v
+        for k, v in data.items()
+        if v is not None
+    }
+    json_text = json.dumps(compact_data, ensure_ascii=False, separators=(",", ":"))
+    compressed = zlib.compress(json_text.encode("utf-8"), level=9)
+    return base64.urlsafe_b64encode(compressed).decode("utf-8").rstrip("=")
 
 def decode_share_data(encoded_text):
     try:
         padding = "=" * (-len(encoded_text) % 4)
-        decoded = base64.urlsafe_b64decode((encoded_text + padding).encode("utf-8"))
-        return json.loads(decoded.decode("utf-8"))
+        raw = base64.urlsafe_b64decode((encoded_text + padding).encode("utf-8"))
+
+        try:
+            json_text = zlib.decompress(raw).decode("utf-8")
+        except Exception:
+            json_text = raw.decode("utf-8")
+
+        data = json.loads(json_text)
+
+        if any(key in SHARE_KEY_MAP for key in data.keys()):
+            return {
+                SHARE_KEY_MAP.get(k, k): v
+                for k, v in data.items()
+            }
+
+        return data
     except Exception:
         return {}
 
@@ -164,6 +208,255 @@ st.markdown("""
         .client-condition-table td:nth-child(5)::before { content: "할부 잔존"; }
         .client-condition-table td:nth-child(6)::before { content: "렌트 잔존"; }
     }
+
+    /* 모바일 전용 보정 */
+    @media (max-width: 768px) {
+
+        .common-info-box {
+            padding: 12px !important;
+            margin-bottom: 16px !important;
+        }
+
+        .common-table:not(.client-condition-table),
+        .common-table:not(.client-condition-table) thead,
+        .common-table:not(.client-condition-table) tbody,
+        .common-table:not(.client-condition-table) tr,
+        .common-table:not(.client-condition-table) th,
+        .common-table:not(.client-condition-table) td {
+            display: block !important;
+            width: 100% !important;
+            box-sizing: border-box !important;
+        }
+
+        .common-table:not(.client-condition-table) thead {
+            display: none !important;
+        }
+
+        .common-table:not(.client-condition-table) tr {
+            display: block !important;
+            border-bottom: 1px solid #dee2e6 !important;
+        }
+
+        .common-table:not(.client-condition-table) tr:nth-child(2) {
+            display: none !important;
+        }
+
+        .common-table:not(.client-condition-table) tr:first-child td:nth-child(1)::before { content: "차량명"; }
+        .common-table:not(.client-condition-table) tr:first-child td:nth-child(2)::before { content: "옵션"; }
+        .common-table:not(.client-condition-table) tr:first-child td:nth-child(3)::before { content: "차량가격"; }
+        .common-table:not(.client-condition-table) tr:first-child td:nth-child(4)::before { content: "계약기간"; }
+        .common-table:not(.client-condition-table) tr:first-child td:nth-child(5)::before { content: "약정거리"; }
+        .common-table:not(.client-condition-table) tr:nth-child(3) td:nth-child(1)::before { content: "유종"; }
+        .common-table:not(.client-condition-table) tr:nth-child(3) td:nth-child(2)::before { content: "CC"; }
+
+        .common-table:not(.client-condition-table) td {
+            display: grid !important;
+            grid-template-columns: 90px 1fr !important;
+            align-items: center !important;
+            text-align: left !important;
+            padding: 8px !important;
+            min-height: 38px !important;
+            font-size: 13px !important;
+            word-break: keep-all !important;
+            border-bottom: 1px solid #dee2e6 !important;
+        }
+
+        .common-table:not(.client-condition-table) td::before {
+            font-weight: 800 !important;
+            color: #0b3873 !important;
+            background: #f1f3f5 !important;
+            padding: 8px !important;
+            margin: -8px 8px -8px -8px !important;
+            min-height: 38px !important;
+            display: flex !important;
+            align-items: center !important;
+        }
+
+        .common-table:not(.client-condition-table) td:empty,
+        .common-table:not(.client-condition-table) td[colspan="3"] {
+            display: none !important;
+        }
+
+        .excel-green,
+        .excel-red {
+            margin-bottom: 18px !important;
+        }
+
+        .excel-header-blue {
+            margin-top: 12px !important;
+        }
+
+        .excel-header-gray,
+        .matrix-table {
+            width: 100% !important;
+        }
+
+        .matrix-table {
+            font-size: 11px !important;
+        }
+
+        .matrix-table th,
+        .matrix-table td {
+            padding: 4px !important;
+            word-break: keep-all !important;
+        }
+
+        .guide-card {
+            padding: 16px !important;
+        }
+
+        .guide-title {
+            font-size: 21px !important;
+            word-break: keep-all !important;
+        }
+
+        .guide-copy {
+            font-size: 16px !important;
+            line-height: 1.65 !important;
+            word-break: keep-all !important;
+        }
+
+        .guide-subtitle {
+            font-size: 15px !important;
+        }
+
+        .guide-list {
+            font-size: 14px !important;
+            line-height: 2.0 !important;
+            word-break: keep-all !important;
+            padding-left: 20px !important;
+        }
+
+        .reality-title {
+            font-size: 16px !important;
+        }
+
+        .reality-item {
+            font-size: 14px !important;
+            line-height: 1.85 !important;
+            word-break: keep-all !important;
+        }
+    }
+
+    /* 다크모드 전용 보정 */
+    @media (prefers-color-scheme: dark) {
+        html, body,
+        [data-testid="stAppViewContainer"],
+        [data-testid="stHeader"],
+        [data-testid="stToolbar"] {
+            background-color: #0f172a !important;
+            color: #e5e7eb !important;
+        }
+
+        div.block-container {
+            background-color: #0f172a !important;
+        }
+
+        .common-info-box,
+        .guide-card,
+        .reality-box {
+            background-color: #111827 !important;
+            border-color: #334155 !important;
+            color: #e5e7eb !important;
+        }
+
+        .common-info-box > div,
+        .guide-title,
+        .reality-title {
+            color: #93c5fd !important;
+        }
+
+        .guide-copy,
+        .guide-subtitle,
+        .guide-list,
+        .reality-item {
+            color: #e5e7eb !important;
+        }
+
+        .common-table,
+        .pure-table,
+        .matrix-table {
+            background-color: #111827 !important;
+            color: #e5e7eb !important;
+        }
+
+        .common-table th,
+        .matrix-table th,
+        .pure-table th {
+            background-color: #0b3873 !important;
+            color: #ffffff !important;
+            border-color: #334155 !important;
+        }
+
+        .common-table td,
+        .matrix-table td,
+        .pure-table td {
+            background-color: #111827 !important;
+            color: #e5e7eb !important;
+            border-color: #334155 !important;
+        }
+
+        .common-table td[style*="color:#111"],
+        .common-table td[style*="color: #111"] {
+            color: #e5e7eb !important;
+        }
+
+        .bg-light {
+            background-color: #1e293b !important;
+        }
+
+        .text-blue {
+            color: #93c5fd !important;
+        }
+
+        .excel-header-gray {
+            background-color: #334155 !important;
+            color: #ffffff !important;
+        }
+
+        .excel-header-blue {
+            background-color: #0b3873 !important;
+            color: #ffffff !important;
+        }
+
+        .excel-green {
+            background-color: #14351f !important;
+            color: #bbf7d0 !important;
+            border-color: #2f855a !important;
+        }
+
+        .excel-red {
+            background-color: #3b1d1d !important;
+            color: #fecaca !important;
+            border-color: #b91c1c !important;
+        }
+
+        .td-highlight,
+        .rent-highlight {
+            background-color: #1f3a2d !important;
+            color: #bbf7d0 !important;
+            font-weight: bold !important;
+        }
+
+        .common-table:not(.client-condition-table) td::before,
+        .client-condition-table td::before {
+            background: #1e293b !important;
+            color: #93c5fd !important;
+        }
+
+        input, textarea, select,
+        [data-baseweb="input"] input,
+        [data-baseweb="textarea"] textarea {
+            background-color: #111827 !important;
+            color: #e5e7eb !important;
+            border-color: #334155 !important;
+        }
+
+        [data-testid="stSidebar"] {
+            background-color: #0b1220 !important;
+        }
+    }
+
     </style>
 """, unsafe_allow_html=True)
 
@@ -198,37 +491,41 @@ if st.query_params.get("q"):
     shared_quote_data = decode_share_data(st.query_params.get("q", ""))
 
 if shared_quote_data:
-    car_name = shared_quote_data.get("n", shared_quote_data.get("car_name", car_name))
-    car_price = int(shared_quote_data.get("p", shared_quote_data.get("car_price", car_price)))
-    months = int(shared_quote_data.get("m", shared_quote_data.get("months", months)))
-    mileage = shared_quote_data.get("km", shared_quote_data.get("mileage", mileage))
-    rent_monthly_pay = int(shared_quote_data.get("rp", shared_quote_data.get("rent_monthly_pay", rent_monthly_pay)))
-    cc_text = shared_quote_data.get("ct", shared_quote_data.get("cc_text", cc_text))
-    cc_raw_text = shared_quote_data.get("cc", shared_quote_data.get("cc_raw_text", cc_raw_text))
-    fuel_text = shared_quote_data.get("f", shared_quote_data.get("fuel_text", fuel_text))
-    passenger_count = int(shared_quote_data.get("pc", shared_quote_data.get("passenger_count", passenger_count)))
-    car_shape = shared_quote_data.get("sh", shared_quote_data.get("car_shape", car_shape))
-    installment_resale_pct = int(shared_quote_data.get("ir", shared_quote_data.get("installment_resale_pct", installment_resale_pct)))
-    rent_resale_pct = float(shared_quote_data.get("rr", shared_quote_data.get("rent_resale_pct", rent_resale_pct)))
+    car_name = shared_quote_data.get("car_name", car_name)
+    car_option = shared_quote_data.get("car_option", car_option)
+    car_price = int(shared_quote_data.get("car_price", car_price))
+    months = int(shared_quote_data.get("months", months))
+    mileage = shared_quote_data.get("mileage", mileage)
+    rent_monthly_pay = int(shared_quote_data.get("rent_monthly_pay", rent_monthly_pay))
+    rent_deposit = int(shared_quote_data.get("rent_deposit", rent_deposit))
+    cc_text = shared_quote_data.get("cc_text", cc_text)
+    cc_raw_text = shared_quote_data.get("cc_raw_text", cc_raw_text)
+    fuel_text = shared_quote_data.get("fuel_text", fuel_text)
+    passenger_count = int(shared_quote_data.get("passenger_count", passenger_count))
+    car_shape = shared_quote_data.get("car_shape", car_shape)
+    installment_resale_pct = int(shared_quote_data.get("installment_resale_pct", installment_resale_pct))
+    rent_resale_pct = float(shared_quote_data.get("rent_resale_pct", rent_resale_pct))
 
 def make_share_url():
     share_data = {
-        "n": car_name,
-        "p": car_price,
-        "m": months,
-        "km": mileage,
-        "rp": rent_monthly_pay,
-        "ct": cc_text,
-        "pc": passenger_count,
-        "sh": car_shape,
-        "ir": installment_resale_pct,
-        "ia": insurance_annual if "insurance_annual" in globals() else 1000000,
-        "rt": installment_rate if "installment_rate" in globals() else 5.0,
-        "ip": installment_prepaid if "installment_prepaid" in globals() else 10000000,
-        "co": is_corporate if "is_corporate" in globals() else False,
-        "rr": rent_resale_pct,
-        "cc": cc_raw_text,
-        "f": fuel_text
+        "car_name": car_name,
+        "car_option": car_option,
+        "car_price": car_price,
+        "months": months,
+        "mileage": mileage,
+        "rent_monthly_pay": rent_monthly_pay,
+        "rent_deposit": rent_deposit,
+        "cc_text": cc_text,
+        "cc_raw_text": cc_raw_text,
+        "fuel_text": fuel_text,
+        "passenger_count": passenger_count,
+        "car_shape": car_shape,
+        "installment_resale_pct": installment_resale_pct,
+        "insurance_annual": insurance_annual if "insurance_annual" in globals() else 1000000,
+        "installment_rate": installment_rate if "installment_rate" in globals() else 5.0,
+        "installment_prepaid": installment_prepaid if "installment_prepaid" in globals() else 10000000,
+        "is_corporate": is_corporate if "is_corporate" in globals() else False,
+        "rent_resale_pct": rent_resale_pct
     }
     encoded = encode_share_data(share_data)
     return f"https://carfreeoh-rentcalculator.streamlit.app/?view=client&q={encoded}"
