@@ -613,25 +613,25 @@ st.markdown("""
     box-sizing:border-box;
 }
 .guide-title{
-    font-size:17px;
+    font-size:23px;
     font-weight:800;
     color:#0b3873;
     margin-bottom:6px;
 }
 .guide-copy{
-    font-size:13px;
+    font-size:18px;
     font-weight:700;
     color:#333;
     margin-bottom:12px;
     line-height:1.5;
 }
 .guide-subtitle{
-    font-size:13px;
+    font-size:15px;
     font-weight:800;
     margin-bottom:6px;
 }
 .guide-list{
-    font-size:12px;
+    font-size:14px;
     line-height:1.9;
     padding-left:20px;
     margin:0 0 12px 0;
@@ -643,12 +643,12 @@ st.markdown("""
     padding:12px;
 }
 .reality-title{
-    font-size:13px;
+    font-size:18px;
     font-weight:800;
     margin-bottom:6px;
 }
 .reality-item{
-    font-size:12px;
+    font-size:15px;
     line-height:1.7;
     margin-bottom:5px;
 }
