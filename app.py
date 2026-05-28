@@ -1693,9 +1693,13 @@ if not IS_CLIENT_VIEW:
     if st.session_state.quick_mileage not in quick_mileage_options:
         quick_mileage_options.append(st.session_state.quick_mileage)
 
-        st.markdown('<div class="quick-rent-condition">', unsafe_allow_html=True)
+    st.markdown('<div class="quick-rent-condition">', unsafe_allow_html=True)
 
-        with st.form("quick_rent_edit_form"):
+    quick_edit_submitted = False
+
+    with st.form("quick_rent_edit_form"):
+
+            
             st.markdown("#### 🛠️ 렌트 조건 빠른 수정")
 
         
