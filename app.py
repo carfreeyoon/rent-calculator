@@ -249,7 +249,7 @@ else:
     # ==========================================
     # [SIDEBAR] 조건 설정 구역
     # ==========================================
-    st.sidebar.header("📋 조건 설정")
+    st.sidebar.header("📋 할부 조건설정")
 
     is_corporate = st.sidebar.checkbox("🏢 법인 고객 여부", value=False)
 
