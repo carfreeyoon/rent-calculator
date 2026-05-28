@@ -368,6 +368,22 @@ st.markdown("""
         background:#7fb52b !important;
         background-color:#7fb52b !important;
     }
+
+    
+    /* 렌트 견적 라벨 잘림 방지 */
+    div[data-testid="stTextArea"] label {
+        padding-top: 8px !important;
+        min-height: 32px !important;
+        overflow: visible !important;
+    }
+
+    div[data-testid="stTextArea"] label p {
+        margin-top: 0 !important;
+        line-height: 1.5 !important;
+        overflow: visible !important;
+    }
+
+    
     </style>
 """, unsafe_allow_html=True)
 
