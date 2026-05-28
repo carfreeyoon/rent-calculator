@@ -692,7 +692,7 @@ if IS_CLIENT_VIEW:
     st.markdown(f"""
         <div class="common-info-box" style="margin-top:-8px; margin-bottom:20px;">
             <div style="font-size:15px; font-weight:bold; margin-bottom:10px; color:#0b3873;">
-                📋 비교 조건 설정
+                📋 할부 조건 설정
             </div>
             <table class="common-table client-condition-table">
                 <thead>
