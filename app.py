@@ -1135,7 +1135,6 @@ O
 </td>
 </tr>
 <tr>
-<tr>
 <td class="compare-item">차량 자산 인식</td>
 <td>
 O
