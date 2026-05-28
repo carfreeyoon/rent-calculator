@@ -913,7 +913,7 @@ st.markdown("""
 </ol>
 <div class="reality-box">
 <div class="reality-title">💡 현실 체크</div>
-<div class="reality-item">📉 <b>개인 보험요율 유지</b> : 개인의 낮다면? 보험료를 그대로 적용받아 수입차 운용 시 경제적이에요.</div>
+<div class="reality-item">📉 <b>개인 보험요율 유지</b> : 개인보험료가 낮다면? 보험료를 그대로 적용받아 수입차 운용 시 경제적이에요.</div>
 <div class="reality-item">✨ <b>일반 번호판</b> : 자가용과 동일한 번호판을 유지해요.</div>
 <div class="reality-item">💰 <b>효율적 비용 구성</b> : 자동차세 포함 + 초기비용 부담을 낮출 수 있어요.</div>
 <div class="reality-item">💵 <b>세금 인상</b> : 재산세 등 세금 인상은 걱정하지 않으셔도 괜찮아요!</div>
