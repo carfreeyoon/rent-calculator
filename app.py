@@ -1163,6 +1163,68 @@ st.markdown("""
         overflow: hidden !important;
     }
 
+
+    /* [PATCH] 영업자 화면 테마 보정: PC 화이트 버튼 / MO 다크 라벨·적용 버튼 */
+    html.caprio-light [data-testid="stSidebar"] div[data-testid="stNumberInput"] button,
+    html:not(.caprio-dark) [data-testid="stSidebar"] div[data-testid="stNumberInput"] button,
+    html.caprio-light [data-testid="stSidebar"] div[data-testid="stButton"] button,
+    html:not(.caprio-dark) [data-testid="stSidebar"] div[data-testid="stButton"] button {
+        background-color: #ffffff !important;
+        color: #111827 !important;
+        border: 1px solid #d8dee8 !important;
+        box-shadow: none !important;
+        -webkit-text-fill-color: #111827 !important;
+    }
+
+    html.caprio-light [data-testid="stSidebar"] div[data-testid="stNumberInput"] button svg,
+    html:not(.caprio-dark) [data-testid="stSidebar"] div[data-testid="stNumberInput"] button svg,
+    html.caprio-light [data-testid="stSidebar"] div[data-testid="stButton"] button svg,
+    html:not(.caprio-dark) [data-testid="stSidebar"] div[data-testid="stButton"] button svg {
+        color: #111827 !important;
+        fill: #111827 !important;
+    }
+
+    html.caprio-light div[data-testid="stFormSubmitButton"] button,
+    html:not(.caprio-dark) div[data-testid="stFormSubmitButton"] button {
+        background-color: #ffffff !important;
+        color: #111827 !important;
+        border: 1px solid #d8dee8 !important;
+        box-shadow: none !important;
+        -webkit-text-fill-color: #111827 !important;
+    }
+
+    html.caprio-light div[data-testid="stFormSubmitButton"] button p,
+    html:not(.caprio-dark) div[data-testid="stFormSubmitButton"] button p {
+        color: #111827 !important;
+        -webkit-text-fill-color: #111827 !important;
+    }
+
+    html.caprio-dark div[data-testid="stTextArea"] label,
+    html.caprio-dark div[data-testid="stTextArea"] label p,
+    html.caprio-dark div[data-testid="stTextInput"] label,
+    html.caprio-dark div[data-testid="stTextInput"] label p,
+    html.caprio-dark div[data-testid="stSelectbox"] label,
+    html.caprio-dark div[data-testid="stSelectbox"] label p,
+    html.caprio-dark div[data-testid="stNumberInput"] label,
+    html.caprio-dark div[data-testid="stNumberInput"] label p {
+        color: #f3f6fb !important;
+        -webkit-text-fill-color: #f3f6fb !important;
+        opacity: 1 !important;
+    }
+
+    html.caprio-dark div[data-testid="stFormSubmitButton"] button {
+        background-color: #0b4a90 !important;
+        color: #ffffff !important;
+        border: 1px solid #2f6fb8 !important;
+        box-shadow: none !important;
+        -webkit-text-fill-color: #ffffff !important;
+    }
+
+    html.caprio-dark div[data-testid="stFormSubmitButton"] button p {
+        color: #ffffff !important;
+        -webkit-text-fill-color: #ffffff !important;
+    }
+
     </style>
 """, unsafe_allow_html=True)
 
