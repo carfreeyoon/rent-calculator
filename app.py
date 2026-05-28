@@ -266,25 +266,17 @@ st.markdown("""
         font-weight: 900 !important;
     }
 
-    html.caprio-dark .compare-summary-table td[style*="background:#ddebf7"],
-    html.caprio-dark .compare-summary-table td[style*="background: #ddebf7"] {
-        background: #22364d !important;
-        background-color: #22364d !important;
+    html.caprio-dark .compare-summary-table td[style*="background:#ddebf7"]:nth-child(2),
+    html.caprio-dark .compare-summary-table td[style*="background: #ddebf7"]:nth-child(2) {
+        background-color: #0b3873 !important;
         color: #ffffff !important;
         font-weight: 800 !important;
     }
 
-html.caprio-dark .compare-summary-table td[style*="background:#ddebf7"],
-html.caprio-dark .compare-summary-table td[style*="background: #ddebf7"] {
-    background-color: #22364d !important;
-    color: #ffffff !important;
-    font-weight: 800 !important;
-}
-
-html.caprio-dark .compare-summary-table td:not([style*="background:#0b3873"]):not([style*="background: #0b3873"]):not([style*="background:#6b8e23"]):not([style*="background: #6b8e23"]):not([style*="background:#ddebf7"]):not([style*="background: #ddebf7"]) {
-    background-color: #0e141c !important;
-    color: #f3f6fb !important;
-}
+    html.caprio-dark .compare-summary-table td:not([style*="background:#0b3873"]):not([style*="background: #0b3873"]):not([style*="background:#6b8e23"]):not([style*="background: #6b8e23"]):not([style*="background:#ddebf7"]):not([style*="background: #ddebf7"]) {
+        background-color: #0e141c !important;
+        color: #f3f6fb !important;
+    }
 
     html.caprio-dark .guide-card {
         background-color: #111821 !important;
@@ -354,6 +346,15 @@ html.caprio-dark .compare-summary-table td:not([style*="background:#0b3873"]):no
             color: #9fc7ff !important;
         }
     }
+
+    /* 다크모드 - 할부·렌트·리스 비교표 2열(항목) 강제 보정 */
+    html.caprio-dark .compare-summary-table tr td:nth-child(2) {
+        background: #22364d !important;
+        background-color: #22364d !important;
+        color: #ffffff !important;
+        font-weight: 700 !important;
+    }
+
     </style>
 """, unsafe_allow_html=True)
 
