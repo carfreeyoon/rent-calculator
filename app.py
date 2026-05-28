@@ -1243,6 +1243,28 @@ st.markdown("""
         -webkit-text-fill-color: #ffffff !important;
     }
 
+    
+    /* [PATCH] 다크모드 폼 입력칸/셀렉트 배경·테두리 복구 */
+    html.caprio-dark div[data-testid="stForm"] div[data-baseweb="input"],
+    html.caprio-dark div[data-testid="stForm"] div[data-baseweb="select"] > div,
+    html.caprio-dark div[data-testid="stForm"] textarea {
+        background-color: #232631 !important;
+        color: #f3f6fb !important;
+        border: 1px solid #46566d !important;
+        box-shadow: none !important;
+    }
+
+    html.caprio-dark div[data-testid="stForm"] input,
+    html.caprio-dark div[data-testid="stForm"] textarea {
+        color: #f3f6fb !important;
+        -webkit-text-fill-color: #f3f6fb !important;
+    }
+
+    html.caprio-dark div[data-testid="stForm"] div[data-baseweb="select"] svg {
+        color: #f3f6fb !important;
+        fill: #f3f6fb !important;
+    }
+
     </style>
 """, unsafe_allow_html=True)
 
@@ -1698,11 +1720,8 @@ if not IS_CLIENT_VIEW:
     quick_edit_submitted = False
 
     with st.form("quick_rent_edit_form"):
+        st.markdown("#### 🛠️ 렌트 조건 빠른 수정")
 
-            
-            st.markdown("#### 🛠️ 렌트 조건 빠른 수정")
-
-        
         quick_col1, quick_col2, quick_col3, quick_col4, quick_col5 = st.columns([1.2, 1.1, 0.9, 1.0, 0.7])
 
         with quick_col1:
