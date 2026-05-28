@@ -198,41 +198,37 @@ if st.query_params.get("q"):
     shared_quote_data = decode_share_data(st.query_params.get("q", ""))
 
 if shared_quote_data:
-    car_name = shared_quote_data.get("car_name", car_name)
-    car_option = shared_quote_data.get("car_option", car_option)
-    car_price = int(shared_quote_data.get("car_price", car_price))
-    months = int(shared_quote_data.get("months", months))
-    mileage = shared_quote_data.get("mileage", mileage)
-    rent_monthly_pay = int(shared_quote_data.get("rent_monthly_pay", rent_monthly_pay))
-    rent_deposit = int(shared_quote_data.get("rent_deposit", rent_deposit))
-    cc_text = shared_quote_data.get("cc_text", cc_text)
-    cc_raw_text = shared_quote_data.get("cc_raw_text", cc_raw_text)
-    fuel_text = shared_quote_data.get("fuel_text", fuel_text)
-    passenger_count = int(shared_quote_data.get("passenger_count", passenger_count))
-    car_shape = shared_quote_data.get("car_shape", car_shape)
-    installment_resale_pct = int(shared_quote_data.get("installment_resale_pct", installment_resale_pct))
-    rent_resale_pct = float(shared_quote_data.get("rent_resale_pct", rent_resale_pct))
+    car_name = shared_quote_data.get("n", shared_quote_data.get("car_name", car_name))
+    car_price = int(shared_quote_data.get("p", shared_quote_data.get("car_price", car_price)))
+    months = int(shared_quote_data.get("m", shared_quote_data.get("months", months)))
+    mileage = shared_quote_data.get("km", shared_quote_data.get("mileage", mileage))
+    rent_monthly_pay = int(shared_quote_data.get("rp", shared_quote_data.get("rent_monthly_pay", rent_monthly_pay)))
+    cc_text = shared_quote_data.get("ct", shared_quote_data.get("cc_text", cc_text))
+    cc_raw_text = shared_quote_data.get("cc", shared_quote_data.get("cc_raw_text", cc_raw_text))
+    fuel_text = shared_quote_data.get("f", shared_quote_data.get("fuel_text", fuel_text))
+    passenger_count = int(shared_quote_data.get("pc", shared_quote_data.get("passenger_count", passenger_count)))
+    car_shape = shared_quote_data.get("sh", shared_quote_data.get("car_shape", car_shape))
+    installment_resale_pct = int(shared_quote_data.get("ir", shared_quote_data.get("installment_resale_pct", installment_resale_pct)))
+    rent_resale_pct = float(shared_quote_data.get("rr", shared_quote_data.get("rent_resale_pct", rent_resale_pct)))
 
 def make_share_url():
     share_data = {
-        "car_name": car_name,
-        "car_option": car_option,
-        "car_price": car_price,
-        "months": months,
-        "mileage": mileage,
-        "rent_monthly_pay": rent_monthly_pay,
-        "rent_deposit": rent_deposit,
-        "cc_text": cc_text,
-        "cc_raw_text": cc_raw_text,
-        "fuel_text": fuel_text,
-        "passenger_count": passenger_count,
-        "car_shape": car_shape,
-        "installment_resale_pct": installment_resale_pct,
-        "insurance_annual": insurance_annual if "insurance_annual" in globals() else 1000000,
-        "installment_rate": installment_rate if "installment_rate" in globals() else 5.0,
-        "installment_prepaid": installment_prepaid if "installment_prepaid" in globals() else 10000000,
-        "is_corporate": is_corporate if "is_corporate" in globals() else False,
-        "rent_resale_pct": rent_resale_pct
+        "n": car_name,
+        "p": car_price,
+        "m": months,
+        "km": mileage,
+        "rp": rent_monthly_pay,
+        "ct": cc_text,
+        "pc": passenger_count,
+        "sh": car_shape,
+        "ir": installment_resale_pct,
+        "ia": insurance_annual if "insurance_annual" in globals() else 1000000,
+        "rt": installment_rate if "installment_rate" in globals() else 5.0,
+        "ip": installment_prepaid if "installment_prepaid" in globals() else 10000000,
+        "co": is_corporate if "is_corporate" in globals() else False,
+        "rr": rent_resale_pct,
+        "cc": cc_raw_text,
+        "f": fuel_text
     }
     encoded = encode_share_data(share_data)
     return f"https://carfreeoh-rentcalculator.streamlit.app/?view=client&q={encoded}"
