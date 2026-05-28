@@ -1232,11 +1232,13 @@ st.markdown("""
     }
 
     /* [PATCH] 견적 이력 버튼/공유 버튼 높이·정렬 복구 */
-    [data-testid="stSidebar"] div[data-testid="stButton"] button {
-        min-height: 38px !important;
-        height: 38px !important;
+    [data-testid="stSidebar"] div[data-testid="stButton"] button,
+    [data-testid="stSidebar"] div[data-testid="stLinkButton"] a,
+    [data-testid="stSidebar"] a[data-testid="stLinkButton"] {
+        min-height: 40px !important;
+        height: 40px !important;
         padding: 0 12px !important;
-        line-height: 38px !important;
+        line-height: 1 !important;
         display: flex !important;
         align-items: center !important;
         justify-content: center !important;
@@ -1244,16 +1246,24 @@ st.markdown("""
         box-sizing: border-box !important;
     }
 
-    [data-testid="stSidebar"] div[data-testid="stButton"] button p {
+    [data-testid="stSidebar"] div[data-testid="stButton"] button p,
+    [data-testid="stSidebar"] div[data-testid="stLinkButton"] a p,
+    [data-testid="stSidebar"] a[data-testid="stLinkButton"] p {
         margin: 0 !important;
-        line-height: 38px !important;
+        padding: 0 !important;
+        line-height: 1 !important;
         display: flex !important;
         align-items: center !important;
         justify-content: center !important;
     }
 
-    [data-testid="stSidebar"] div[data-testid="stButton"] {
+    [data-testid="stSidebar"] div[data-testid="stButton"],
+    [data-testid="stSidebar"] div[data-testid="stLinkButton"] {
+        min-height: 40px !important;
+        height: 40px !important;
         overflow: visible !important;
+        display: flex !important;
+        align-items: center !important;
     }
 
     html.caprio-dark div[data-testid="stTextArea"] label,
