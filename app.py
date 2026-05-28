@@ -1103,6 +1103,8 @@ with view_col1:
     else:
         st.markdown(f'<div class="excel-red">할부 이용이 {abs(diff_ret):,}원 더 유리합니다.</div>', unsafe_allow_html=True)
 
+    st.markdown('<div class="mobile-compare-gap"></div>', unsafe_allow_html=True)
+
 # 2. 인수형 테이블
 with view_col2:
     st.markdown('<div class="excel-header-blue">카프리오 비교 프로그램 (인수형)</div>', unsafe_allow_html=True)
