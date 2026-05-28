@@ -587,246 +587,177 @@ with m_col4:
     </table>
     """, unsafe_allow_html=True)
 
-# ==========================================
-# [할부 · 렌트 · 리스 비교표]
-# ==========================================
-st.write("")
-st.markdown('<div class="excel-header-gray" style="width:55%;">🚗 할부 · 렌트 · 리스 비교표</div>', unsafe_allow_html=True)
 
-st.markdown("""
-<table class="matrix-table" style="width:55%; font-size:13px;">
-<tr>
-<th style="width:12%;">분류</th>
-<th style="width:18%;">항목</th>
-<th style="width:23%;">할부</th>
-<th style="width:23%;">렌트</th>
-<th style="width:24%;">리스</th>
-</tr>
-
-<tr>
-<td style="background:#0b3873;color:white;font-weight:bold;">번호판</td>
-<td style="background:#ddebf7;font-weight:bold;">일반번호판</td>
-<td>O</td>
-<td>X<div style="color:red; font-size:10px; line-height:1; margin-top:-4px;">(하·허·호)</div></td>
-<td>O</td>
-</tr>
-
-<tr>
-<td rowspan="2" style="background:#0b3873;color:white;font-weight:bold;">재무/신용</td>
-<td style="background:#ddebf7;font-weight:bold;">금융·부채 영향</td>
-<td>O<div style="color:red; font-size:10px; line-height:1; margin-top:-4px;">(DSR·대출 영향)</div></td>
-<td>X</td>
-<td>△<div style="color:red; font-size:10px; line-height:1; margin-top:-4px;">(DSR·대출 영향)</div></td>
-</tr>
-<tr>
-<td style="background:#ddebf7;font-weight:bold;">차량 자산 인식</td>
-<td>O<div style="color:red; font-size:10px; line-height:1; margin-top:-4px;">(건보료·세금 인상)</div></td>
-<td>X</td>
-<td>X</td>
-</tr>
-
-<tr>
-<td rowspan="2" style="background:#0b3873;color:white;font-weight:bold;">비용</td>
-<td style="background:#ddebf7;font-weight:bold;">세금·보험 납부</td>
-<td>별도 납부</td>
-<td>월납입 포함</td>
-<td>보험 별도</td>
-</tr>
-<tr>
-<td style="background:#ddebf7;font-weight:bold;">초기비용</td>
-<td>차량가·취등록세 부담</td>
-<td>선택 가능</td>
-<td>선택 가능</td>
-</tr>
-
-<tr>
-<td rowspan="3" style="background:#0b3873;color:white;font-weight:bold;">보험·사고</td>
-<td style="background:#ddebf7;font-weight:bold;">보험 포함</td>
-<td>X</td>
-<td>O</td>
-<td>X</td>
-</tr>
-<tr>
-<td style="background:#ddebf7;font-weight:bold;">보험·사고 처리</td>
-<td>직접 가입·처리</td>
-<td>보험 포함·지원</td>
-<td>직접 가입·처리</td>
-</tr>
-<tr>
-<td style="background:#ddebf7;font-weight:bold;">사고 비용·리스크</td>
-<td>수리비·감가 부담</td>
-<td>면책금 처리</td>
-<td>수리비·감가 부담</td>
-</tr>
-
-<tr>
-<td rowspan="2" style="background:#0b3873;color:white;font-weight:bold;">이력 관리</td>
-<td style="background:#ddebf7;font-weight:bold;">보험경력 인정</td>
-<td>O</td>
-<td>O</td>
-<td>O</td>
-</tr>
-<tr>
-<td style="background:#ddebf7;font-weight:bold;">사고이력·보험할증</td>
-<td>O</td>
-<td>X</td>
-<td>O</td>
-</tr>
-
-
-<tr>
-<td rowspan="2" style="background:#6b8e23;color:white;font-weight:bold;">법인</td>
-<td style="background:#ddebf7;font-weight:bold;">비용처리</td>
-<td>O (최장 8년)</td>
-<td>O (납입기간 내)</td>
-<td>O (납입기간 내)</td>
-</tr>
-<tr>
-<td style="background:#ddebf7;font-weight:bold;">판매 시</td>
-<td>
-부가세 10% 발생
-<div style="color:red; font-size:10px; line-height:1; margin-top:-4px;">(경차, 승합차 제외)</div>
-</td>
-<td>반납·인수 자유</td>
-<td>반납·인수 자유</td>
-</tr>
-</table>
-""", unsafe_allow_html=True)
-
-
-# ==========================================
-# [나에게 맞는 방식 선택 가이드]
-# ==========================================
-st.write("")
-st.markdown('<div class="excel-header-gray" style="width:55%;">🚗 나에게 맞는 방식 선택 가이드</div>', unsafe_allow_html=True)
 
 st.markdown("""
 <style>
-.guide-wrap {
-    width: 55%;
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 14px;
+.guide-wrap{
+    width:55%;
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:16px;
+    margin-top:10px;
 }
-.guide-card {
-    border: 1px solid #d9e2ec;
-    border-radius: 8px;
-    background: #ffffff;
-    padding: 16px;
-    box-sizing: border-box;
+
+.guide-card{
+    background:#ffffff;
+    border:1px solid #d9e2ec;
+    border-radius:8px;
+    padding:18px;
+    box-sizing:border-box;
 }
-.guide-card.full {
-    grid-column: 1 / 3;
+
+.guide-card.full{
+    grid-column:1 / 3;
 }
-.guide-title {
-    font-size: 16px;
-    font-weight: 800;
-    color: #0b3873;
-    margin-bottom: 6px;
+
+.guide-title{
+    font-size:17px;
+    font-weight:800;
+    color:#0b3873;
+    margin-bottom:6px;
 }
-.guide-copy {
-    font-size: 13px;
-    font-weight: 700;
-    margin-bottom: 12px;
+
+.guide-copy{
+    font-size:13px;
+    font-weight:700;
+    color:#444;
+    margin-bottom:12px;
 }
-.guide-section-title {
-    font-size: 13px;
-    font-weight: 800;
-    margin: 10px 0 6px 0;
+
+.guide-subtitle{
+    font-size:13px;
+    font-weight:800;
+    margin-bottom:6px;
 }
-.guide-list {
-    font-size: 12px;
-    line-height: 1.7;
-    margin: 0;
-    padding-left: 18px;
+
+.guide-list{
+    font-size:12px;
+    line-height:1.8;
+    padding-left:18px;
+    margin-bottom:12px;
 }
-.reality-box {
-    margin-top: 12px;
-    padding: 10px 12px;
-    background: #f8f9fa;
-    border: 1px solid #dee2e6;
-    border-radius: 6px;
+
+.reality-box{
+    background:#f4f6f8;
+    border:1px solid #d9dee5;
+    border-radius:6px;
+    padding:12px;
 }
-.reality-title {
-    font-size: 13px;
-    font-weight: 800;
-    margin-bottom: 6px;
+
+.reality-title{
+    font-size:13px;
+    font-weight:800;
+    margin-bottom:6px;
 }
-.reality-item {
-    font-size: 12px;
-    line-height: 1.65;
-    margin-bottom: 5px;
+
+.reality-item{
+    font-size:12px;
+    line-height:1.7;
+    margin-bottom:5px;
 }
-@media (max-width: 768px) {
-    .guide-wrap {
-        width: 100%;
-        grid-template-columns: 1fr;
+
+@media (max-width:768px){
+    .guide-wrap{
+        width:100%;
+        grid-template-columns:1fr;
     }
-    .guide-card.full {
-        grid-column: 1;
+
+    .guide-card.full{
+        grid-column:auto;
     }
 }
 </style>
-
-<div class="guide-wrap">
-
-    <div class="guide-card">
-        <div class="guide-title">💳 [소유형] 할부 구매</div>
-        <div class="guide-copy">내 차라는 확실한 자산, 오래도록 변함없이 타고 싶다면?</div>
-
-        <div class="guide-section-title">✅ 할부 체크리스트</div>
-        <ol class="guide-list">
-            <li>5~10년 이상 장기 보유할 목적이 확실해요.</li>
-            <li>취등록세와 같은 초기 목돈을 지출할 여력이 있어요.</li>
-            <li>명의가 개인 또는 법인 소유인 온전한 자산을 원해요.</li>
-        </ol>
-
-        <div class="reality-box">
-            <div class="reality-title">💡 현실 체크</div>
-            <div class="reality-item">📉 <b>집 대출 한도 축소</b>: 내 명의로 할부 대출이 잡히기 때문에, 추후 주택담보대출 한도가 줄어들 수 있어요.</div>
-            <div class="reality-item">💸 <b>부대 비용 발생</b>: 차량 가액 외에 자동차세, 취등록세, 보험료 등 지속적인 비용이 매년 발생해요.</div>
-            <div class="reality-item">🛡️ <b>자산 가치 관리</b>: 결국 내 차를 파는 시점에 자산 가치가 결정돼요. 평소 차량 관리를 철저히 하면 감가를 최소화해 내 자산을 방어할 수 있어요.</div>
-            <div class="reality-item">🏢 <b>법인 시 주의</b>: 법인 명의라면 나중에 차를 팔 때 판매 금액에 대한 부가세 10%가 발생하니 미리 체크해야 해요.</div>
-        </div>
-    </div>
-
-    <div class="guide-card">
-        <div class="guide-title">🚗 [재테크형] 장기렌트</div>
-        <div class="guide-copy">대출 한도 보호와 차량 관리의 효율성을 동시에!</div>
-
-        <div class="guide-section-title">✅ 렌트 체크리스트</div>
-        <ol class="guide-list">
-            <li>추후 주택 마련 등을 위해 대출 한도를 확보해야 해요.</li>
-            <li>3~5년마다 새로운 차량으로 교체하는 주기를 선호해요.</li>
-            <li>정비, 세금 납부, 사고 처리 등 번거로운 일은 맡기고 싶어요.</li>
-        </ol>
-
-        <div class="reality-box">
-            <div class="reality-title">💡 현실 체크</div>
-            <div class="reality-item">🔓 <b>대출 한도 영향 없음</b>: 명의가 렌트사로 등록되어 개인 대출 한도에 영향을 주지 않아요.</div>
-            <div class="reality-item">🚫 <b>보험료와 사고 기록</b>: 사고 발생 시 정해진 면책금만 내면 되며, 개인 보험 이력에 사고 기록이 남지 않아요.</div>
-            <div class="reality-item">🗓️ <b>관리 비용 최소화</b>: 월 이용료에 보험료와 자동차세가 포함되어 있어 추가 비용 고민이 없어요.</div>
-        </div>
-    </div>
-
-    <div class="guide-card full">
-        <div class="guide-title">✨ [이미지형] 리스</div>
-        <div class="guide-copy">품격은 일반 번호판으로, 초기 비용은 리스로 합리적으로!</div>
-
-        <div class="guide-section-title">✅ 리스 체크리스트</div>
-        <ol class="guide-list">
-            <li>할부 구매 시 발생하는 취등록세 목돈 지출이 부담스러워요.</li>
-            <li>하·허·호 번호판 대신 일반 번호판을 사용하고 싶어요.</li>
-            <li>렌트보다는 자차와 유사한 만족감을 유지하고 싶어요.</li>
-        </ol>
-
-        <div class="reality-box">
-            <div class="reality-title">💡 현실 체크</div>
-            <div class="reality-item">📉 <b>기존 보험 요율 유지</b>: 개인의 낮은 보험료를 그대로 적용받아 수입차 운용 시 경제적이에요.</div>
-            <div class="reality-item">✨ <b>일반 번호판 유지</b>: 자가용과 동일한 번호판을 사용하여 품격을 유지할 수 있어요.</div>
-            <div class="reality-item">💰 <b>효율적인 비용 구성</b>: 월 리스료에 자동차세가 포함되어 있고, 초기 비용 부담을 획기적으로 낮출 수 있어요.</div>
-        </div>
-    </div>
-
-</div>
 """, unsafe_allow_html=True)
+
+
+
+
+
+
+
+
+st.markdown("""
+<style>
+.guide-wrap{
+    width:55%;
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:16px;
+    margin-top:10px;
+}
+
+.guide-card{
+    background:#ffffff;
+    border:1px solid #d9e2ec;
+    border-radius:8px;
+    padding:18px;
+    box-sizing:border-box;
+}
+
+.guide-card.full{
+    grid-column:1 / 3;
+}
+
+.guide-title{
+    font-size:17px;
+    font-weight:800;
+    color:#0b3873;
+    margin-bottom:6px;
+}
+
+.guide-copy{
+    font-size:13px;
+    font-weight:700;
+    color:#444;
+    margin-bottom:12px;
+}
+
+.guide-subtitle{
+    font-size:13px;
+    font-weight:800;
+    margin-bottom:6px;
+}
+
+.guide-list{
+    font-size:12px;
+    line-height:1.8;
+    padding-left:18px;
+    margin-bottom:12px;
+}
+
+.reality-box{
+    background:#f4f6f8;
+    border:1px solid #d9dee5;
+    border-radius:6px;
+    padding:12px;
+}
+
+.reality-title{
+    font-size:13px;
+    font-weight:800;
+    margin-bottom:6px;
+}
+
+.reality-item{
+    font-size:12px;
+    line-height:1.7;
+    margin-bottom:5px;
+}
+
+@media (max-width:768px){
+    .guide-wrap{
+        width:100%;
+        grid-template-columns:1fr;
+    }
+
+    .guide-card.full{
+        grid-column:auto;
+    }
+}
+</style>
+""", unsafe_allow_html=True)
+
+
+
+
