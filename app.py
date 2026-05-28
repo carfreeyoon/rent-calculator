@@ -202,42 +202,6 @@ components.html("""
             });
         });
 
-        // 모바일/웹뷰 우측하단 Streamlit 플로팅 뱃지류 제거
-        doc.querySelectorAll('iframe, div, button, a').forEach(function(el){
-            if(el.closest && el.closest('#caprio-brand-header')) return;
-
-            const s = window.parent.getComputedStyle(el);
-            const rect = el.getBoundingClientRect();
-            const text = ((el.innerText || '') + ' ' + (el.getAttribute('aria-label') || '') + ' ' + (el.getAttribute('title') || '') + ' ' + (el.getAttribute('src') || '') + ' ' + (el.getAttribute('href') || '')).toLowerCase();
-
-            const isFloating = (s.position === 'fixed' || s.position === 'sticky');
-            const nearBottomRight = rect.width > 0 && rect.height > 0 &&
-                rect.width <= 260 && rect.height <= 260 &&
-                rect.right > (window.parent.innerWidth - 320) &&
-                rect.bottom > (window.parent.innerHeight - 320);
-
-            const isStreamlitBadge =
-                text.includes('streamlit') ||
-                text.includes('record') ||
-                text.includes('rerun') ||
-                text.includes('github') ||
-                text.includes('fork') ||
-                text.includes('share') ||
-                text.includes('deploy') ||
-                text.includes('edit') ||
-                text.includes('manage app') ||
-                text.includes('make a copy');
-
-            const badgeLike = isFloating && nearBottomRight;
-            if(badgeLike || isStreamlitBadge){
-                el.style.setProperty('display','none','important');
-                el.style.setProperty('visibility','hidden','important');
-                el.style.setProperty('pointer-events','none','important');
-                el.style.setProperty('width','0','important');
-                el.style.setProperty('height','0','important');
-                el.style.setProperty('overflow','hidden','important');
-            }
-        });
     }
 
     hideStreamlitChromeEarly();
@@ -1185,9 +1149,6 @@ st.markdown("""
         color: #111827 !important;
     }
 
-    iframe[src*="streamlit"],
-    iframe[title*="streamlit"],
-    iframe[title*="Streamlit"],
     div[data-testid="stDecoration"],
     div[data-testid="stStatusWidget"],
     div[data-testid="stToolbar"],
@@ -1253,21 +1214,6 @@ components.html(f"""
             }});
         }});
 
-        // Streamlit Cloud 우측하단 플로팅 뱃지류 제거
-        doc.querySelectorAll('div, button, a').forEach(el => {{
-            if(el.closest('#caprio-brand-header')) return;
-            const s = window.parent.getComputedStyle(el);
-            const rect = el.getBoundingClientRect();
-            const fixedNearBottomRight = (s.position === 'fixed' || s.position === 'sticky') && rect.width <= 220 && rect.height <= 220 && rect.right > (window.parent.innerWidth - 260) && rect.bottom > (window.parent.innerHeight - 260);
-            const fixedTopRight = (s.position === 'fixed' || s.position === 'sticky') && rect.width <= 260 && rect.height <= 120 && rect.right > (window.parent.innerWidth - 320) && rect.top < 120;
-            const txt = (el.innerText || el.getAttribute('aria-label') || el.getAttribute('title') || '').toLowerCase();
-            const badText = txt.includes('record') || txt.includes('rerun') || txt.includes('github') || txt.includes('fork') || txt.includes('share') || txt.includes('deploy') || txt.includes('streamlit') || txt.includes('edit') || txt.includes('star');
-            if((fixedNearBottomRight && !el.closest('#caprio-brand-header')) || (fixedTopRight && badText)){{
-                el.style.setProperty('display','none','important');
-                el.style.setProperty('visibility','hidden','important');
-                el.style.setProperty('pointer-events','none','important');
-            }}
-        }});
     }}
 
     function ensureHeader(){{
@@ -1333,45 +1279,9 @@ components.html(f"""
     }}
 
 
-    function hideFloatingBadgesHard(){{
-        doc.querySelectorAll('iframe, div, button, a, section').forEach(function(el){{
-            if(el.closest && el.closest('#caprio-brand-header')) return;
-            const s = window.parent.getComputedStyle(el);
-            const rect = el.getBoundingClientRect();
-            const text = ((el.innerText || '') + ' ' + (el.getAttribute('aria-label') || '') + ' ' + (el.getAttribute('title') || '') + ' ' + (el.getAttribute('src') || '') + ' ' + (el.getAttribute('href') || '')).toLowerCase();
-
-            const isFloating = (s.position === 'fixed' || s.position === 'sticky');
-            const nearRight = rect.right > (window.parent.innerWidth - 340);
-            const nearBottom = rect.bottom > (window.parent.innerHeight - 340);
-            const smallFloating = isFloating && nearRight && nearBottom && rect.width <= 280 && rect.height <= 280;
-
-            const streamlitRelated =
-                text.includes('streamlit') ||
-                text.includes('record') ||
-                text.includes('rerun') ||
-                text.includes('github') ||
-                text.includes('fork') ||
-                text.includes('share') ||
-                text.includes('deploy') ||
-                text.includes('edit') ||
-                text.includes('manage app') ||
-                text.includes('make a copy');
-
-            if(smallFloating || streamlitRelated){{
-                el.style.setProperty('display','none','important');
-                el.style.setProperty('visibility','hidden','important');
-                el.style.setProperty('pointer-events','none','important');
-                el.style.setProperty('width','0','important');
-                el.style.setProperty('height','0','important');
-                el.style.setProperty('overflow','hidden','important');
-            }}
-        }});
-    }}
-
     ensureHeader();
     applyTheme();
     removeStreamlitChrome();
-    hideFloatingBadgesHard();
     protectCopyDevTools();
     setInterval(function(){{
         ensureHeader();
