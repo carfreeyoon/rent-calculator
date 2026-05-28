@@ -454,15 +454,32 @@ if not IS_CLIENT_VIEW:
                     st.rerun()
 
             with history_col2:
-                copied = st.button(
-                    "🔗",
-                    key=f"copy_share_{idx}",
-                    use_container_width=True
-                )
 
-                if copied:
-                    st.session_state[f"copied_{idx}"] = True
-                    st.session_state.copy_text = item["share_url"]
+                components.html(
+                    f"""
+                    <button
+                        onclick="
+                            navigator.clipboard.writeText(window.location.origin + window.location.pathname + {item['share_url']!r});
+                            this.innerText='✅';
+                            this.style.background='#dff3df';
+                            this.style.border='1px solid #86c986';
+                        "
+                        style="
+                            width:100%;
+                            height:38px;
+                            border-radius:8px;
+                            border:1px solid #e3c86a;
+                            background:#fff4c2;
+                            cursor:pointer;
+                            font-size:16px;
+                            display:flex;
+                            align-items:center;
+                            justify-content:center;
+                        "
+                    >🔗</button>
+                    """,
+                    height=42
+                )
 
         if st.sidebar.button("🗑️ 이력 전체 삭제"):
             st.session_state.quote_history = []
