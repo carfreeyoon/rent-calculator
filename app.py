@@ -3,11 +3,18 @@ import streamlit.components.v1 as components
 import re
 import json
 import base64
+import random
+import string
+import requests
 
 st.set_page_config(page_title="카프리오 비교 프로그램", layout="wide")
 
 APP_PASSWORD = st.secrets.get("APP_PASSWORD", "")
-IS_CLIENT_VIEW = st.query_params.get("view") == "client" and bool(st.query_params.get("q"))
+SUPABASE_URL = st.secrets.get("SUPABASE_URL", "").rstrip("/")
+SUPABASE_KEY = st.secrets.get("SUPABASE_KEY", "")
+APP_BASE_URL = st.secrets.get("APP_BASE_URL", "https://carfreeoh-rentcalculator.streamlit.app").rstrip("/")
+SHARE_QUERY = st.query_params.get("q", "")
+IS_CLIENT_VIEW = bool(SHARE_QUERY)
 
 CHO = ["ㄱ","ㄲ","ㄴ","ㄷ","ㄸ","ㄹ","ㅁ","ㅂ","ㅃ","ㅅ","ㅆ","ㅇ","ㅈ","ㅉ","ㅊ","ㅋ","ㅌ","ㅍ","ㅎ"]
 JUNG = ["ㅏ","ㅐ","ㅑ","ㅒ","ㅓ","ㅔ","ㅕ","ㅖ","ㅗ","ㅘ","ㅙ","ㅚ","ㅛ","ㅜ","ㅝ","ㅞ","ㅟ","ㅠ","ㅡ","ㅢ","ㅣ"]
@@ -41,7 +48,79 @@ def encode_share_data(data):
     json_text = json.dumps(data, ensure_ascii=False)
     return base64.urlsafe_b64encode(json_text.encode("utf-8")).decode("utf-8")
 
+
+def is_short_code(value):
+    return bool(re.fullmatch(r"[A-Za-z0-9]{6,10}", str(value or "").strip()))
+
+
+def make_short_code(length=6):
+    alphabet = string.ascii_uppercase + string.digits
+    return "".join(random.choice(alphabet) for _ in range(length))
+
+
+def supabase_headers(extra=None):
+    headers = {
+        "apikey": SUPABASE_KEY,
+        "Authorization": f"Bearer {SUPABASE_KEY}",
+        "Content-Type": "application/json"
+    }
+    if extra:
+        headers.update(extra)
+    return headers
+
+
+def save_share_data_to_supabase(data):
+    if not SUPABASE_URL or not SUPABASE_KEY:
+        return ""
+
+    endpoint = f"{SUPABASE_URL}/rest/v1/share_links"
+
+    for _ in range(20):
+        code = make_short_code(6)
+        try:
+            res = requests.post(
+                endpoint,
+                headers=supabase_headers({"Prefer": "return=minimal"}),
+                json={"code": code, "payload": data},
+                timeout=8
+            )
+
+            if res.status_code in (200, 201, 204):
+                return code
+
+            if res.status_code == 409:
+                continue
+        except Exception:
+            return ""
+
+    return ""
+
+
+def load_share_data_from_supabase(code):
+    if not SUPABASE_URL or not SUPABASE_KEY or not code:
+        return {}
+
+    try:
+        endpoint = f"{SUPABASE_URL}/rest/v1/share_links?code=eq.{code}&select=payload"
+        res = requests.get(endpoint, headers=supabase_headers(), timeout=8)
+        if res.status_code == 200:
+            rows = res.json()
+            if rows:
+                return rows[0].get("payload", {}) or {}
+    except Exception:
+        return {}
+
+    return {}
+
+
 def decode_share_data(encoded_text):
+    encoded_text = str(encoded_text or "").strip()
+
+    if is_short_code(encoded_text):
+        short_data = load_share_data_from_supabase(encoded_text)
+        if short_data:
+            return short_data
+
     try:
         padding = "=" * (-len(encoded_text) % 4)
         decoded = base64.urlsafe_b64decode((encoded_text + padding).encode("utf-8"))
@@ -399,42 +478,6 @@ st.markdown("""
             display: block;
             height: 18px;
         }
-
-        /* 모바일 - 할부·렌트·리스 비교표 가로폭 보정 */
-        .compare-summary-table {
-            width: 100% !important;
-            table-layout: fixed !important;
-            font-size: 11px !important;
-        }
-
-        .compare-summary-table th,
-        .compare-summary-table td {
-            writing-mode: horizontal-tb !important;
-            white-space: normal !important;
-            word-break: keep-all !important;
-            overflow-wrap: normal !important;
-            line-height: 1.35 !important;
-            padding: 6px 4px !important;
-        }
-
-        .compare-summary-table th:nth-child(1),
-        .compare-summary-table td:nth-child(1) {
-            width: 13% !important;
-        }
-
-        .compare-summary-table th:nth-child(2),
-        .compare-summary-table td:nth-child(2) {
-            width: 24% !important;
-        }
-
-        .compare-summary-table th:nth-child(3),
-        .compare-summary-table td:nth-child(3),
-        .compare-summary-table th:nth-child(4),
-        .compare-summary-table td:nth-child(4),
-        .compare-summary-table th:nth-child(5),
-        .compare-summary-table td:nth-child(5) {
-            width: 21% !important;
-        }
     }
     
     </style>
@@ -532,8 +575,12 @@ def make_share_url():
         "is_corporate": is_corporate if "is_corporate" in globals() else False,
         "rent_resale_pct": rent_resale_pct
     }
+    short_code = save_share_data_to_supabase(share_data)
+    if short_code:
+        return f"{APP_BASE_URL}/?q={short_code}"
+
     encoded = encode_share_data(share_data)
-    return f"https://carfreeoh-rentcalculator.streamlit.app/?view=client&q={encoded}"
+    return f"{APP_BASE_URL}/?view=client&q={encoded}"
     
 # ==========================================
 # [SIDEBAR] 조건 설정 구역
@@ -1283,22 +1330,13 @@ st.markdown("""
 <tr>
 <td rowspan="2" class="compare-cat">재무/신용</td>
 <td class="compare-item">금융·부채 영향</td>
-<td>
-O
-<br><span style="color:red; font-size:10px; display:block; margin-top:-2px; line-height:1;">(대출한도 영향)</span>
-</td>
+<td>O</td>
 <td>X</td>
-<td>
-△
-<br><span style="color:red; font-size:10px; display:block; margin-top:-2px; line-height:1;">(대출한도 영향)</span>
-</td>
+<td>O</td>
 </tr>
 <tr>
 <td class="compare-item">차량 자산 인식</td>
-<td>
-O
-<br><span style="color:red; font-size:10px; display:block; margin-top:-2px; line-height:1;">(재산세 등 인상)</span>
-</td>
+<td>O</td>
 <td>X</td>
 <td>X</td>
 </tr>
@@ -1333,7 +1371,7 @@ O
 <tr>
 <td class="compare-item">사고 비용·리스크</td>
 <td>수리비·감가 부담</td>
-<td>면책금 처리</td>
+<td>면책금 중심</td>
 <td>감가·보험료 영향</td>
 </tr>
 
@@ -1370,7 +1408,7 @@ O
 <td class="compare-item">판매 시</td>
 <td>
 부가세 10% 발생
-<br><span style="color:red; font-size:10px; display:block; margin-top:-2px; line-height:1;">(경차, 승합차 제외)</span>
+<br><span style="color:red; font-size:10px;">(경차, 승합차 제외)</span>
 </td>
 <td>인수·반납 자유</td>
 <td>인수·반납 자유</td>
@@ -1474,7 +1512,7 @@ st.markdown("""
 <div class="reality-title">💡 현실 체크</div>
 <div class="reality-item">📉 <b>집 대출 한도 축소</b> : 내 명의로 할부 대출이 잡히기 때문에, 추후 주택담보대출 한도가 줄어들 수 있어요.</div>
 <div class="reality-item">💸 <b>부대 비용 발생</b> : 자동차세·취등록세·보험료 등 지속적인 비용이 발생해요.</div>
-<div class="reality-item">🛡️ <b>자산 가치 관리</b> : 사고주의 & 관리를 통해 감가를 최소화하는게 중요해요.</div>
+<div class="reality-item">🛡️ <b>자산 가치 관리</b> : 사고주의 & 관리를 통해 감가를 최소화하는게 중요해요!</div>
 <div class="reality-item">🏢 <b>법인 시 주의</b> : 판매 시 부가세 10%가 발생하니 미리 대비해야해요!</div>
 </div>
 </div>
@@ -1491,7 +1529,6 @@ st.markdown("""
 <div class="reality-box">
 <div class="reality-title">💡 현실 체크</div>
 <div class="reality-item">🔓 <b>대출 한도 영향 없음</b> : 렌트사 명의라 개인 대출 한도에 영향이 없어요.</div>
-<div class="reality-item">💵 <b>세금 할증 없음</b> : 재산세 등 세금 인상은 걱정하지 않으셔도 괜찮아요.</div>
 <div class="reality-item">🚫 <b>보험·사고 기록</b> : 사고 시, 정해진 면책금으로 해결하고 개인 보험 이력에 남지 않아요.</div>
 <div class="reality-item">🗓️ <b>관리 비용 최소화</b> : 보험·세금이 모두 월 이용료에 포함되며 추가 비용 부담이 없어요!</div>
 </div>
