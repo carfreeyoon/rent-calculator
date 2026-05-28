@@ -269,10 +269,18 @@ if "quote_history" not in st.session_state:
 if "raw_quote_input" not in st.session_state:
     st.session_state.raw_quote_input = ""
 
+if "pending_quote_input" not in st.session_state:
+    st.session_state.pending_quote_input = None
+
 
 # ==========================================
 # [TOP MAIN] 타사 견적 파싱 구역
 # ==========================================
+
+if st.session_state.pending_quote_input is not None:
+    st.session_state.raw_quote_input = st.session_state.pending_quote_input
+    st.session_state.pending_quote_input = None
+
 
 raw_data = st.text_area(
     "📋 렌트 견적 복사 붙여넣기",
@@ -358,11 +366,9 @@ if st.session_state.quote_history:
             key=f"history_{idx}",
             help=item["title"]
         ):
-            st.session_state.raw_quote_input = item["raw"]
+            st.session_state.pending_quote_input = item["raw"]
             st.rerun()
 
-            st.session_state.raw_quote_input = item["raw"]
-            st.rerun()
 
     if st.sidebar.button("🗑️ 이력 전체 삭제"):
         st.session_state.quote_history = []
