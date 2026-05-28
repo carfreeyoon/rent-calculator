@@ -441,7 +441,7 @@ if not IS_CLIENT_VIEW:
 
         for idx, item in enumerate(st.session_state.quote_history):
 
-            history_col1, history_col2 = st.sidebar.columns([0.9, 0.42])
+            history_col1, history_col2 = st.sidebar.columns([1.85, 0.42])
 
             with history_col1:
                 if st.button(
