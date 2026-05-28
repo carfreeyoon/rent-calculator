@@ -1333,7 +1333,7 @@ O
 <tr>
 <td class="compare-item">사고 비용·리스크</td>
 <td>수리비·감가 부담</td>
-<td>면책금 중심</td>
+<td>면책금 처리</td>
 <td>감가·보험료 영향</td>
 </tr>
 
@@ -1364,7 +1364,7 @@ O
 <td class="compare-item">비용처리</td>
 <td>
 O
-<br><span style="color:red; font-size:10px; display:block; margin-top:-2px; line-height:1;">(최장 8년)</span>
+<br><span style="color:red; font-size:10px;">(납입기간 내)</span>
 </td>
 <td>O (납입기간 내)</td>
 <td>O (납입기간 내)</td>
