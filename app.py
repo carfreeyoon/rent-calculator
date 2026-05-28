@@ -759,5 +759,71 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 
+st.markdown('<div class="excel-header-gray" style="width:55%;">🚗 나에게 맞는 방식 선택 가이드</div>', unsafe_allow_html=True)
+
+st.markdown("""
+<div class="guide-wrap">
+
+<div class="guide-card">
+<div class="guide-title">💳 [소유형] 할부 구매</div>
+<div class="guide-copy">내 차라는 확실한 자산, 오래도록 변함없이 타고 싶다면?</div>
+
+<div class="guide-subtitle">✅ 할부 체크리스트</div>
+<ol class="guide-list">
+<li>5~10년 이상 장기 보유할 목적이 확실해요.</li>
+<li>취등록세와 같은 초기 목돈을 지출할 여력이 있어요.</li>
+<li>명의가 개인 또는 법인 소유인 온전한 자산을 원해요.</li>
+</ol>
+
+<div class="reality-box">
+<div class="reality-title">💡 현실 체크</div>
+<div class="reality-item">📉 <b>집 대출 한도 축소</b> : 내 명의로 할부 대출이 잡히기 때문에, 추후 주택담보대출 한도가 줄어들 수 있어요.</div>
+<div class="reality-item">💸 <b>부대 비용 발생</b> : 자동차세·취등록세·보험료 등 지속적인 비용이 발생해요.</div>
+<div class="reality-item">🛡️ <b>자산 가치 관리</b> : 차량 관리가 결국 감가와 자산가치를 결정해요.</div>
+<div class="reality-item">🏢 <b>법인 시 주의</b> : 판매 시 부가세 10%가 발생해요.</div>
+</div>
+</div>
+
+<div class="guide-card">
+<div class="guide-title">🚗 [재테크형] 장기렌트</div>
+<div class="guide-copy">대출 한도 보호와 차량 관리의 효율성을 동시에!</div>
+
+<div class="guide-subtitle">✅ 렌트 체크리스트</div>
+<ol class="guide-list">
+<li>추후 주택 마련 등을 위해 대출 한도를 확보해야 해요.</li>
+<li>3~5년마다 새로운 차량으로 교체하는 주기를 선호해요.</li>
+<li>정비·세금·사고처리 등 번거로운 일은 맡기고 싶어요.</li>
+</ol>
+
+<div class="reality-box">
+<div class="reality-title">💡 현실 체크</div>
+<div class="reality-item">🔓 <b>대출 한도 영향 없음</b> : 렌트사 명의라 개인 대출 한도에 영향이 없어요.</div>
+<div class="reality-item">🚫 <b>보험·사고 기록</b> : 사고 시 면책금 중심이며 개인 보험 이력에 남지 않아요.</div>
+<div class="reality-item">🗓️ <b>관리 비용 최소화</b> : 보험·자동차세가 월 이용료에 포함돼요.</div>
+</div>
+</div>
+
+<div class="guide-card full">
+<div class="guide-title">✨ [이미지형] 리스</div>
+<div class="guide-copy">품격은 일반 번호판으로, 초기 비용은 리스로 합리적으로!</div>
+
+<div class="guide-subtitle">✅ 리스 체크리스트</div>
+<ol class="guide-list">
+<li>취등록세 초기 목돈 지출이 부담스러워요.</li>
+<li>하·허·호 대신 일반 번호판을 원해요.</li>
+<li>렌트보다 자차와 유사한 만족감을 원해요.</li>
+</ol>
+
+<div class="reality-box">
+<div class="reality-title">💡 현실 체크</div>
+<div class="reality-item">📉 <b>보험요율 유지</b> : 기존 개인 보험요율을 그대로 활용할 수 있어요.</div>
+<div class="reality-item">✨ <b>일반 번호판</b> : 자가용과 동일한 번호판을 유지해요.</div>
+<div class="reality-item">💰 <b>효율적 비용 구성</b> : 자동차세 포함 + 초기비용 부담을 낮출 수 있어요.</div>
+</div>
+</div>
+
+</div>
+""", unsafe_allow_html=True)
+
 
 
