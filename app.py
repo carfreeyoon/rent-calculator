@@ -1,22 +1,12 @@
 import streamlit as st
 import re
-import json, base64
-from urllib.parse import quote, unquote
-from streamlit import query_params
+import json
+import base64
 
 st.set_page_config(page_title="카프리오 비교 프로그램", layout="wide")
 
 APP_PASSWORD = st.secrets.get("APP_PASSWORD", "")
-
-params = st.query_params
-client_mode = params.get("view") == "client"
-
-def encode_share(data):
-    return quote(base64.urlsafe_b64encode(json.dumps(data, ensure_ascii=False).encode()).decode())
-
-def decode_share(q):
-    return json.loads(base64.urlsafe_b64decode(unquote(q).encode()).decode())
-
+IS_CLIENT_VIEW = st.query_params.get("view") == "client" and bool(st.query_params.get("q"))
 
 CHO = ["ㄱ","ㄲ","ㄴ","ㄷ","ㄸ","ㄹ","ㅁ","ㅂ","ㅃ","ㅅ","ㅆ","ㅇ","ㅈ","ㅉ","ㅊ","ㅋ","ㅌ","ㅍ","ㅎ"]
 JUNG = ["ㅏ","ㅐ","ㅑ","ㅒ","ㅓ","ㅔ","ㅕ","ㅖ","ㅗ","ㅘ","ㅙ","ㅚ","ㅛ","ㅜ","ㅝ","ㅞ","ㅟ","ㅠ","ㅡ","ㅢ","ㅣ"]
@@ -45,33 +35,47 @@ def hangul_to_eng(text):
             result += ch
     return result.lower()
 
-if not client_mode and not APP_PASSWORD:
-    st.warning("APP_PASSWORD가 설정되지 않았습니다.")
-    st.stop()
 
-if not client_mode and "auth_ok" not in st.session_state:
-    st.session_state.auth_ok = False
+def encode_share_data(data):
+    json_text = json.dumps(data, ensure_ascii=False)
+    return base64.urlsafe_b64encode(json_text.encode("utf-8")).decode("utf-8")
 
-if not client_mode and not st.session_state.auth_ok:
-    input_password = st.text_input(
-        "",
-        type="password",
-        placeholder="비밀번호 입력"
-    )
+def decode_share_data(encoded_text):
+    try:
+        padding = "=" * (-len(encoded_text) % 4)
+        decoded = base64.urlsafe_b64decode((encoded_text + padding).encode("utf-8"))
+        return json.loads(decoded.decode("utf-8"))
+    except Exception:
+        return {}
 
-    if input_password:
-        pw_input = input_password.strip().lower()
-        pw_secret = APP_PASSWORD.strip().lower()
-        pw_secret_eng = hangul_to_eng(pw_secret)
-
-        if pw_input == pw_secret or pw_input == pw_secret_eng:
-            st.session_state.auth_ok = True
-            st.rerun()
-        else:
-            st.error("비밀번호가 올바르지 않습니다.")
-            st.stop()
-    else:
+if not IS_CLIENT_VIEW:
+    if not APP_PASSWORD:
+        st.warning("APP_PASSWORD가 설정되지 않았습니다.")
         st.stop()
+
+    if "auth_ok" not in st.session_state:
+        st.session_state.auth_ok = False
+
+    if not st.session_state.auth_ok:
+        input_password = st.text_input(
+            "",
+            type="password",
+            placeholder="비밀번호 입력"
+        )
+
+        if input_password:
+            pw_input = input_password.strip().lower()
+            pw_secret = APP_PASSWORD.strip().lower()
+            pw_secret_eng = hangul_to_eng(pw_secret)
+
+            if pw_input == pw_secret or pw_input == pw_secret_eng:
+                st.session_state.auth_ok = True
+                st.rerun()
+            else:
+                st.error("비밀번호가 올바르지 않습니다.")
+                st.stop()
+        else:
+            st.stop()
 
 
 # 레이아웃 완벽 정렬 및 불필요한 공백 제거용 CSS
@@ -105,152 +109,17 @@ st.markdown("""
     .bg-light { background-color: #f8f9fa; }
     .text-blue { color: #0b3873; font-weight: bold; }
     .font-bold { font-weight: bold; }
-
-
-    /* 모바일 전용 보정 */
-    @media (max-width: 768px) {
-
-        /* 공통 조건 표: 모바일에서는 2열 정보표처럼 정리 */
-        .common-info-box {
-            padding: 12px !important;
-            margin-bottom: 16px !important;
-        }
-
-        .common-table,
-        .common-table thead,
-        .common-table tbody,
-        .common-table tr,
-        .common-table th,
-        .common-table td {
-            display: block !important;
-            width: 100% !important;
-            box-sizing: border-box !important;
-        }
-
-        .common-table thead {
-            display: none !important;
-        }
-
-        .common-table tr {
-            display: grid !important;
-            grid-template-columns: 82px 1fr !important;
-            border-bottom: 1px solid #dee2e6 !important;
-        }
-
-        .common-table tr:first-child td:nth-child(1)::before { content: "차량명"; }
-        .common-table tr:first-child td:nth-child(2)::before { content: "옵션"; }
-        .common-table tr:first-child td:nth-child(3)::before { content: "차량가격"; }
-        .common-table tr:first-child td:nth-child(4)::before { content: "계약기간"; }
-        .common-table tr:first-child td:nth-child(5)::before { content: "약정거리"; }
-
-        .common-table tr:nth-child(2) {
-            display: none !important;
-        }
-
-        .common-table tr:nth-child(3) td:nth-child(1)::before { content: "유종"; }
-        .common-table tr:nth-child(3) td:nth-child(2)::before { content: "CC"; }
-
-        .common-table td {
-            display: grid !important;
-            grid-template-columns: 82px 1fr !important;
-            align-items: center !important;
-            text-align: left !important;
-            padding: 8px !important;
-            min-height: 38px !important;
-            font-size: 13px !important;
-            word-break: keep-all !important;
-            border-bottom: 1px solid #dee2e6 !important;
-        }
-
-        .common-table td::before {
-            font-weight: 800 !important;
-            color: #0b3873 !important;
-            background: #f1f3f5 !important;
-            padding: 8px !important;
-            margin: -8px 8px -8px -8px !important;
-            height: 100% !important;
-            display: flex !important;
-            align-items: center !important;
-        }
-
-        .common-table td:empty {
-            display: none !important;
-        }
-
-        /* 결과 박스와 다음 파란 헤더 간격 분리 */
-        .excel-green,
-        .excel-red {
-            margin-bottom: 14px !important;
-        }
-
-        .excel-header-blue {
-            margin-top: 10px !important;
-        }
-
-        /* 모바일에서 하단 비교표/검증표 폭 꽉 채우기 */
-        .excel-header-gray,
-        .matrix-table {
-            width: 100% !important;
-        }
-
-        .matrix-table {
-            font-size: 11px !important;
-        }
-
-        .matrix-table th,
-        .matrix-table td {
-            padding: 4px !important;
-            word-break: keep-all !important;
-        }
-
-        /* 선택 가이드 줄바꿈 보정 */
-        .guide-card {
-            padding: 16px !important;
-        }
-
-        .guide-title {
-            font-size: 21px !important;
-            word-break: keep-all !important;
-        }
-
-        .guide-copy {
-            font-size: 16px !important;
-            line-height: 1.65 !important;
-            word-break: keep-all !important;
-        }
-
-        .guide-subtitle {
-            font-size: 15px !important;
-        }
-
-        .guide-list {
-            font-size: 14px !important;
-            line-height: 2.0 !important;
-            word-break: keep-all !important;
-            padding-left: 20px !important;
-        }
-
-        .reality-title {
-            font-size: 16px !important;
-        }
-
-        .reality-item {
-            font-size: 14px !important;
-            line-height: 1.85 !important;
-            word-break: keep-all !important;
-        }
-    }
     </style>
 """, unsafe_allow_html=True)
 
+if IS_CLIENT_VIEW:
+    st.markdown("""
+    <style>
+    [data-testid="stSidebar"] { display: none !important; }
+    [data-testid="stSidebarCollapsedControl"] { display: none !important; }
+    </style>
+    """, unsafe_allow_html=True)
 
-# 고객 공유 데이터 로드
-if client_mode and params.get("q"):
-    try:
-        shared = decode_share(params.get("q"))
-    except:
-        st.error("공유 견적을 불러올 수 없습니다.")
-        st.stop()
 
 # 초기 기본값 설정
 car_name = "기아 카니발 가솔린 1.6 터보 하이브리드 2WD 7인승 노블레스"
@@ -268,64 +137,97 @@ car_shape = "하이브리드"
 installment_resale_pct = 50 # 할부 잔존가치(매각율) 기본값
 rent_resale_pct = 58       # 렌트 고정 잔존가치(기본값 58%)
 
+# 공유 링크로 접속한 경우 기본값 반영
+shared_quote_data = {}
+if st.query_params.get("q"):
+    shared_quote_data = decode_share_data(st.query_params.get("q", ""))
 
-if client_mode and params.get("q"):
-    car_name = shared.get("car_name", car_name)
-    car_option = shared.get("car_option", car_option)
-    car_price = shared.get("car_price", car_price)
-    months = shared.get("months", months)
-    mileage = shared.get("mileage", mileage)
-    rent_monthly_pay = shared.get("rent_monthly_pay", rent_monthly_pay)
-    rent_deposit = shared.get("rent_deposit", rent_deposit)
-    cc_text = shared.get("cc_text", cc_text)
-    cc_raw_text = shared.get("cc_raw_text", cc_raw_text)
-    fuel_text = shared.get("fuel_text", fuel_text)
-    passenger_count = shared.get("passenger_count", passenger_count)
-    car_shape = shared.get("car_shape", car_shape)
-    installment_resale_pct = shared.get("installment_resale_pct", installment_resale_pct)
-    insurance_annual = shared.get("insurance_annual", 1000000)
-    installment_rate = shared.get("installment_rate", 5.0)
-    installment_prepaid = shared.get("installment_prepaid", 10000000)
-    is_corporate = shared.get("is_corporate", False)
-    rent_resale_pct = shared.get("rent_resale_pct", rent_resale_pct)
+if shared_quote_data:
+    car_name = shared_quote_data.get("car_name", car_name)
+    car_option = shared_quote_data.get("car_option", car_option)
+    car_price = int(shared_quote_data.get("car_price", car_price))
+    months = int(shared_quote_data.get("months", months))
+    mileage = shared_quote_data.get("mileage", mileage)
+    rent_monthly_pay = int(shared_quote_data.get("rent_monthly_pay", rent_monthly_pay))
+    rent_deposit = int(shared_quote_data.get("rent_deposit", rent_deposit))
+    cc_text = shared_quote_data.get("cc_text", cc_text)
+    cc_raw_text = shared_quote_data.get("cc_raw_text", cc_raw_text)
+    fuel_text = shared_quote_data.get("fuel_text", fuel_text)
+    passenger_count = int(shared_quote_data.get("passenger_count", passenger_count))
+    car_shape = shared_quote_data.get("car_shape", car_shape)
+    installment_resale_pct = int(shared_quote_data.get("installment_resale_pct", installment_resale_pct))
+    rent_resale_pct = float(shared_quote_data.get("rent_resale_pct", rent_resale_pct))
+
+def make_share_url():
+    share_data = {
+        "car_name": car_name,
+        "car_option": car_option,
+        "car_price": car_price,
+        "months": months,
+        "mileage": mileage,
+        "rent_monthly_pay": rent_monthly_pay,
+        "rent_deposit": rent_deposit,
+        "cc_text": cc_text,
+        "cc_raw_text": cc_raw_text,
+        "fuel_text": fuel_text,
+        "passenger_count": passenger_count,
+        "car_shape": car_shape,
+        "installment_resale_pct": installment_resale_pct,
+        "insurance_annual": insurance_annual if "insurance_annual" in globals() else 1000000,
+        "installment_rate": installment_rate if "installment_rate" in globals() else 5.0,
+        "installment_prepaid": installment_prepaid if "installment_prepaid" in globals() else 10000000,
+        "is_corporate": is_corporate if "is_corporate" in globals() else False,
+        "rent_resale_pct": rent_resale_pct
+    }
+    encoded = encode_share_data(share_data)
+    return f"?view=client&q={encoded}"
 
 # ==========================================
 # [SIDEBAR] 조건 설정 구역
 # ==========================================
-if not client_mode:
+if IS_CLIENT_VIEW:
+    is_corporate = bool(shared_quote_data.get("is_corporate", False))
+    installment_prepaid = int(shared_quote_data.get("installment_prepaid", 10000000))
+    installment_rate = float(shared_quote_data.get("installment_rate", 5.0))
+    insurance_annual = int(shared_quote_data.get("insurance_annual", 1000000))
+else:
+    # ==========================================
+    # [SIDEBAR] 조건 설정 구역
+    # ==========================================
     st.sidebar.header("📋 조건 설정")
 
-is_corporate = st.sidebar.checkbox("🏢 법인 고객 여부", value=False)
+    is_corporate = st.sidebar.checkbox("🏢 법인 고객 여부", value=False)
 
-installment_prepaid = int(
-    st.sidebar.text_input(
-        "💵 할부 선납금",
-        value=f"{10000000:,}"
-    ).replace(",", "")
-)
+    installment_prepaid = int(
+        st.sidebar.text_input(
+            "💵 할부 선납금",
+            value=f"{int(shared_quote_data.get('installment_prepaid', 10000000)):,}"
+        ).replace(",", "")
+    )
 
-installment_rate = st.sidebar.number_input(
-    "📈 할부 금리 (%)",
-    value=5.0,
-    step=0.1
-)
+    installment_rate = st.sidebar.number_input(
+        "📈 할부 금리 (%)",
+        value=float(shared_quote_data.get("installment_rate", 5.0)),
+        step=0.1
+    )
 
-insurance_annual = int(
-    st.sidebar.text_input(
-        "🛡️ 연 개인 보험료",
-        value=f"{1000000:,}"
-    ).replace(",", "")
-)
+    insurance_annual = int(
+        st.sidebar.text_input(
+            "🛡️ 연 개인 보험료",
+            value=f"{int(shared_quote_data.get('insurance_annual', 1000000)):,}"
+        ).replace(",", "")
+    )
 
-st.sidebar.markdown("---")
+    st.sidebar.markdown("---")
 
-installment_resale_pct = st.sidebar.number_input(
-    "📉 할부 잔존가치 (%)",
-    value=installment_resale_pct,
-    min_value=0,
-    max_value=100,
-    step=1
-)
+    installment_resale_pct = st.sidebar.number_input(
+        "📉 할부 잔존가치 (%)",
+        value=installment_resale_pct,
+        min_value=0,
+        max_value=100,
+        step=1
+    )
+
 
 def auto_convert_quote(raw_text):
     if "견적서" not in raw_text or "최종차량가격" not in raw_text:
@@ -440,126 +342,130 @@ CC원문\t{cc_raw_val}
 
 
 # ==========================================
-# [견적 이력 저장]
+# [견적 이력 저장 / 견적 입력 / 사이드바 이력]
 # ==========================================
-if "quote_history" not in st.session_state:
-    st.session_state.quote_history = []
-
-if "raw_quote_input" not in st.session_state:
-    st.session_state.raw_quote_input = ""
-
-if "pending_quote_input" not in st.session_state:
-    st.session_state.pending_quote_input = None
-
-
-# ==========================================
-# [TOP MAIN] 타사 견적 파싱 구역
-# ==========================================
-
-if st.session_state.pending_quote_input is not None:
-    st.session_state.raw_quote_input = st.session_state.pending_quote_input
-    st.session_state.pending_quote_input = None
-
-
 raw_data = ""
-if not client_mode:
+
+if not IS_CLIENT_VIEW:
+    if "quote_history" not in st.session_state:
+        st.session_state.quote_history = []
+
+    if "raw_quote_input" not in st.session_state:
+        st.session_state.raw_quote_input = ""
+
+    if "pending_quote_input" not in st.session_state:
+        st.session_state.pending_quote_input = None
+
+    # ==========================================
+    # [TOP MAIN] 타사 견적 파싱 구역
+    # ==========================================
+    if st.session_state.pending_quote_input is not None:
+        st.session_state.raw_quote_input = st.session_state.pending_quote_input
+        st.session_state.pending_quote_input = None
+
     raw_data = st.text_area(
-    "📋 렌트 견적 복사 붙여넣기",
-    placeholder="견적 텍스트를 입력하세요.",
-    height=80,
-    key="raw_quote_input"
-)
+        "📋 렌트 견적 복사 붙여넣기",
+        placeholder="견적 텍스트를 입력하세요.",
+        height=80,
+        key="raw_quote_input"
+    )
 
+    if raw_data:
+        parsed_data = auto_convert_quote(raw_data)
+        lines = parsed_data.strip().split('\n')
+        for line in lines:
+            parts = line.split('	') if '	' in line else (line.split(':') if ':' in line else line.split())
+            if len(parts) >= 2:
+                key = parts[0].strip()
+                val = "".join(parts[1:]).strip()
+                def clean_num(v): return int("".join(filter(str.isdigit, v))) if any(char.isdigit() for char in v) else 0
+                
+                if "차량명" in key: car_name = val
+                elif "옵션" in key: car_option = val
+                elif "차량가" in key: car_price = clean_num(val)
+                elif "개월수" in key: months = clean_num(val)
+                elif "약정거리" in key: mileage = val.replace(" ", "")
+                elif "월납입" in key: rent_monthly_pay = clean_num(val)
+                elif "선납금" in key or "보증금" in key: rent_deposit = clean_num(val)
+                elif "잔존" in key: rent_resale_pct = float(val.replace("%", "").replace(" ", ""))
+                elif key == "CC원문": cc_raw_text = val.replace(" ", "")
+                elif key == "유종": fuel_text = val.replace(" ", "")
+                elif key == "인승": passenger_count = clean_num(val)
+                elif "CC" in key: cc_text = val.replace(" ", "")
+                elif "형태" in key: car_shape = val.replace(" ", "")
 
-if raw_data:
-    parsed_data = auto_convert_quote(raw_data)
-    lines = parsed_data.strip().split('\n')
-    for line in lines:
-        parts = line.split('\t') if '\t' in line else (line.split(':') if ':' in line else line.split())
-        if len(parts) >= 2:
-            key = parts[0].strip()
-            val = "".join(parts[1:]).strip()
-            def clean_num(v): return int("".join(filter(str.isdigit, v))) if any(char.isdigit() for char in v) else 0
-            
-            if "차량명" in key: car_name = val
-            elif "옵션" in key: car_option = val
-            elif "차량가" in key: car_price = clean_num(val)
-            elif "개월수" in key: months = clean_num(val)
-            elif "약정거리" in key: mileage = val.replace(" ", "")
-            elif "월납입" in key: rent_monthly_pay = clean_num(val)
-            elif "선납금" in key or "보증금" in key: rent_deposit = clean_num(val)
-            elif "잔존" in key: rent_resale_pct = float(val.replace("%", "").replace(" ", ""))
-            elif key == "CC원문": cc_raw_text = val.replace(" ", "")
-            elif key == "유종": fuel_text = val.replace(" ", "")
-            elif key == "인승": passenger_count = clean_num(val)
-            elif "CC" in key: cc_text = val.replace(" ", "")
-            elif "형태" in key: car_shape = val.replace(" ", "")
+    st.sidebar.markdown(
+        '<div style="font-size:14px; font-weight:400; color:#262730;">📉 렌트 고정 잔존가치 (%)</div>',
+        unsafe_allow_html=True
+    )
+    st.sidebar.markdown(f"""
+    <div style="background-color:white; padding:9px 13px; border-radius:8px; font-size:14px; color:#111; height:38px; display:flex; align-items:center;">
+    {rent_resale_pct:g}
+    </div>
+    """, unsafe_allow_html=True)
 
-st.sidebar.markdown(
-    '<div style="font-size:14px; font-weight:400; color:#262730;">📉 렌트 고정 잔존가치 (%)</div>',
-    unsafe_allow_html=True
-)
-st.sidebar.markdown(f"""
-<div style="background-color:white; padding:9px 13px; border-radius:8px; font-size:14px; color:#111; height:38px; display:flex; align-items:center;">
-{rent_resale_pct:g}
-</div>
-""", unsafe_allow_html=True)
+    # ==========================================
+    # [견적 이력]
+    # ==========================================
+    st.sidebar.markdown("---")
+    st.sidebar.markdown("### 🕘 견적 이력")
 
+    if st.sidebar.button("➕ 현재 견적 저장"):
 
-# ==========================================
-# [견적 이력]
-# ==========================================
-st.sidebar.markdown("---")
-st.sidebar.markdown("### 🕘 견적 이력")
+        if raw_data.strip() or car_name:
 
-if st.sidebar.button("➕ 현재 견적 저장"):
+            short_car_name = (
+                car_name[:15] + "..."
+                if len(car_name) > 15
+                else car_name
+            )
 
-    if raw_data.strip():
+            history_title = (
+                f"{short_car_name}\n"
+                f"월 {rent_monthly_pay:,}원｜{months}개월｜{mileage}"
+            )
 
-        short_car_name = (
-            car_name[:15] + "..."
-            if len(car_name) > 15
-            else car_name
-        )
+            st.session_state.quote_history.insert(
+                0,
+                {
+                    "title": history_title,
+                    "raw": raw_data,
+                    "share_url": make_share_url()
+                }
+            )
 
-        history_title = (
-            f"{short_car_name}\n"
-            f"월 {rent_monthly_pay:,}원｜{months}개월｜{mileage}"
-        )
-
-        st.session_state.quote_history.insert(
-            0,
-            {
-                "title": history_title,
-                "raw": raw_data
-            }
-        )
-
-        st.session_state.quote_history = st.session_state.quote_history[:5]
-        st.rerun()
-
-if st.session_state.quote_history and not client_mode:
-
-    for idx, item in enumerate(st.session_state.quote_history):
-
-        if st.sidebar.button(
-            f"📄 견적 {idx+1}",
-            key=f"history_{idx}",
-            help=item["title"]
-        ):
-            st.session_state.pending_quote_input = item["raw"]
+            st.session_state.quote_history = st.session_state.quote_history[:5]
             st.rerun()
 
+    if st.session_state.quote_history:
 
-    if st.sidebar.button("🗑️ 이력 전체 삭제"):
-        st.session_state.quote_history = []
-        st.session_state.raw_quote_input = ""
-        st.rerun()
+        for idx, item in enumerate(st.session_state.quote_history):
 
-else:
-    st.sidebar.caption("저장된 견적이 없습니다.")
+            history_col1, history_col2 = st.sidebar.columns([0.9, 1.1])
 
+            with history_col1:
+                if st.button(
+                    f"📄 견적 {idx+1}",
+                    key=f"history_{idx}",
+                    help=item["title"]
+                ):
+                    st.session_state.pending_quote_input = item["raw"]
+                    st.rerun()
 
+            with history_col2:
+                st.link_button(
+                    "🔗",
+                    item.get("share_url", "#"),
+                    use_container_width=True
+                )
+
+        if st.sidebar.button("🗑️ 이력 전체 삭제"):
+            st.session_state.quote_history = []
+            st.session_state.raw_quote_input = ""
+            st.rerun()
+
+    else:
+        st.sidebar.caption("저장된 견적이 없습니다.")
 
 # ==========================================
 # [BACKEND] 연산 로직
@@ -704,21 +610,6 @@ st.markdown(f"""
 """, unsafe_allow_html=True)
 
 # ==========================================
-if client_mode:
-    st.markdown(f"""
-    <div class='common-info-box'>
-    <div style='font-size:15px;font-weight:bold;margin-bottom:10px;color:#0b3873;'>📋 견적 적용 조건</div>
-    <table class='common-table'>
-    <tr><td>법인 여부</td><td>{'법인' if is_corporate else '일반'}</td></tr>
-    <tr><td>할부 선납금</td><td>{installment_prepaid:,} 원</td></tr>
-    <tr><td>할부 금리</td><td>{installment_rate}%</td></tr>
-    <tr><td>연 보험료</td><td>{insurance_annual:,} 원</td></tr>
-    <tr><td>할부 잔존가치</td><td>{installment_resale_pct}%</td></tr>
-    <tr><td>렌트 잔존가치</td><td>{rent_resale_pct}%</td></tr>
-    </table></div>
-    """, unsafe_allow_html=True)
-
-
 # [📊 MAIN VISUAL] 대칭형 비교 테이블
 # ==========================================
 view_col1, view_col2 = st.columns(2)
@@ -866,21 +757,6 @@ with m_col4:
     """, unsafe_allow_html=True)
 
 
-
-share_payload = {
-"car_name":car_name,"car_option":car_option,"car_price":car_price,"months":months,"mileage":mileage,
-"rent_monthly_pay":rent_monthly_pay,"rent_deposit":rent_deposit,"cc_text":cc_text,"cc_raw_text":cc_raw_text,
-"fuel_text":fuel_text,"passenger_count":passenger_count,"car_shape":car_shape,
-"installment_resale_pct":installment_resale_pct,"insurance_annual":insurance_annual,
-"installment_rate":installment_rate,"installment_prepaid":installment_prepaid,
-"is_corporate":is_corporate,"rent_resale_pct":rent_resale_pct}
-q=encode_share(share_payload)
-short_name=(car_name[:15]+'...' if len(car_name)>15 else car_name)
-st.sidebar.markdown('---')
-st.sidebar.markdown('### 🔗 고객 공유')
-st.sidebar.caption(f'{short_name} | {months}개월 | {mileage}')
-share_url=f'?view=client&q={q}'
-st.sidebar.code(share_url)
 
 # ==========================================
 # [할부 · 렌트 · 리스 비교표]
@@ -1132,6 +1008,4 @@ st.markdown("""
 </div>
 
 </div>
-""", unsafe_allow_html=True
-
-)
+""", unsafe_allow_html=True)
