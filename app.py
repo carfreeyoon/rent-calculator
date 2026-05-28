@@ -640,6 +640,9 @@ if not IS_CLIENT_VIEW:
     if "pending_quote_input" not in st.session_state:
         st.session_state.pending_quote_input = None
 
+    if "pending_quick_edit" not in st.session_state:
+        st.session_state.pending_quick_edit = None
+
     # ==========================================
     # [TOP MAIN] 타사 견적 파싱 구역
     # ==========================================
@@ -648,7 +651,7 @@ if not IS_CLIENT_VIEW:
         st.session_state.pending_quote_input = None
 
     raw_data = st.text_area(
-        "📋 렌트 견적 복사 붙여넣기",
+        "📋 렌트 견적 붙여넣기",
         placeholder="견적 텍스트를 입력하세요.",
         height=80,
         key="raw_quote_input"
@@ -677,6 +680,84 @@ if not IS_CLIENT_VIEW:
                 elif key == "인승": passenger_count = clean_num(val)
                 elif "CC" in key: cc_text = val.replace(" ", "")
                 elif "형태" in key: car_shape = val.replace(" ", "")
+
+    # ==========================================
+    # [렌트 조건 빠른 수정]
+    # ==========================================
+    quick_edit_source_signature = raw_data.strip() if raw_data.strip() else f"{car_name}|{car_price}|{months}|{mileage}|{rent_monthly_pay}|{rent_resale_pct}"
+
+    def quick_money_to_int(value):
+        value_text = str(value).replace(",", "").strip()
+        return int("".join(filter(str.isdigit, value_text))) if any(ch.isdigit() for ch in value_text) else 0
+
+    def quick_pct_to_float(value, default_value):
+        try:
+            return float(str(value).replace("%", "").replace(",", "").strip())
+        except Exception:
+            return float(default_value)
+
+    if st.session_state.get("quick_edit_source_signature") != quick_edit_source_signature:
+        st.session_state.quick_rent_monthly_pay = f"{rent_monthly_pay:,}"
+        st.session_state.quick_rent_resale_pct = f"{rent_resale_pct:g}"
+        st.session_state.quick_months = int(months)
+        st.session_state.quick_mileage = mileage
+        st.session_state.quick_edit_applied = False
+        st.session_state.quick_edit_source_signature = quick_edit_source_signature
+
+    if st.session_state.pending_quick_edit is not None:
+        pending_quick_edit = st.session_state.pending_quick_edit
+        st.session_state.quick_rent_monthly_pay = f"{int(pending_quick_edit.get('rent_monthly_pay', rent_monthly_pay)):,}"
+        st.session_state.quick_rent_resale_pct = f"{float(pending_quick_edit.get('rent_resale_pct', rent_resale_pct)):g}"
+        st.session_state.quick_months = int(pending_quick_edit.get("months", months))
+        st.session_state.quick_mileage = pending_quick_edit.get("mileage", mileage)
+        st.session_state.quick_edit_applied = True
+        st.session_state.pending_quick_edit = None
+
+    quick_month_options = [24, 36, 48, 60]
+    if int(st.session_state.quick_months) not in quick_month_options:
+        quick_month_options.append(int(st.session_state.quick_months))
+        quick_month_options = sorted(quick_month_options)
+
+    quick_mileage_options = ["1만KM", "1.5만KM", "2만Km", "3만KM"]
+    if st.session_state.quick_mileage not in quick_mileage_options:
+        quick_mileage_options.append(st.session_state.quick_mileage)
+
+    with st.form("quick_rent_edit_form"):
+        st.markdown("#### 🛠️ 렌트 조건 빠른 수정")
+        quick_col1, quick_col2, quick_col3, quick_col4, quick_col5 = st.columns([1.2, 1.1, 0.9, 1.0, 0.7])
+
+        with quick_col1:
+            st.text_input("월납입", key="quick_rent_monthly_pay")
+
+        with quick_col2:
+            st.text_input("렌트잔존(%)", key="quick_rent_resale_pct")
+
+        with quick_col3:
+            st.selectbox(
+                "개월수",
+                quick_month_options,
+                key="quick_months"
+            )
+
+        with quick_col4:
+            st.selectbox(
+                "약정거리",
+                quick_mileage_options,
+                key="quick_mileage"
+            )
+
+        with quick_col5:
+            st.markdown("<div style='height:28px;'></div>", unsafe_allow_html=True)
+            quick_edit_submitted = st.form_submit_button("적용", use_container_width=True)
+
+    if quick_edit_submitted:
+        st.session_state.quick_edit_applied = True
+
+    if st.session_state.get("quick_edit_applied"):
+        rent_monthly_pay = quick_money_to_int(st.session_state.quick_rent_monthly_pay)
+        rent_resale_pct = quick_pct_to_float(st.session_state.quick_rent_resale_pct, rent_resale_pct)
+        months = int(st.session_state.quick_months)
+        mileage = st.session_state.quick_mileage
 
     st.sidebar.markdown(
         '<div style="font-size:14px; font-weight:400; color:#262730;">📉 렌트 고정 잔존가치 (%)</div>',
@@ -714,7 +795,13 @@ if not IS_CLIENT_VIEW:
                 {
                     "title": history_title,
                     "raw": raw_data,
-                    "share_url": make_share_url()
+                    "share_url": make_share_url(),
+                    "quick_edit": {
+                        "rent_monthly_pay": rent_monthly_pay,
+                        "rent_resale_pct": rent_resale_pct,
+                        "months": months,
+                        "mileage": mileage
+                    }
                 }
             )
 
@@ -735,6 +822,7 @@ if not IS_CLIENT_VIEW:
                     use_container_width=True
                 ):
                     st.session_state.pending_quote_input = item["raw"]
+                    st.session_state.pending_quick_edit = item.get("quick_edit")
                     st.rerun()
 
             with history_col2:
@@ -1124,27 +1212,15 @@ st.markdown("""
 <tr>
 <td rowspan="2" class="compare-cat">재무/신용</td>
 <td class="compare-item">금융·부채 영향</td>
-<td>
-O
-<br><span style="color:red; font-size:10px; display:block; margin-top:-2px; line-height:1;">(대출한도 영향)</span>
-</td>
+<td>O</td>
 <td>X</td>
-<td>
-△
-<br><span style="color:red; font-size:10px; display:block; margin-top:-2px; line-height:1;">(대출한도 영향)</span>
-</td>
+<td>O</td>
 </tr>
 <tr>
 <td class="compare-item">차량 자산 인식</td>
-<td>
-O
-<br><span style="color:red; font-size:10px; display:block; margin-top:-2px; line-height:1;">(재산세 등 인상)</span>
-</td>
+<td>O</td>
 <td>X</td>
-<td>
-O
-<br><span style="color:red; font-size:10px; display:block; margin-top:-2px; line-height:1;">(재산세 등 인상)</span>
-</td>
+<td>X</td>
 </tr>
 
 <tr>
@@ -1177,7 +1253,7 @@ O
 <tr>
 <td class="compare-item">사고 비용·리스크</td>
 <td>수리비·감가 부담</td>
-<td>면책금 처리</td>
+<td>면책금 중심</td>
 <td>감가·보험료 영향</td>
 </tr>
 
@@ -1214,7 +1290,7 @@ O
 <td class="compare-item">판매 시</td>
 <td>
 부가세 10% 발생
-<br><span style="color:red; font-size:10px; display:block; margin-top:-2px; line-height:1;">(경차, 승합차 제외)</span>
+<br><span style="color:red; font-size:10px;">(경차, 승합차 제외)</span>
 </td>
 <td>인수·반납 자유</td>
 <td>인수·반납 자유</td>
