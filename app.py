@@ -327,11 +327,20 @@ if st.sidebar.button("➕ 현재 견적 저장"):
 
     if raw_data.strip():
 
-        history_title = (
-            f"월 {rent_monthly_pay:,}원"
-            f"｜{months}개월"
-            f"｜{mileage}"
-        )
+short_car_name = (
+    car_name[:15] + "..."
+    if len(car_name) > 15
+    else car_name
+)
+
+history_title = (
+    f"<span style='font-size:12px; font-weight:700; color:#0b3873;'>"
+    f"{short_car_name}"
+    f"</span><br>"
+    f"월 {rent_monthly_pay:,}원｜{months}개월｜{mileage}"
+)
+
+
 
         st.session_state.quote_history.insert(
             0,
@@ -349,9 +358,13 @@ if st.session_state.quote_history:
     for idx, item in enumerate(st.session_state.quote_history):
 
         if st.sidebar.button(
-            item["title"],
-            key=f"history_{idx}"
+            f"📄 견적 {idx+1}",
+            key=f"history_{idx}",
+            help=item["title"]
         ):
+            st.session_state.raw_quote_input = item["raw"]
+            st.rerun()
+
             st.session_state.raw_quote_input = item["raw"]
             st.rerun()
 
