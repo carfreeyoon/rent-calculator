@@ -616,7 +616,7 @@ st.markdown("""
 <td style="background:#ddebf7;font-weight:bold;">금융·부채 영향</td>
 <td>O<div style="color:red; font-size:10px; line-height:1; margin-top:-4px;">(DSR·대출 영향)</div></td>
 <td>X</td>
-<td>O<div style="color:red; font-size:10px; line-height:1; margin-top:-4px;">(DSR·대출 영향)</div></td>
+<td>△<div style="color:red; font-size:10px; line-height:1; margin-top:-4px;">(DSR·대출 영향)</div></td>
 </tr>
 <tr>
 <td style="background:#ddebf7;font-weight:bold;">차량 자산 인식</td>
@@ -830,6 +830,3 @@ st.markdown("""
 
 </div>
 """, unsafe_allow_html=True)
-
-
-
