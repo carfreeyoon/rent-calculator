@@ -181,8 +181,8 @@ def make_share_url():
         "rent_resale_pct": rent_resale_pct
     }
     encoded = encode_share_data(share_data)
-    return f"?view=client&q={encoded}"
-
+    return f"https://carfreeoh-rentcalculator.streamlit.app/?view=client&q={encoded}"
+    
 # ==========================================
 # [SIDEBAR] 조건 설정 구역
 # ==========================================
@@ -460,7 +460,7 @@ if not IS_CLIENT_VIEW:
                     f"""
                     <button
                         onclick="
-                            navigator.clipboard.writeText(window.location.origin + window.location.pathname + {item['share_url']!r});
+                            navigator.clipboard.writeText({item['share_url']!r});
                             this.innerText='✅';
                             this.style.background='#dff3df';
                             this.style.border='1px solid #86c986';
