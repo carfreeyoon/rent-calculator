@@ -674,7 +674,7 @@ st.markdown("""
 <div class="reality-title">💡 현실 체크</div>
 <div class="reality-item">📉 <b>집 대출 한도 축소</b> : 내 명의로 할부 대출이 잡히기 때문에, 추후 주택담보대출 한도가 줄어들 수 있어요.</div>
 <div class="reality-item">💸 <b>부대 비용 발생</b> : 자동차세·취등록세·보험료 등 지속적인 비용이 발생해요.</div>
-<div class="reality-item">🛡️ <b>자산 가치 관리</b> : 차량 관리가 결국 감가와 자산가치를 결정해요.사고주의&관리를 통해 감가를 최소화하는게 중요해요!</div>
+<div class="reality-item">🛡️ <b>자산 가치 관리</b> : 사고주의 & 관리를 통해 감가를 최소화하는게 중요해요!</div>
 <div class="reality-item">🏢 <b>법인 시 주의</b> : 판매 시 부가세 10%가 발생하니 미리 대비해야해요!</div>
 </div>
 </div>
