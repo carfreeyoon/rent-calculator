@@ -246,8 +246,8 @@ st.markdown("""
 
     html.caprio-dark .matrix-table td.td-highlight,
     html.caprio-dark .matrix-table tr.td-highlight td {
-        background-color: #dbe7d3 !important;
-        color: #4d6b2c !important;
+        background-color: #4d6b2c !important;
+        color: #dbe7d3 !important;
         font-weight: 900 !important;
     }
 
