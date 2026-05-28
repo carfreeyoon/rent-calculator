@@ -360,8 +360,8 @@ st.markdown("""
     }
 
     html.caprio-dark .compare-summary-table .compare-item {
-        background:#0b3873 !important;
-        background-color:#0b3873 !important;
+        background:#23364d !important;
+        background-color:#23364d !important;
     }
 
     html.caprio-dark .compare-summary-table .compare-legal {
