@@ -1130,15 +1130,22 @@ O
 </td>
 <td>X</td>
 <td>
-▲
+△
 <br><span style="color:red; font-size:10px; display:block; margin-top:-2px; line-height:1;">(대출한도 영향)</span>
 </td>
 </tr>
 <tr>
+<tr>
 <td class="compare-item">차량 자산 인식</td>
-<td>O</td>
+<td>
+O
+<br><span style="color:red; font-size:10px; display:block; margin-top:-2px; line-height:1;">(재산세 등 인상)</span>
+</td>
 <td>X</td>
-<td>X</td>
+<td>
+O
+<br><span style="color:red; font-size:10px; display:block; margin-top:-2px; line-height:1;">(재산세 등 인상)</span>
+</td>
 </tr>
 
 <tr>
