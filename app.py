@@ -3,6 +3,7 @@ import streamlit.components.v1 as components
 import re
 import json
 import base64
+import zlib
 
 st.set_page_config(page_title="카프리오 비교 프로그램", layout="wide")
 
@@ -37,15 +38,58 @@ def hangul_to_eng(text):
     return result.lower()
 
 
+SHARE_KEY_MAP = {
+    "n": "car_name",
+    "o": "car_option",
+    "p": "car_price",
+    "m": "months",
+    "km": "mileage",
+    "rp": "rent_monthly_pay",
+    "rd": "rent_deposit",
+    "ct": "cc_text",
+    "cr": "cc_raw_text",
+    "f": "fuel_text",
+    "pc": "passenger_count",
+    "s": "car_shape",
+    "ir": "installment_resale_pct",
+    "ia": "insurance_annual",
+    "rt": "installment_rate",
+    "ip": "installment_prepaid",
+    "co": "is_corporate",
+    "rr": "rent_resale_pct"
+}
+
+SHARE_KEY_REVERSE = {v: k for k, v in SHARE_KEY_MAP.items()}
+
 def encode_share_data(data):
-    json_text = json.dumps(data, ensure_ascii=False)
-    return base64.urlsafe_b64encode(json_text.encode("utf-8")).decode("utf-8")
+    compact_data = {
+        SHARE_KEY_REVERSE.get(k, k): v
+        for k, v in data.items()
+        if v is not None
+    }
+    json_text = json.dumps(compact_data, ensure_ascii=False, separators=(",", ":"))
+    compressed = zlib.compress(json_text.encode("utf-8"), level=9)
+    return base64.urlsafe_b64encode(compressed).decode("utf-8").rstrip("=")
 
 def decode_share_data(encoded_text):
     try:
         padding = "=" * (-len(encoded_text) % 4)
-        decoded = base64.urlsafe_b64decode((encoded_text + padding).encode("utf-8"))
-        return json.loads(decoded.decode("utf-8"))
+        raw = base64.urlsafe_b64decode((encoded_text + padding).encode("utf-8"))
+
+        try:
+            json_text = zlib.decompress(raw).decode("utf-8")
+        except Exception:
+            json_text = raw.decode("utf-8")
+
+        data = json.loads(json_text)
+
+        if any(key in SHARE_KEY_MAP for key in data.keys()):
+            return {
+                SHARE_KEY_MAP.get(k, k): v
+                for k, v in data.items()
+            }
+
+        return data
     except Exception:
         return {}
 
@@ -164,6 +208,255 @@ st.markdown("""
         .client-condition-table td:nth-child(5)::before { content: "할부 잔존"; }
         .client-condition-table td:nth-child(6)::before { content: "렌트 잔존"; }
     }
+
+    /* 모바일 전용 보정 */
+    @media (max-width: 768px) {
+
+        .common-info-box {
+            padding: 12px !important;
+            margin-bottom: 16px !important;
+        }
+
+        .common-table:not(.client-condition-table),
+        .common-table:not(.client-condition-table) thead,
+        .common-table:not(.client-condition-table) tbody,
+        .common-table:not(.client-condition-table) tr,
+        .common-table:not(.client-condition-table) th,
+        .common-table:not(.client-condition-table) td {
+            display: block !important;
+            width: 100% !important;
+            box-sizing: border-box !important;
+        }
+
+        .common-table:not(.client-condition-table) thead {
+            display: none !important;
+        }
+
+        .common-table:not(.client-condition-table) tr {
+            display: block !important;
+            border-bottom: 1px solid #dee2e6 !important;
+        }
+
+        .common-table:not(.client-condition-table) tr:nth-child(2) {
+            display: none !important;
+        }
+
+        .common-table:not(.client-condition-table) tr:first-child td:nth-child(1)::before { content: "차량명"; }
+        .common-table:not(.client-condition-table) tr:first-child td:nth-child(2)::before { content: "옵션"; }
+        .common-table:not(.client-condition-table) tr:first-child td:nth-child(3)::before { content: "차량가격"; }
+        .common-table:not(.client-condition-table) tr:first-child td:nth-child(4)::before { content: "계약기간"; }
+        .common-table:not(.client-condition-table) tr:first-child td:nth-child(5)::before { content: "약정거리"; }
+        .common-table:not(.client-condition-table) tr:nth-child(3) td:nth-child(1)::before { content: "유종"; }
+        .common-table:not(.client-condition-table) tr:nth-child(3) td:nth-child(2)::before { content: "CC"; }
+
+        .common-table:not(.client-condition-table) td {
+            display: grid !important;
+            grid-template-columns: 90px 1fr !important;
+            align-items: center !important;
+            text-align: left !important;
+            padding: 8px !important;
+            min-height: 38px !important;
+            font-size: 13px !important;
+            word-break: keep-all !important;
+            border-bottom: 1px solid #dee2e6 !important;
+        }
+
+        .common-table:not(.client-condition-table) td::before {
+            font-weight: 800 !important;
+            color: #0b3873 !important;
+            background: #f1f3f5 !important;
+            padding: 8px !important;
+            margin: -8px 8px -8px -8px !important;
+            min-height: 38px !important;
+            display: flex !important;
+            align-items: center !important;
+        }
+
+        .common-table:not(.client-condition-table) td:empty,
+        .common-table:not(.client-condition-table) td[colspan="3"] {
+            display: none !important;
+        }
+
+        .excel-green,
+        .excel-red {
+            margin-bottom: 18px !important;
+        }
+
+        .excel-header-blue {
+            margin-top: 12px !important;
+        }
+
+        .excel-header-gray,
+        .matrix-table {
+            width: 100% !important;
+        }
+
+        .matrix-table {
+            font-size: 11px !important;
+        }
+
+        .matrix-table th,
+        .matrix-table td {
+            padding: 4px !important;
+            word-break: keep-all !important;
+        }
+
+        .guide-card {
+            padding: 16px !important;
+        }
+
+        .guide-title {
+            font-size: 21px !important;
+            word-break: keep-all !important;
+        }
+
+        .guide-copy {
+            font-size: 16px !important;
+            line-height: 1.65 !important;
+            word-break: keep-all !important;
+        }
+
+        .guide-subtitle {
+            font-size: 15px !important;
+        }
+
+        .guide-list {
+            font-size: 14px !important;
+            line-height: 2.0 !important;
+            word-break: keep-all !important;
+            padding-left: 20px !important;
+        }
+
+        .reality-title {
+            font-size: 16px !important;
+        }
+
+        .reality-item {
+            font-size: 14px !important;
+            line-height: 1.85 !important;
+            word-break: keep-all !important;
+        }
+    }
+
+    /* 다크모드 전용 보정 */
+    @media (prefers-color-scheme: dark) {
+        html, body,
+        [data-testid="stAppViewContainer"],
+        [data-testid="stHeader"],
+        [data-testid="stToolbar"] {
+            background-color: #0f172a !important;
+            color: #e5e7eb !important;
+        }
+
+        div.block-container {
+            background-color: #0f172a !important;
+        }
+
+        .common-info-box,
+        .guide-card,
+        .reality-box {
+            background-color: #111827 !important;
+            border-color: #334155 !important;
+            color: #e5e7eb !important;
+        }
+
+        .common-info-box > div,
+        .guide-title,
+        .reality-title {
+            color: #93c5fd !important;
+        }
+
+        .guide-copy,
+        .guide-subtitle,
+        .guide-list,
+        .reality-item {
+            color: #e5e7eb !important;
+        }
+
+        .common-table,
+        .pure-table,
+        .matrix-table {
+            background-color: #111827 !important;
+            color: #e5e7eb !important;
+        }
+
+        .common-table th,
+        .matrix-table th,
+        .pure-table th {
+            background-color: #0b3873 !important;
+            color: #ffffff !important;
+            border-color: #334155 !important;
+        }
+
+        .common-table td,
+        .matrix-table td,
+        .pure-table td {
+            background-color: #111827 !important;
+            color: #e5e7eb !important;
+            border-color: #334155 !important;
+        }
+
+        .common-table td[style*="color:#111"],
+        .common-table td[style*="color: #111"] {
+            color: #e5e7eb !important;
+        }
+
+        .bg-light {
+            background-color: #1e293b !important;
+        }
+
+        .text-blue {
+            color: #93c5fd !important;
+        }
+
+        .excel-header-gray {
+            background-color: #334155 !important;
+            color: #ffffff !important;
+        }
+
+        .excel-header-blue {
+            background-color: #0b3873 !important;
+            color: #ffffff !important;
+        }
+
+        .excel-green {
+            background-color: #14351f !important;
+            color: #bbf7d0 !important;
+            border-color: #2f855a !important;
+        }
+
+        .excel-red {
+            background-color: #3b1d1d !important;
+            color: #fecaca !important;
+            border-color: #b91c1c !important;
+        }
+
+        .td-highlight,
+        .rent-highlight {
+            background-color: #1f3a2d !important;
+            color: #bbf7d0 !important;
+            font-weight: bold !important;
+        }
+
+        .common-table:not(.client-condition-table) td::before,
+        .client-condition-table td::before {
+            background: #1e293b !important;
+            color: #93c5fd !important;
+        }
+
+        input, textarea, select,
+        [data-baseweb="input"] input,
+        [data-baseweb="textarea"] textarea {
+            background-color: #111827 !important;
+            color: #e5e7eb !important;
+            border-color: #334155 !important;
+        }
+
+        [data-testid="stSidebar"] {
+            background-color: #0b1220 !important;
+        }
+    }
+
     </style>
 """, unsafe_allow_html=True)
 
@@ -1119,276 +1412,255 @@ st.markdown("""
 
 </div>
 """, unsafe_allow_html=True)
-
 # ==========================================
-# [DARK MODE OVERRIDE - 최종 덮어쓰기]
+# [FORCED DARK THEME OVERRIDE - v3]
 # ==========================================
 st.markdown("""
 <style>
-@media (prefers-color-scheme: dark) {
+/* 강제 다크 적용: @media 제거 */
+html, body,
+.stApp,
+[data-testid="stAppViewContainer"],
+[data-testid="stMain"],
+[data-testid="stMainBlockContainer"],
+div.block-container {
+    background-color: #0b0f16 !important;
+    color: #eef3f8 !important;
+}
 
-    /* 앱 전체 배경 */
-    .stApp,
-    [data-testid="stAppViewContainer"],
-    [data-testid="stMain"],
-    [data-testid="stMainBlockContainer"] {
-        background-color: #0b0f16 !important;
-        color: #eef3f8 !important;
-    }
+/* 기본 텍스트 */
+.stMarkdown, .stMarkdown p, .stMarkdown div, .stMarkdown span,
+.stMarkdown li, .stMarkdown ol, .stMarkdown ul,
+label, p, span, div {
+    color: inherit;
+}
 
-    div.block-container {
-        background-color: #0b0f16 !important;
-    }
+/* 사이드바 */
+[data-testid="stSidebar"],
+[data-testid="stSidebarContent"] {
+    background-color: #111827 !important;
+    color: #eef3f8 !important;
+}
 
-    /* 기본 텍스트 */
-    .stMarkdown,
-    .stMarkdown p,
-    .stMarkdown div,
-    .stMarkdown span,
-    .stMarkdown li,
-    .stMarkdown ol,
-    .stMarkdown ul {
-        color: #eef3f8 !important;
-    }
+[data-testid="stSidebar"] label,
+[data-testid="stSidebar"] p,
+[data-testid="stSidebar"] span,
+[data-testid="stSidebar"] div {
+    color: #eef3f8 !important;
+}
 
-    /* 사이드바 */
-    [data-testid="stSidebar"],
-    [data-testid="stSidebarContent"] {
-        background-color: #111827 !important;
-        color: #eef3f8 !important;
-    }
+[data-testid="stSidebar"] input,
+[data-testid="stSidebar"] textarea,
+textarea,
+input {
+    background-color: #172235 !important;
+    color: #f8fafc !important;
+    border: 1px solid #334155 !important;
+}
 
-    [data-testid="stSidebar"] label,
-    [data-testid="stSidebar"] p,
-    [data-testid="stSidebar"] span,
-    [data-testid="stSidebar"] div {
-        color: #eef3f8 !important;
-    }
+textarea::placeholder,
+input::placeholder {
+    color: #94a3b8 !important;
+}
 
-    [data-testid="stSidebar"] input,
-    [data-testid="stSidebar"] textarea {
-        background-color: #1b2533 !important;
-        color: #f8fafc !important;
-        border: 1px solid #334155 !important;
-    }
+[data-testid="stSidebar"] button,
+button[kind="secondary"] {
+    background-color: #172235 !important;
+    color: #f8fafc !important;
+    border: 1px solid #334155 !important;
+}
 
-    [data-testid="stSidebar"] button {
-        background-color: #172235 !important;
-        color: #f8fafc !important;
-        border: 1px solid #334155 !important;
-    }
+/* 큰 박스/카드 */
+.common-info-box,
+.guide-card,
+.reality-box,
+.capture-box {
+    background-color: #111827 !important;
+    border: 1px solid #2f3b4c !important;
+    color: #eef3f8 !important;
+    box-shadow: none !important;
+}
 
-    /* 입력창 */
-    textarea,
-    input {
-        background-color: #111827 !important;
-        color: #f8fafc !important;
-        border-color: #334155 !important;
-    }
+.common-info-box * ,
+.guide-card * ,
+.reality-box * ,
+.capture-box * {
+    color: #eef3f8 !important;
+}
 
-    textarea::placeholder,
-    input::placeholder {
-        color: #94a3b8 !important;
-    }
+.common-info-box > div:first-child,
+.guide-title {
+    color: #9cc7ff !important;
+}
 
-    /* 공통 박스류 */
-    .common-info-box,
-    .guide-card,
-    .reality-box,
-    .capture-box {
-        background-color: #111827 !important;
-        border: 1px solid #2f3b4c !important;
-        color: #eef3f8 !important;
-        box-shadow: none !important;
-    }
+.reality-box {
+    background-color: #172235 !important;
+    border-color: #344255 !important;
+}
 
-    .common-info-box > div,
-    .guide-title,
-    .guide-copy,
-    .guide-subtitle,
-    .reality-title,
-    .reality-item {
-        color: #eef3f8 !important;
-    }
+/* 헤더 */
+.excel-header-blue {
+    background-color: #0b3f7a !important;
+    color: #ffffff !important;
+    border: 1px solid #2f5f99 !important;
+}
 
-    .common-info-box > div:first-child,
-    .guide-title {
-        color: #9cc7ff !important;
-    }
+.excel-header-gray {
+    background-color: #263241 !important;
+    color: #ffffff !important;
+    border: 1px solid #3c4654 !important;
+}
 
-    .reality-box {
-        background-color: #172235 !important;
-        border-color: #344255 !important;
-    }
+/* 테이블 전체 */
+table,
+.common-table,
+.pure-table,
+.matrix-table,
+.client-condition-table {
+    background-color: #0f141d !important;
+    color: #eef3f8 !important;
+    border-collapse: collapse !important;
+}
 
-    /* 헤더 */
-    .excel-header-blue {
-        background-color: #0b3f7a !important;
-        color: #ffffff !important;
-        border: 1px solid #2f5f99 !important;
-    }
+.common-table th,
+.pure-table th,
+.matrix-table th,
+.client-condition-table th,
+th {
+    background-color: #0b3f7a !important;
+    color: #ffffff !important;
+    border: 1px solid #526173 !important;
+}
 
-    .excel-header-gray {
-        background-color: #263241 !important;
-        color: #ffffff !important;
-        border: 1px solid #3c4654 !important;
-    }
+.common-table td,
+.pure-table td,
+.matrix-table td,
+.client-condition-table td,
+td {
+    background-color: #0f141d !important;
+    color: #eef3f8 !important;
+    border: 1px solid #526173 !important;
+}
 
-    /* 테이블 공통 */
-    table,
-    .common-table,
-    .pure-table,
-    .matrix-table,
-    .client-condition-table {
-        background-color: #0f141d !important;
-        color: #eef3f8 !important;
-        border-collapse: collapse !important;
-    }
+/* inline style 라이트 색 강제 제거 */
+td[style*="background:#ddebf7"],
+td[style*="background: #ddebf7"],
+td[style*="background-color:#ddebf7"],
+td[style*="background-color: #ddebf7"],
+th[style*="background:#ddebf7"],
+th[style*="background: #ddebf7"],
+th[style*="background-color:#ddebf7"],
+th[style*="background-color: #ddebf7"] {
+    background-color: #1b2533 !important;
+    color: #dbeafe !important;
+    border-color: #526173 !important;
+}
 
-    .common-table th,
-    .pure-table th,
-    .matrix-table th,
-    .client-condition-table th {
-        background-color: #0b3f7a !important;
-        color: #ffffff !important;
-        border: 1px solid #526173 !important;
-    }
+td[style*="background:#0b3873"],
+td[style*="background: #0b3873"],
+td[style*="background-color:#0b3873"],
+td[style*="background-color: #0b3873"] {
+    background-color: #0b3f7a !important;
+    color: #ffffff !important;
+    border-color: #526173 !important;
+}
 
-    .common-table td,
-    .pure-table td,
-    .matrix-table td,
-    .client-condition-table td {
-        background-color: #0f141d !important;
-        color: #eef3f8 !important;
-        border: 1px solid #526173 !important;
-    }
+td[style*="background:#6b8e23"],
+td[style*="background: #6b8e23"],
+td[style*="background-color:#6b8e23"],
+td[style*="background-color: #6b8e23"] {
+    background-color: #42691c !important;
+    color: #ffffff !important;
+    border-color: #526173 !important;
+}
 
-    /* inline style로 박힌 라이트 셀 강제 제거 */
-    td[style*="background:#ddebf7"],
-    td[style*="background: #ddebf7"],
-    td[style*="background-color:#ddebf7"],
-    td[style*="background-color: #ddebf7"],
-    th[style*="background:#ddebf7"],
-    th[style*="background: #ddebf7"],
-    th[style*="background-color:#ddebf7"],
-    th[style*="background-color: #ddebf7"] {
-        background-color: #1b2533 !important;
-        color: #e8f0f8 !important;
-        border-color: #526173 !important;
-    }
+/* 할부·렌트·리스 비교표: 항목열 */
+.matrix-table td:nth-child(2) {
+    background-color: #1b2533 !important;
+    color: #dbeafe !important;
+    font-weight: 800 !important;
+}
 
-    td[style*="background:#0b3873"],
-    td[style*="background: #0b3873"],
-    td[style*="background-color:#0b3873"],
-    td[style*="background-color: #0b3873"] {
-        background-color: #0b3f7a !important;
-        color: #ffffff !important;
-        border-color: #526173 !important;
-    }
+/* 일반 값 셀 */
+.matrix-table td:nth-child(n+3),
+.pure-table td:nth-child(n+2),
+.common-table td,
+.client-condition-table td {
+    background-color: #0f141d !important;
+    color: #eef3f8 !important;
+}
 
-    td[style*="background:#6b8e23"],
-    td[style*="background: #6b8e23"],
-    td[style*="background-color:#6b8e23"],
-    td[style*="background-color: #6b8e23"] {
-        background-color: #42691c !important;
-        color: #ffffff !important;
-        border-color: #526173 !important;
-    }
+/* 공통조건/조건설정 표 안의 헤더성 행 */
+.common-table tbody th,
+.common-table tr:nth-child(2) th,
+.client-condition-table th {
+    background-color: #1b2533 !important;
+    color: #9cc7ff !important;
+}
 
-    /* 비교표 항목열 강제 다크화 */
-    .matrix-table td:nth-child(2) {
-        background-color: #1b2533 !important;
-        color: #e8f0f8 !important;
-        font-weight: 700 !important;
-    }
+/* 라이트/합계/포함 셀 */
+.bg-light,
+tr.bg-light td,
+.pure-table tr.bg-light td,
+.matrix-table tr.bg-light td,
+td.bg-light,
+td[style*="background-color:#e9ecef"],
+td[style*="background-color: #e9ecef"] {
+    background-color: #172235 !important;
+    color: #eef3f8 !important;
+}
 
-    /* 일반 값 셀 */
-    .matrix-table td:nth-child(n+3),
-    .pure-table td:nth-child(n+2),
-    .common-table td,
-    .client-condition-table td {
-        background-color: #0f141d !important;
-        color: #eef3f8 !important;
-    }
+.text-blue,
+td.text-blue,
+.bg-light.text-blue {
+    color: #9cc7ff !important;
+    background-color: #172235 !important;
+    font-weight: 800 !important;
+}
 
-    /* 합계/라이트 클래스 */
-    .bg-light,
-    tr.bg-light td,
-    .pure-table tr.bg-light td,
-    .matrix-table tr.bg-light td,
-    td.bg-light {
-        background-color: #172235 !important;
-        color: #eef3f8 !important;
-    }
+/* 하이라이트 */
+.td-highlight,
+.rent-highlight,
+td.td-highlight,
+td.rent-highlight,
+tr.td-highlight td,
+tr.rent-highlight td {
+    background-color: #20351f !important;
+    color: #c8f7c5 !important;
+    font-weight: 800 !important;
+}
 
-    .text-blue,
-    td.text-blue,
-    .bg-light.text-blue {
-        color: #9cc7ff !important;
-        background-color: #172235 !important;
-        font-weight: 800 !important;
-    }
+/* 결과 박스 */
+.excel-green {
+    background-color: #17351d !important;
+    color: #c8f7c5 !important;
+    border-color: #3f7a48 !important;
+}
 
-    /* 하이라이트 */
-    .td-highlight,
-    .rent-highlight,
-    td.td-highlight,
-    td.rent-highlight,
-    tr.td-highlight td,
-    tr.rent-highlight td {
-        background-color: #20351f !important;
-        color: #c8f7c5 !important;
-        font-weight: 800 !important;
-    }
+.excel-red {
+    background-color: #3a1d16 !important;
+    color: #ffd2c2 !important;
+    border-color: #8a4b38 !important;
+}
 
-    /* 결과 박스 */
-    .excel-green {
-        background-color: #17351d !important;
-        color: #c8f7c5 !important;
-        border-color: #3f7a48 !important;
-    }
+/* 빨간 보조 텍스트는 유지 */
+span[style*="color:red"],
+div[style*="color:red"],
+span[style*="color:#ff3b30"],
+div[style*="color:#ff3b30"] {
+    color: #ff6b6b !important;
+}
 
-    .excel-red {
-        background-color: #3a1d16 !important;
-        color: #ffd2c2 !important;
-        border-color: #8a4b38 !important;
-    }
+/* 모바일 2열 라벨 */
+.common-table td::before,
+.client-condition-table td::before {
+    background-color: #1b2533 !important;
+    color: #9cc7ff !important;
+    border-color: #526173 !important;
+}
 
-    /* 빨간 보조 텍스트 유지 */
-    span[style*="color:red"],
-    div[style*="color:red"],
-    span[style*="color:#ff3b30"],
-    div[style*="color:#ff3b30"] {
-        color: #ff6b6b !important;
-    }
-
-    /* 모바일 2열 변환 라벨 */
-    .common-table td::before,
-    .client-condition-table td::before {
-        background-color: #1b2533 !important;
-        color: #9cc7ff !important;
-        border-color: #526173 !important;
-    }
-
-    /* 선택 가이드 */
-    .guide-card {
-        background-color: #111827 !important;
-    }
-
-    .guide-card li,
-    .guide-card b,
-    .guide-card div {
-        color: #eef3f8 !important;
-    }
-
-    .reality-box {
-        background-color: #172235 !important;
-    }
-
-    /* 링크/아이콘 */
-    a {
-        color: #9cc7ff !important;
-    }
+a {
+    color: #9cc7ff !important;
 }
 </style>
 """, unsafe_allow_html=True)
