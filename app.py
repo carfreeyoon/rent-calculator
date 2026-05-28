@@ -369,8 +369,8 @@ st.markdown("""
     }
 
     html.caprio-dark .compare-summary-table .compare-item {
-        background:#22364d !important;
-        background-color:#22364d !important;
+        background:#1f3146 !important;
+        background-color:#1f3146 !important;
         color:#ffffff !important;
         font-weight:800 !important;
     }
