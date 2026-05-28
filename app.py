@@ -1,9 +1,22 @@
 import streamlit as st
 import re
+import json, base64
+from urllib.parse import quote, unquote
+from streamlit import query_params
 
 st.set_page_config(page_title="카프리오 비교 프로그램", layout="wide")
 
 APP_PASSWORD = st.secrets.get("APP_PASSWORD", "")
+
+params = st.query_params
+client_mode = params.get("view") == "client"
+
+def encode_share(data):
+    return quote(base64.urlsafe_b64encode(json.dumps(data, ensure_ascii=False).encode()).decode())
+
+def decode_share(q):
+    return json.loads(base64.urlsafe_b64decode(unquote(q).encode()).decode())
+
 
 CHO = ["ㄱ","ㄲ","ㄴ","ㄷ","ㄸ","ㄹ","ㅁ","ㅂ","ㅃ","ㅅ","ㅆ","ㅇ","ㅈ","ㅉ","ㅊ","ㅋ","ㅌ","ㅍ","ㅎ"]
 JUNG = ["ㅏ","ㅐ","ㅑ","ㅒ","ㅓ","ㅔ","ㅕ","ㅖ","ㅗ","ㅘ","ㅙ","ㅚ","ㅛ","ㅜ","ㅝ","ㅞ","ㅟ","ㅠ","ㅡ","ㅢ","ㅣ"]
@@ -32,14 +45,14 @@ def hangul_to_eng(text):
             result += ch
     return result.lower()
 
-if not APP_PASSWORD:
+if not client_mode and not APP_PASSWORD:
     st.warning("APP_PASSWORD가 설정되지 않았습니다.")
     st.stop()
 
-if "auth_ok" not in st.session_state:
+if not client_mode and "auth_ok" not in st.session_state:
     st.session_state.auth_ok = False
 
-if not st.session_state.auth_ok:
+if not client_mode and not st.session_state.auth_ok:
     input_password = st.text_input(
         "",
         type="password",
@@ -94,64 +107,34 @@ st.markdown("""
     .font-bold { font-weight: bold; }
 
 
+    /* 모바일 전용 보정 */
+    @media (max-width: 768px) {
+
         /* 공통 조건 표: 모바일에서는 2열 정보표처럼 정리 */
         .common-info-box {
             padding: 12px !important;
             margin-bottom: 16px !important;
         }
 
-        .common-table {
+        .common-table,
+        .common-table thead,
+        .common-table tbody,
+        .common-table tr,
+        .common-table th,
+        .common-table td {
             display: block !important;
             width: 100% !important;
-            border-collapse: collapse !important;
+            box-sizing: border-box !important;
         }
 
         .common-table thead {
             display: none !important;
         }
 
-        .common-table tbody {
-            display: block !important;
-            width: 100% !important;
-        }
-
         .common-table tr {
-            display: block !important;
-            width: 100% !important;
-        }
-
-        .common-table tr:nth-child(2) {
-            display: none !important;
-        }
-
-        .common-table td,
-        .common-table th {
-            display: flex !important;
-            align-items: center !important;
-            width: 100% !important;
-            min-height: 42px !important;
-            padding: 0 !important;
-            border: 1px solid #dee2e6 !important;
-            box-sizing: border-box !important;
-            text-align: left !important;
-            font-size: 13px !important;
-            word-break: keep-all !important;
-        }
-
-        .common-table td::before {
-            width: 92px !important;
-            min-width: 92px !important;
-            align-self: stretch !important;
-            display: flex !important;
-            align-items: center !important;
-            justify-content: center !important;
-            padding: 8px !important;
-            margin-right: 10px !important;
-            background: #f1f3f5 !important;
-            color: #0b3873 !important;
-            font-weight: 800 !important;
-            border-right: 1px solid #dee2e6 !important;
-            box-sizing: border-box !important;
+            display: grid !important;
+            grid-template-columns: 82px 1fr !important;
+            border-bottom: 1px solid #dee2e6 !important;
         }
 
         .common-table tr:first-child td:nth-child(1)::before { content: "차량명"; }
@@ -160,13 +143,39 @@ st.markdown("""
         .common-table tr:first-child td:nth-child(4)::before { content: "계약기간"; }
         .common-table tr:first-child td:nth-child(5)::before { content: "약정거리"; }
 
+        .common-table tr:nth-child(2) {
+            display: none !important;
+        }
+
         .common-table tr:nth-child(3) td:nth-child(1)::before { content: "유종"; }
         .common-table tr:nth-child(3) td:nth-child(2)::before { content: "CC"; }
+
+        .common-table td {
+            display: grid !important;
+            grid-template-columns: 82px 1fr !important;
+            align-items: center !important;
+            text-align: left !important;
+            padding: 8px !important;
+            min-height: 38px !important;
+            font-size: 13px !important;
+            word-break: keep-all !important;
+            border-bottom: 1px solid #dee2e6 !important;
+        }
+
+        .common-table td::before {
+            font-weight: 800 !important;
+            color: #0b3873 !important;
+            background: #f1f3f5 !important;
+            padding: 8px !important;
+            margin: -8px 8px -8px -8px !important;
+            height: 100% !important;
+            display: flex !important;
+            align-items: center !important;
+        }
 
         .common-table td:empty {
             display: none !important;
         }
-        
 
         /* 결과 박스와 다음 파란 헤더 간격 분리 */
         .excel-green,
@@ -234,6 +243,15 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
+
+# 고객 공유 데이터 로드
+if client_mode and params.get("q"):
+    try:
+        shared = decode_share(params.get("q"))
+    except:
+        st.error("공유 견적을 불러올 수 없습니다.")
+        st.stop()
+
 # 초기 기본값 설정
 car_name = "기아 카니발 가솔린 1.6 터보 하이브리드 2WD 7인승 노블레스"
 car_option = "-"
@@ -250,10 +268,32 @@ car_shape = "하이브리드"
 installment_resale_pct = 50 # 할부 잔존가치(매각율) 기본값
 rent_resale_pct = 58       # 렌트 고정 잔존가치(기본값 58%)
 
+
+if client_mode and params.get("q"):
+    car_name = shared.get("car_name", car_name)
+    car_option = shared.get("car_option", car_option)
+    car_price = shared.get("car_price", car_price)
+    months = shared.get("months", months)
+    mileage = shared.get("mileage", mileage)
+    rent_monthly_pay = shared.get("rent_monthly_pay", rent_monthly_pay)
+    rent_deposit = shared.get("rent_deposit", rent_deposit)
+    cc_text = shared.get("cc_text", cc_text)
+    cc_raw_text = shared.get("cc_raw_text", cc_raw_text)
+    fuel_text = shared.get("fuel_text", fuel_text)
+    passenger_count = shared.get("passenger_count", passenger_count)
+    car_shape = shared.get("car_shape", car_shape)
+    installment_resale_pct = shared.get("installment_resale_pct", installment_resale_pct)
+    insurance_annual = shared.get("insurance_annual", 1000000)
+    installment_rate = shared.get("installment_rate", 5.0)
+    installment_prepaid = shared.get("installment_prepaid", 10000000)
+    is_corporate = shared.get("is_corporate", False)
+    rent_resale_pct = shared.get("rent_resale_pct", rent_resale_pct)
+
 # ==========================================
 # [SIDEBAR] 조건 설정 구역
 # ==========================================
-st.sidebar.header("📋 조건 설정")
+if not client_mode:
+    st.sidebar.header("📋 조건 설정")
 
 is_corporate = st.sidebar.checkbox("🏢 법인 고객 여부", value=False)
 
@@ -421,7 +461,9 @@ if st.session_state.pending_quote_input is not None:
     st.session_state.pending_quote_input = None
 
 
-raw_data = st.text_area(
+raw_data = ""
+if not client_mode:
+    raw_data = st.text_area(
     "📋 렌트 견적 복사 붙여넣기",
     placeholder="견적 텍스트를 입력하세요.",
     height=80,
@@ -496,7 +538,7 @@ if st.sidebar.button("➕ 현재 견적 저장"):
         st.session_state.quote_history = st.session_state.quote_history[:5]
         st.rerun()
 
-if st.session_state.quote_history:
+if st.session_state.quote_history and not client_mode:
 
     for idx, item in enumerate(st.session_state.quote_history):
 
@@ -662,6 +704,21 @@ st.markdown(f"""
 """, unsafe_allow_html=True)
 
 # ==========================================
+if client_mode:
+    st.markdown(f"""
+    <div class='common-info-box'>
+    <div style='font-size:15px;font-weight:bold;margin-bottom:10px;color:#0b3873;'>📋 견적 적용 조건</div>
+    <table class='common-table'>
+    <tr><td>법인 여부</td><td>{'법인' if is_corporate else '일반'}</td></tr>
+    <tr><td>할부 선납금</td><td>{installment_prepaid:,} 원</td></tr>
+    <tr><td>할부 금리</td><td>{installment_rate}%</td></tr>
+    <tr><td>연 보험료</td><td>{insurance_annual:,} 원</td></tr>
+    <tr><td>할부 잔존가치</td><td>{installment_resale_pct}%</td></tr>
+    <tr><td>렌트 잔존가치</td><td>{rent_resale_pct}%</td></tr>
+    </table></div>
+    """, unsafe_allow_html=True)
+
+
 # [📊 MAIN VISUAL] 대칭형 비교 테이블
 # ==========================================
 view_col1, view_col2 = st.columns(2)
@@ -809,6 +866,21 @@ with m_col4:
     """, unsafe_allow_html=True)
 
 
+
+share_payload = {
+"car_name":car_name,"car_option":car_option,"car_price":car_price,"months":months,"mileage":mileage,
+"rent_monthly_pay":rent_monthly_pay,"rent_deposit":rent_deposit,"cc_text":cc_text,"cc_raw_text":cc_raw_text,
+"fuel_text":fuel_text,"passenger_count":passenger_count,"car_shape":car_shape,
+"installment_resale_pct":installment_resale_pct,"insurance_annual":insurance_annual,
+"installment_rate":installment_rate,"installment_prepaid":installment_prepaid,
+"is_corporate":is_corporate,"rent_resale_pct":rent_resale_pct}
+q=encode_share(share_payload)
+short_name=(car_name[:15]+'...' if len(car_name)>15 else car_name)
+st.sidebar.markdown('---')
+st.sidebar.markdown('### 🔗 고객 공유')
+st.sidebar.caption(f'{short_name} | {months}개월 | {mileage}')
+share_url=f'?view=client&q={q}'
+st.sidebar.code(share_url)
 
 # ==========================================
 # [할부 · 렌트 · 리스 비교표]
@@ -1060,4 +1132,6 @@ st.markdown("""
 </div>
 
 </div>
-""", unsafe_allow_html=True)
+""", unsafe_allow_html=True
+
+)
