@@ -1211,6 +1211,20 @@ st.markdown("""
         -webkit-text-fill-color: #111827 !important;
     }
 
+    html.caprio-light div[data-baseweb="tooltip"],
+    html:not(.caprio-dark) div[data-baseweb="tooltip"] {
+        background-color: #0b0f17 !important;
+        color: #ffffff !important;
+        border-radius: 6px !important;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.25) !important;
+    }
+
+    html.caprio-light div[data-baseweb="tooltip"] *,
+    html:not(.caprio-dark) div[data-baseweb="tooltip"] * {
+        color: #ffffff !important;
+        -webkit-text-fill-color: #ffffff !important;
+    }
+
     html.caprio-light div[data-testid="stFormSubmitButton"] button p,
     html:not(.caprio-dark) div[data-testid="stFormSubmitButton"] button p {
         color: #111827 !important;
