@@ -381,7 +381,7 @@ def render_share_section_selector(current_sections):
 
     return collect_visible_sections_from_state()
 
-def render_quote_history_area(raw_data, car_name, rent_monthly_pay, months, mileage, rent_resale_pct, rent_deposit, make_share_url_func, visible_sections):
+def render_quote_history_area(raw_data, car_name, rent_monthly_pay, months, mileage, rent_resale_pct, make_share_url_func, visible_sections):
     st.markdown('<div class="quote-history-panel">', unsafe_allow_html=True)
     st.markdown('<div class="quote-history-title">🕘 견적 저장 / 이력</div>', unsafe_allow_html=True)
 
@@ -412,8 +412,6 @@ def render_quote_history_area(raw_data, car_name, rent_monthly_pay, months, mile
                     "quick_edit": {
                         "rent_monthly_pay": rent_monthly_pay,
                         "rent_resale_pct": rent_resale_pct,
-                        "rent_deposit": rent_deposit,
-                        "rent_deposit_mode": "원",
                         "months": months,
                         "mileage": mileage,
                     },
@@ -2387,7 +2385,7 @@ if not IS_CLIENT_VIEW:
     with control_col:
         visible_sections = render_share_section_selector(visible_sections)
     with history_col:
-        render_quote_history_area(pre_raw_data, car_name, rent_monthly_pay, months, mileage, rent_resale_pct, rent_deposit, make_share_url, visible_sections)
+        render_quote_history_area(pre_raw_data, car_name, rent_monthly_pay, months, mileage, rent_resale_pct, make_share_url, visible_sections)
 
     # ==========================================
     # [TOP MAIN] 타사 견적 파싱 구역
@@ -2432,7 +2430,7 @@ if not IS_CLIENT_VIEW:
     # ==========================================
     # [렌트 조건 빠른 수정]
     # ==========================================
-    quick_edit_source_signature = raw_data.strip() if raw_data.strip() else f"{car_name}|{car_price}|{months}|{mileage}|{rent_monthly_pay}|{rent_resale_pct}|{rent_deposit}"
+    quick_edit_source_signature = raw_data.strip() if raw_data.strip() else f"{car_name}|{car_price}|{months}|{mileage}|{rent_monthly_pay}|{rent_resale_pct}"
 
     def quick_money_to_int(value):
         value_text = str(value).replace(",", "").strip()
@@ -2449,8 +2447,6 @@ if not IS_CLIENT_VIEW:
         st.session_state.quick_rent_resale_pct = f"{rent_resale_pct:g}"
         st.session_state.quick_months = int(months)
         st.session_state.quick_mileage = mileage
-        st.session_state.quick_rent_deposit_mode = "원"
-        st.session_state.quick_rent_deposit_value = f"{rent_deposit:,}"
         st.session_state.quick_edit_applied = False
         st.session_state.quick_edit_source_signature = quick_edit_source_signature
 
@@ -2460,8 +2456,6 @@ if not IS_CLIENT_VIEW:
         st.session_state.quick_rent_resale_pct = f"{float(pending_quick_edit.get('rent_resale_pct', rent_resale_pct)):g}"
         st.session_state.quick_months = int(pending_quick_edit.get("months", months))
         st.session_state.quick_mileage = pending_quick_edit.get("mileage", mileage)
-        st.session_state.quick_rent_deposit_mode = pending_quick_edit.get("rent_deposit_mode", "원")
-        st.session_state.quick_rent_deposit_value = f"{int(pending_quick_edit.get('rent_deposit', rent_deposit)):,}"
         st.session_state.quick_edit_applied = True
         st.session_state.pending_quick_edit = None
 
@@ -2481,7 +2475,7 @@ if not IS_CLIENT_VIEW:
     with st.form("quick_rent_edit_form"):
         st.markdown("#### 🛠️ 렌트 조건 빠른 수정")
 
-        quick_col1, quick_col2, quick_col3, quick_col4, quick_col5, quick_col6, quick_col7 = st.columns([1.15, 1.05, 0.85, 0.95, 0.75, 1.0, 0.65])
+        quick_col1, quick_col2, quick_col3, quick_col4, quick_col5 = st.columns([1.2, 1.1, 0.9, 1.0, 0.7])
 
         with quick_col1:
             st.text_input("월납입", key="quick_rent_monthly_pay")
@@ -2504,17 +2498,6 @@ if not IS_CLIENT_VIEW:
             )
 
         with quick_col5:
-            st.selectbox(
-                "선납방식",
-                ["원", "%"],
-                key="quick_rent_deposit_mode"
-            )
-
-        with quick_col6:
-            quick_deposit_label = "선납금(%)" if st.session_state.get("quick_rent_deposit_mode") == "%" else "선납금(원)"
-            st.text_input(quick_deposit_label, key="quick_rent_deposit_value")
-
-        with quick_col7:
             st.markdown("<div style='height:28px;'></div>", unsafe_allow_html=True)
             quick_edit_submitted = st.form_submit_button("적용", use_container_width=True)
 
@@ -2527,10 +2510,6 @@ if not IS_CLIENT_VIEW:
     if st.session_state.get("quick_edit_applied"):
         rent_monthly_pay = quick_money_to_int(st.session_state.quick_rent_monthly_pay)
         rent_resale_pct = quick_pct_to_float(st.session_state.quick_rent_resale_pct, rent_resale_pct)
-        if st.session_state.get("quick_rent_deposit_mode") == "%":
-            rent_deposit = int(car_price * (quick_pct_to_float(st.session_state.quick_rent_deposit_value, 0) / 100))
-        else:
-            rent_deposit = quick_money_to_int(st.session_state.quick_rent_deposit_value)
         months = int(st.session_state.quick_months)
         mileage = st.session_state.quick_mileage
 
