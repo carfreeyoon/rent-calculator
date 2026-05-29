@@ -145,6 +145,11 @@ def format_option_html(option_text):
     return '<div class="option-stack">' + ''.join(formatted_parts) + '</div>'
 
 
+def render_output_section_gap():
+    """모바일 출력 섹션 간격 통일용. PC에는 영향을 주지 않음."""
+    st.markdown('<div class="output-section-gap"></div>', unsafe_allow_html=True)
+
+
 def render_share_section_selector(current_sections):
     current_sections = normalize_visible_sections(current_sections)
 
@@ -1894,6 +1899,73 @@ st.markdown("""
             margin-top: 8px !important;
         }
     }
+
+
+    /* [FINAL] MO 출력 섹션 간격 통일: 큰 섹션 사이 전용 간격 */
+    .output-section-gap {
+        display: none;
+        height: 0;
+        line-height: 0;
+        margin: 0;
+        padding: 0;
+    }
+
+    @media (max-width: 768px) {
+        .output-section-gap {
+            display: block !important;
+            height: 26px !important;
+            min-height: 26px !important;
+            line-height: 0 !important;
+            margin: 0 !important;
+            padding: 0 !important;
+        }
+
+        .mobile-compare-gap {
+            display: block !important;
+            height: 26px !important;
+            min-height: 26px !important;
+            line-height: 0 !important;
+            margin: 0 !important;
+            padding: 0 !important;
+        }
+
+        .excel-header-blue,
+        .excel-header-gray {
+            margin-top: 0 !important;
+            margin-bottom: 8px !important;
+        }
+
+        .matrix-table,
+        .pure-table,
+        .compare-summary-table {
+            margin-bottom: 0 !important;
+        }
+    }
+
+
+
+    /* [FINAL] MO 공유 체크: 대분류 아래 소항목은 한 줄 흐름으로 압축 */
+    @media (max-width: 768px) {
+        .share-selector-anchor + div[data-testid="stHorizontalBlock"] div[data-testid="stCheckbox"] {
+            margin-bottom: 8px !important;
+        }
+
+        .share-selector-anchor + div[data-testid="stHorizontalBlock"] > div {
+            border-bottom: 1px solid #d6e0eb !important;
+            padding-bottom: 10px !important;
+            margin-bottom: 10px !important;
+        }
+
+        html.caprio-dark .share-selector-anchor + div[data-testid="stHorizontalBlock"] > div {
+            border-bottom-color: #46566d !important;
+        }
+
+        .share-selector-anchor + div[data-testid="stHorizontalBlock"] > div:first-child {
+            border-bottom: 0 !important;
+            padding-bottom: 0 !important;
+        }
+    }
+
     </style>
 """, unsafe_allow_html=True)
 
@@ -2599,7 +2671,7 @@ if visible_sections.get("common", True):
 # 고객/영업자 할부 조건 설정표 노출
 if visible_sections.get("installment_condition", True):
     st.markdown(f"""
-        <div class="common-info-box" style="margin-top:-8px; margin-bottom:20px;">
+        <div class="common-info-box">
             <div style="font-size:15px; font-weight:bold; margin-bottom:10px; color:#0b3873;">
                 📋 할부 조건 설정
             </div>
@@ -2638,6 +2710,8 @@ if visible_sections.get("summary", True) and visible_sections.get("summary_takeo
     selected_summary_views.append("takeover")
 
 if selected_summary_views:
+    if visible_sections.get("common", True) or visible_sections.get("installment_condition", True):
+        render_output_section_gap()
     summary_cols = st.columns(len(selected_summary_views))
     summary_col_map = dict(zip(selected_summary_views, summary_cols))
 
@@ -2706,6 +2780,8 @@ if selected_summary_views:
                 st.markdown(f'<div class="excel-red">할부 인수가 총 {abs(diff_ins):,}원 더 유리합니다.</div>', unsafe_allow_html=True)
 
 if visible_sections.get("rate_table", True):
+    if (visible_sections.get("common", True) or visible_sections.get("installment_condition", True) or selected_summary_views):
+        render_output_section_gap()
     # ==========================================
     # [📊 BOTTOM] 검증 요율표 구역
     # ==========================================
@@ -2802,7 +2878,8 @@ if visible_sections.get("compare", True):
         selected_compare_methods.append("lease")
 
     if len(selected_compare_methods) >= 2:
-        st.markdown('<div class="section-spacer-soft"></div>', unsafe_allow_html=True)
+        if (visible_sections.get("common", True) or visible_sections.get("installment_condition", True) or selected_summary_views or visible_sections.get("rate_table", True)):
+            render_output_section_gap()
         st.markdown('<div class="excel-header-gray compare-summary-title" style="width:55%;">🚗 할부 · 렌트 · 리스 비교표</div>', unsafe_allow_html=True)
         st.markdown(render_compare_summary_table(selected_compare_methods), unsafe_allow_html=True)
 
@@ -2819,7 +2896,8 @@ if visible_sections.get("guide", True):
         selected_guide_cards.append('<div class="guide-card">\n<div class="guide-title">✨ [이미지형] 리스</div>\n<div class="guide-copy">품격은 일반 번호판으로, 초기 비용은 리스로 합리적으로!</div>\n<div class="guide-subtitle">✅ 리스 체크리스트</div>\n<ol class="guide-list">\n<li>취등록세 초기 목돈 지출이 부담스러워요.</li>\n<li>하·허·호 대신 일반 번호판을 원해요.</li>\n<li>렌트보다 자차와 유사한 만족감을 원해요.</li>\n</ol>\n<div class="reality-box">\n<div class="reality-title">💡 현실 체크</div>\n<div class="reality-item">📉 <b>개인 보험요율 유지</b> : 무사고 경력이 길고 보험료가 낮다면 유리할 수 있어요.</div>\n<div class="reality-item">✨ <b>일반 번호판</b> : 자가용과 동일한 번호판을 유지해요.</div>\n<div class="reality-item">💰 <b>효율적 비용 구성</b> : 자동차세 포함 + 초기비용 부담을 낮출 수 있어요.</div>\n<div class="reality-item">💵 <b>세금 인상</b> : 재산세 등 세금 인상은 걱정하지 않으셔도 괜찮아요!</div>\n</div>\n<div class="match-card match-lease">\n<div class="match-icon">✨</div>\n<div>\n<div class="match-title">🔥 리스는 이런 경우 고민없이!</div>\n<ul class="match-list">\n<li>✔ 초기비용은 줄이고 싶고</li>\n<li>✔ 무사고 경력이 길어 보험료가 낮으며</li>\n<li>✔ 할부보다 대출 영향은 줄이고 싶다면</li>\n</ul>\n<div class="match-result">→ 리스가 잘 맞아요.</div>\n</div>\n</div>\n</div>')
 
     if selected_guide_cards:
-        st.markdown('<div class="section-spacer-soft"></div>', unsafe_allow_html=True)
+        if (visible_sections.get("common", True) or visible_sections.get("installment_condition", True) or selected_summary_views or visible_sections.get("rate_table", True) or (visible_sections.get("compare", True) and len(selected_compare_methods) >= 2)):
+            render_output_section_gap()
         st.markdown('<div class="excel-header-gray">🚗 나에게 맞는 방식 선택 가이드</div>', unsafe_allow_html=True)
         guide_html = """
 <style>
