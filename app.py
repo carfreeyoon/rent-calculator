@@ -1469,14 +1469,20 @@ st.markdown("""
         box-shadow: 0 7px 18px rgba(0,0,0,0.28) !important;
     }
 
-    /* 서로 다른 큰 섹션 사이만 미세 간격 추가 */
+    /* 서로 다른 큰 섹션 사이 간격 통일 */
     .section-spacer-soft {
-        height: 16px;
+        height: 14px !important;
+        line-height: 0 !important;
+        margin: 0 !important;
+        padding: 0 !important;
     }
 
     @media (max-width: 768px) {
         .section-spacer-soft {
-            height: 16px;
+            height: 12px !important;
+            line-height: 0 !important;
+            margin: 0 !important;
+            padding: 0 !important;
         }
     }
 
@@ -1878,25 +1884,38 @@ st.markdown("""
     }
     
 
-    /* [PATCH] MO 섹션 간격 통일: 모든 섹션 간격을 동일 기준으로 축소 */
+    /* [PATCH] MO 섹션 간격 통일: 섹션별 중복 여백 제거 + 단일 간격 적용 */
     @media (max-width: 768px) {
         .excel-header-blue,
         .excel-header-gray {
-            margin-top: 10px !important;
+            margin-top: 0 !important;
             margin-bottom: 8px !important;
         }
 
         .mobile-compare-gap {
-            height: 10px !important;
+            height: 12px !important;
+            line-height: 0 !important;
+            margin: 0 !important;
+            padding: 0 !important;
         }
 
         .compare-card {
-            margin-top: 10px !important;
+            margin-top: 12px !important;
         }
 
         .common-info-box,
         .capture-box {
-            margin-bottom: 10px !important;
+            margin-bottom: 12px !important;
+        }
+
+        .matrix-table,
+        .pure-table,
+        .compare-summary-table {
+            margin-bottom: 0 !important;
+        }
+
+        .guide-wrap {
+            margin-top: 8px !important;
         }
     }
     </style>
@@ -2791,8 +2810,6 @@ if visible_sections.get("rate_table", True):
         """, unsafe_allow_html=True)
 
 
-
-    st.markdown('<div class="section-spacer-soft"></div>', unsafe_allow_html=True)
 
 # ==========================================
 # [할부 · 렌트 · 리스 비교표]
