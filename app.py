@@ -162,119 +162,94 @@ def render_share_section_selector(current_sections):
 
     def sync_children_to_parent(parent_key):
         child_keys = SHARE_SECTION_GROUPS.get(parent_key, [])
-        st.session_state[f"share_{parent_key}"] = any(
-            bool(st.session_state.get(f"share_{child_key}", False))
-            for child_key in child_keys
-        )
+        if child_keys:
+            st.session_state[f"share_{parent_key}"] = any(
+                bool(st.session_state.get(f"share_{child_key}", False))
+                for child_key in child_keys
+            )
 
     st.markdown("""
     <style>
-    .quote-history-panel {
-        margin-top: 0 !important;
-        padding-top: 0 !important;
-    }
-
-    .quote-history-title {
-        margin: 0 0 14px 0 !important;
-        padding: 0 !important;
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        font-size: 28px;
-        line-height: 1.15;
-        font-weight: 900;
-        color: var(--text-color, #111827);
-        letter-spacing: -0.04em;
-    }
-
-    html.caprio-dark .quote-history-title {
-        color: #f3f6fb !important;
-    }
-
+    /* ===== 고객 공유 항목 선택: PC/MO 분리형 최종 정리 ===== */
     .share-selector-anchor + div[data-testid="stHorizontalBlock"] {
         align-items: flex-start !important;
-        margin-top: 0 !important;
-        margin-bottom: 0 !important;
+        gap: 0 !important;
+        margin: 0 0 10px 0 !important;
+        padding: 0 !important;
     }
 
     .share-selector-anchor + div[data-testid="stHorizontalBlock"] > div {
-        padding-top: 0 !important;
+        padding: 0 10px !important;
+        box-sizing: border-box !important;
     }
 
-    .share-divider-line {
-        height: 1px;
-        background: #d8dee8;
-        width: 82%;
-        margin: 8px auto 10px auto;
-    }
-
-    html.caprio-dark .share-divider-line {
-        background: #46566d;
-    }
-
-    .share-mini-note {
-        color: #6b7280;
-        font-size: 11px;
-        line-height: 1.2;
-        margin-top: 6px;
-        text-align: center;
-        white-space: nowrap;
-        width: 100%;
-    }
-
-    html.caprio-dark .share-mini-note {
-        color: #b7c0cf !important;
-    }
-
-    .share-row-spacer {
-        height: 8px;
-    }
-
-    .share-selector-top-row div[data-testid="stButton"] button {
-        min-height: 46px !important;
-        height: 46px !important;
-        border-radius: 8px !important;
+    .share-selector-anchor + div[data-testid="stHorizontalBlock"] div[data-testid="stButton"] button {
+        min-height: 42px !important;
+        height: 42px !important;
+        border-radius: 7px !important;
+        background: #f8fafc !important;
+        border: 1px solid #d6e0eb !important;
+        color: #0f172a !important;
         font-weight: 800 !important;
-        background-color: #f4f7fb !important;
-        border: 1px solid #cfd8e6 !important;
-        color: #111827 !important;
-        -webkit-text-fill-color: #111827 !important;
+        box-shadow: none !important;
     }
 
-    html.caprio-dark .share-selector-top-row div[data-testid="stButton"] button {
-        background-color: #111827 !important;
+    html.caprio-dark .share-selector-anchor + div[data-testid="stHorizontalBlock"] div[data-testid="stButton"] button {
+        background: #131a24 !important;
         border-color: #46566d !important;
         color: #f3f6fb !important;
-        -webkit-text-fill-color: #f3f6fb !important;
     }
 
-    div[data-testid="stCheckbox"] {
-        margin: 0 0 9px 0 !important;
+    .share-selector-anchor + div[data-testid="stHorizontalBlock"] div[data-testid="stCheckbox"] {
+        margin: 0 0 10px 0 !important;
         padding: 0 !important;
     }
 
-    div[data-testid="stCheckbox"] label {
+    .share-selector-anchor + div[data-testid="stHorizontalBlock"] div[data-testid="stCheckbox"] label {
         min-height: 25px !important;
+        display: flex !important;
         align-items: center !important;
         justify-content: center !important;
+        gap: 7px !important;
         width: 100% !important;
-        display: flex !important;
-        gap: 6px !important;
+        padding: 0 !important;
     }
 
-    div[data-testid="stCheckbox"] [data-testid="stMarkdownContainer"] p {
-        font-weight: 800 !important;
+    .share-selector-anchor + div[data-testid="stHorizontalBlock"] div[data-testid="stCheckbox"] [data-testid="stMarkdownContainer"] p {
+        font-weight: 850 !important;
         font-size: 14px !important;
         line-height: 1.15 !important;
         margin: 0 !important;
         white-space: nowrap !important;
         text-align: center !important;
-    }
-
-    html.caprio-light div[data-testid="stCheckbox"] [data-testid="stMarkdownContainer"] p,
-    html:not(.caprio-dark) div[data-testid="stCheckbox"] [data-testid="stMarkdownContainer"] p {
         color: #111827 !important;
         -webkit-text-fill-color: #111827 !important;
+    }
+
+    html.caprio-dark .share-selector-anchor + div[data-testid="stHorizontalBlock"] div[data-testid="stCheckbox"] [data-testid="stMarkdownContainer"] p {
+        color: #f3f6fb !important;
+        -webkit-text-fill-color: #f3f6fb !important;
+    }
+
+    .share-group-divider {
+        width: 86%;
+        height: 1px;
+        background: #d6e0eb;
+        margin: 9px auto 18px auto;
+    }
+
+    html.caprio-dark .share-group-divider {
+        background: #46566d !important;
+    }
+
+    .share-mini-note {
+        width: 100%;
+        text-align: center;
+        font-size: 10px;
+        line-height: 1.2;
+        color: #8a95a8;
+        margin: 5px 0 0 0;
+        padding: 0;
     }
 
     /* 화이트 모드 체크 해제: 검정 방지, 회색 계열 */
@@ -284,107 +259,64 @@ def render_share_section_selector(current_sections):
     html:not(.caprio-dark) div[data-testid="stCheckbox"] div[data-baseweb="checkbox"][aria-checked="false"],
     html.caprio-light div[data-testid="stCheckbox"] label:has(input:not(:checked)) > div:first-child,
     html:not(.caprio-dark) div[data-testid="stCheckbox"] label:has(input:not(:checked)) > div:first-child,
-    html.caprio-light div[data-testid="stCheckbox"] label:has(input[aria-checked="false"]) > div:first-child,
-    html:not(.caprio-dark) div[data-testid="stCheckbox"] label:has(input[aria-checked="false"]) > div:first-child {
+    html.caprio-light div[data-testid="stCheckbox"] label:has(input:not(:checked)) span:first-child,
+    html:not(.caprio-dark) div[data-testid="stCheckbox"] label:has(input:not(:checked)) span:first-child {
         background-color: #cbd5e1 !important;
         border-color: #cbd5e1 !important;
         color: #64748b !important;
         fill: #64748b !important;
+        box-shadow: none !important;
     }
 
     html.caprio-light div[data-testid="stCheckbox"] label:has(input:not(:checked)) svg,
     html:not(.caprio-dark) div[data-testid="stCheckbox"] label:has(input:not(:checked)) svg,
-    html.caprio-light div[data-testid="stCheckbox"] label:has(input[aria-checked="false"]) svg,
-    html:not(.caprio-dark) div[data-testid="stCheckbox"] label:has(input[aria-checked="false"]) svg,
     html.caprio-light div[data-testid="stCheckbox"] div[role="checkbox"][aria-checked="false"] svg,
     html:not(.caprio-dark) div[data-testid="stCheckbox"] div[role="checkbox"][aria-checked="false"] svg {
         color: #64748b !important;
         fill: #64748b !important;
     }
 
-    html.caprio-light div[data-testid="stButton"] button,
-    html:not(.caprio-dark) div[data-testid="stButton"] button {
-        background-color: #ffffff !important;
-        color: #111827 !important;
-        border: 1px solid #d8dee8 !important;
-        box-shadow: none !important;
-        -webkit-text-fill-color: #111827 !important;
-    }
-
-    html.caprio-light div[data-testid="stButton"] button p,
-    html:not(.caprio-dark) div[data-testid="stButton"] button p {
-        color: #111827 !important;
-        -webkit-text-fill-color: #111827 !important;
-    }
-
-    /* 모바일: 체크 UI는 세로 그룹처럼 자연스럽게 붙이고 불필요한 간격 축소 */
     @media (max-width: 768px) {
-        .share-selector-top-row div[data-testid="stButton"] button {
-            min-height: 42px !important;
-            height: 42px !important;
-        }
-        .share-divider-line {
-            width: 92%;
-            margin: 6px auto 8px auto;
-        }
-        .share-mini-note {
-            font-size: 10px;
-            margin-top: 4px;
-        }
-        div[data-testid="stCheckbox"] {
-            margin-bottom: 7px !important;
-        }
-        div[data-testid="stCheckbox"] label {
-            justify-content: flex-start !important;
-        }
-        div[data-testid="stCheckbox"] [data-testid="stMarkdownContainer"] p {
-            text-align: left !important;
-        }
-    }
-
-
-    .share-top-note {
-        min-height: 42px !important;
-    }
-
-    .share-group-divider {
-        width: 86%;
-        height: 1px;
-        background: #d7e0ec;
-        margin: 10px auto 0 auto;
-    }
-
-    .share-empty-child-slot {
-        min-height: 78px;
-    }
-
-    .share-selector-top-row div[data-testid="stButton"] button,
-    .share-selector-anchor + div[data-testid="stHorizontalBlock"] div[data-testid="stButton"] button {
-        background-color: #f8fafc !important;
-        border: 1px solid #d8e1ec !important;
-        color: #0f172a !important;
-        min-height: 40px !important;
-        font-weight: 800 !important;
-    }
-
-    @media (max-width: 768px) {
-        .share-top-note { display:none !important; }
-        .share-empty-child-slot { min-height: 0 !important; }
-        .share-group-divider {
-            width: 100% !important;
-            margin: 12px auto 16px auto !important;
-        }
         .share-selector-anchor + div[data-testid="stHorizontalBlock"] {
-            margin-bottom: 10px !important;
-        }
-        div[data-testid="stCheckbox"] {
+            display: block !important;
             margin-bottom: 8px !important;
         }
-        div[data-testid="stCheckbox"] label {
-            justify-content: flex-start !important;
+
+        .share-selector-anchor + div[data-testid="stHorizontalBlock"] > div {
+            width: 100% !important;
+            padding: 0 !important;
+            margin: 0 0 4px 0 !important;
         }
-        div[data-testid="stCheckbox"] [data-testid="stMarkdownContainer"] p {
+
+        .share-selector-anchor + div[data-testid="stHorizontalBlock"] div[data-testid="stButton"] button {
+            min-height: 40px !important;
+            height: 40px !important;
+            margin-bottom: 10px !important;
+        }
+
+        .share-selector-anchor + div[data-testid="stHorizontalBlock"] div[data-testid="stCheckbox"] {
+            margin: 0 0 9px 0 !important;
+        }
+
+        .share-selector-anchor + div[data-testid="stHorizontalBlock"] div[data-testid="stCheckbox"] label {
+            justify-content: flex-start !important;
+            min-height: 25px !important;
+        }
+
+        .share-selector-anchor + div[data-testid="stHorizontalBlock"] div[data-testid="stCheckbox"] [data-testid="stMarkdownContainer"] p {
             text-align: left !important;
+            font-size: 14px !important;
+        }
+
+        .share-group-divider {
+            width: 100% !important;
+            margin: 10px auto 16px auto !important;
+        }
+
+        .share-mini-note {
+            text-align: left !important;
+            padding-left: 26px !important;
+            margin-top: 2px !important;
         }
     }
     </style>
@@ -395,49 +327,45 @@ def render_share_section_selector(current_sections):
         for key, default_value in DEFAULT_VISIBLE_SECTIONS.items()
     )
 
-    st.markdown('<div class="share-selector-anchor share-selector-top-row"></div>', unsafe_allow_html=True)
+    st.markdown('<div class="share-selector-anchor"></div>', unsafe_allow_html=True)
 
-    all_col, note_col = st.columns([0.18, 0.82], gap="small")
-    with all_col:
+    group_cols = st.columns([0.78, 1, 1, 1, 1, 1], gap="small")
+
+    with group_cols[0]:
         if st.button("전체 선택 / 해제", use_container_width=True):
             set_all_sections(not all_selected_now)
             st.rerun()
-    with note_col:
-        st.markdown('<div class="share-top-note"></div>', unsafe_allow_html=True)
-
-    group_cols = st.columns([1, 1, 1, 1, 1], gap="small")
-
-    with group_cols[0]:
-        st.checkbox("조건설정", key="share_conditions", on_change=sync_parent_to_children, args=("conditions",))
-        st.checkbox("공통조건", key="share_common", disabled=not st.session_state.get("share_conditions", True), on_change=sync_children_to_parent, args=("conditions",))
-        st.checkbox("할부조건", key="share_installment_condition", disabled=not st.session_state.get("share_conditions", True), on_change=sync_children_to_parent, args=("conditions",))
-        st.markdown('<div class="share-group-divider"></div>', unsafe_allow_html=True)
 
     with group_cols[1]:
-        st.checkbox("비교 계산기", key="share_summary", on_change=sync_parent_to_children, args=("summary",))
-        st.checkbox("반납형", key="share_summary_return", disabled=not st.session_state.get("share_summary", True), on_change=sync_children_to_parent, args=("summary",))
-        st.checkbox("인수형", key="share_summary_takeover", disabled=not st.session_state.get("share_summary", True), on_change=sync_children_to_parent, args=("summary",))
+        st.checkbox("조건설정", key="share_conditions", on_change=sync_parent_to_children, args=("conditions",))
         st.markdown('<div class="share-group-divider"></div>', unsafe_allow_html=True)
+        st.checkbox("공통조건", key="share_common", disabled=not st.session_state.get("share_conditions", True), on_change=sync_children_to_parent, args=("conditions",))
+        st.checkbox("할부조건", key="share_installment_condition", disabled=not st.session_state.get("share_conditions", True), on_change=sync_children_to_parent, args=("conditions",))
 
     with group_cols[2]:
-        st.checkbox("검증 요율표", key="share_rate_table")
-        st.markdown('<div class="share-empty-child-slot"></div>', unsafe_allow_html=True)
+        st.checkbox("비교 계산기", key="share_summary", on_change=sync_parent_to_children, args=("summary",))
         st.markdown('<div class="share-group-divider"></div>', unsafe_allow_html=True)
+        st.checkbox("반납형", key="share_summary_return", disabled=not st.session_state.get("share_summary", True), on_change=sync_children_to_parent, args=("summary",))
+        st.checkbox("인수형", key="share_summary_takeover", disabled=not st.session_state.get("share_summary", True), on_change=sync_children_to_parent, args=("summary",))
 
     with group_cols[3]:
+        st.checkbox("검증 요율표", key="share_rate_table")
+        st.markdown('<div class="share-group-divider"></div>', unsafe_allow_html=True)
+
+    with group_cols[4]:
         st.checkbox("비교표", key="share_compare", on_change=sync_parent_to_children, args=("compare",))
+        st.markdown('<div class="share-group-divider"></div>', unsafe_allow_html=True)
         st.checkbox("할부", key="share_compare_installment", disabled=not st.session_state.get("share_compare", True), on_change=sync_children_to_parent, args=("compare",))
         st.checkbox("렌트", key="share_compare_rent", disabled=not st.session_state.get("share_compare", True), on_change=sync_children_to_parent, args=("compare",))
         st.checkbox("리스", key="share_compare_lease", disabled=not st.session_state.get("share_compare", True), on_change=sync_children_to_parent, args=("compare",))
         st.markdown('<div class="share-mini-note">최소 2개 선택</div>', unsafe_allow_html=True)
-        st.markdown('<div class="share-group-divider"></div>', unsafe_allow_html=True)
 
-    with group_cols[4]:
+    with group_cols[5]:
         st.checkbox("선택 가이드", key="share_guide", on_change=sync_parent_to_children, args=("guide",))
+        st.markdown('<div class="share-group-divider"></div>', unsafe_allow_html=True)
         st.checkbox("할부", key="share_guide_installment", disabled=not st.session_state.get("share_guide", True), on_change=sync_children_to_parent, args=("guide",))
         st.checkbox("렌트", key="share_guide_rent", disabled=not st.session_state.get("share_guide", True), on_change=sync_children_to_parent, args=("guide",))
         st.checkbox("리스", key="share_guide_lease", disabled=not st.session_state.get("share_guide", True), on_change=sync_children_to_parent, args=("guide",))
-        st.markdown('<div class="share-group-divider"></div>', unsafe_allow_html=True)
 
     selected_compare_count = sum(
         bool(st.session_state.get(f"share_{key}", False))
@@ -1515,7 +1443,7 @@ st.markdown("""
 
     /* 서로 다른 큰 섹션 사이 간격 통일 */
     .section-spacer-soft {
-        height: 20px !important;
+        height: 28px !important;
         line-height: 0 !important;
         margin: 0 !important;
         padding: 0 !important;
@@ -1523,10 +1451,14 @@ st.markdown("""
 
     @media (max-width: 768px) {
         .section-spacer-soft {
-            height: 18px !important;
+            height: 26px !important;
             line-height: 0 !important;
             margin: 0 !important;
             padding: 0 !important;
+        }
+
+        .excel-header-gray {
+            margin-top: 0 !important;
         }
     }
 
