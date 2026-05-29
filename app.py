@@ -164,25 +164,29 @@ def render_share_section_selector(current_sections):
     <style>
     /* 공유 선택 영역: 5개 대분류 한 줄 고정 + 중앙정렬 */
     .share-grid-cell {
-        min-height: 132px;
+        min-height: 112px;
         padding: 0 6px;
         box-sizing: border-box;
         text-align: center;
         overflow: visible;
+        border-left: none !important;
+        border-right: none !important;
     }
 
     .share-grid-cell-border {
-        border-left: 1px solid #d8dee8;
+        border-left: none !important;
+        border-right: none !important;
     }
 
     html.caprio-dark .share-grid-cell-border {
-        border-left-color: #46566d;
+        border-left: none !important;
+        border-right: none !important;
     }
 
     .share-section-divider {
         height: 1px;
         background: #d8dee8;
-        margin: 10px auto 14px auto;
+        margin: 10px auto 12px auto;
         width: 88%;
     }
 
@@ -192,7 +196,7 @@ def render_share_section_selector(current_sections):
 
     .share-child-stack {
         width: 100%;
-        min-height: 78px;
+        min-height: 58px;
         display: flex;
         flex-direction: column;
         align-items: center;
@@ -201,7 +205,7 @@ def render_share_section_selector(current_sections):
     }
 
     .share-child-empty {
-        min-height: 78px;
+        min-height: 58px;
     }
 
     .share-section-small-note {
@@ -290,6 +294,7 @@ def render_share_section_selector(current_sections):
             min-height: auto;
             padding: 0;
             border-left: none !important;
+            border-right: none !important;
         }
         .share-child-stack {
             min-height: auto;
