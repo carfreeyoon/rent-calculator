@@ -341,6 +341,52 @@ def render_share_section_selector(current_sections):
             text-align: left !important;
         }
     }
+
+
+    .share-top-note {
+        min-height: 42px !important;
+    }
+
+    .share-group-divider {
+        width: 86%;
+        height: 1px;
+        background: #d7e0ec;
+        margin: 10px auto 0 auto;
+    }
+
+    .share-empty-child-slot {
+        min-height: 78px;
+    }
+
+    .share-selector-top-row div[data-testid="stButton"] button,
+    .share-selector-anchor + div[data-testid="stHorizontalBlock"] div[data-testid="stButton"] button {
+        background-color: #f8fafc !important;
+        border: 1px solid #d8e1ec !important;
+        color: #0f172a !important;
+        min-height: 40px !important;
+        font-weight: 800 !important;
+    }
+
+    @media (max-width: 768px) {
+        .share-top-note { display:none !important; }
+        .share-empty-child-slot { min-height: 0 !important; }
+        .share-group-divider {
+            width: 100% !important;
+            margin: 12px auto 16px auto !important;
+        }
+        .share-selector-anchor + div[data-testid="stHorizontalBlock"] {
+            margin-bottom: 10px !important;
+        }
+        div[data-testid="stCheckbox"] {
+            margin-bottom: 8px !important;
+        }
+        div[data-testid="stCheckbox"] label {
+            justify-content: flex-start !important;
+        }
+        div[data-testid="stCheckbox"] [data-testid="stMarkdownContainer"] p {
+            text-align: left !important;
+        }
+    }
     </style>
     """, unsafe_allow_html=True)
 
@@ -350,50 +396,48 @@ def render_share_section_selector(current_sections):
     )
 
     st.markdown('<div class="share-selector-anchor share-selector-top-row"></div>', unsafe_allow_html=True)
-    top_cols = st.columns([0.95, 1, 1, 1, 1, 1], gap="small")
 
-    with top_cols[0]:
+    all_col, note_col = st.columns([0.18, 0.82], gap="small")
+    with all_col:
         if st.button("전체 선택 / 해제", use_container_width=True):
             set_all_sections(not all_selected_now)
             st.rerun()
-    with top_cols[1]:
+    with note_col:
+        st.markdown('<div class="share-top-note"></div>', unsafe_allow_html=True)
+
+    group_cols = st.columns([1, 1, 1, 1, 1], gap="small")
+
+    with group_cols[0]:
         st.checkbox("조건설정", key="share_conditions", on_change=sync_parent_to_children, args=("conditions",))
-    with top_cols[2]:
-        st.checkbox("비교 계산기", key="share_summary", on_change=sync_parent_to_children, args=("summary",))
-    with top_cols[3]:
-        st.checkbox("검증 요율표", key="share_rate_table")
-    with top_cols[4]:
-        st.checkbox("비교표", key="share_compare", on_change=sync_parent_to_children, args=("compare",))
-    with top_cols[5]:
-        st.checkbox("선택 가이드", key="share_guide", on_change=sync_parent_to_children, args=("guide",))
-
-    line_cols = st.columns([0.95, 1, 1, 1, 1, 1], gap="small")
-    with line_cols[0]:
-        st.markdown('<div class="share-row-spacer"></div>', unsafe_allow_html=True)
-    for line_col in line_cols[1:]:
-        with line_col:
-            st.markdown('<div class="share-divider-line"></div>', unsafe_allow_html=True)
-
-    child_cols = st.columns([0.95, 1, 1, 1, 1, 1], gap="small")
-    with child_cols[0]:
-        st.markdown('<div class="share-row-spacer"></div>', unsafe_allow_html=True)
-    with child_cols[1]:
         st.checkbox("공통조건", key="share_common", disabled=not st.session_state.get("share_conditions", True), on_change=sync_children_to_parent, args=("conditions",))
         st.checkbox("할부조건", key="share_installment_condition", disabled=not st.session_state.get("share_conditions", True), on_change=sync_children_to_parent, args=("conditions",))
-    with child_cols[2]:
+        st.markdown('<div class="share-group-divider"></div>', unsafe_allow_html=True)
+
+    with group_cols[1]:
+        st.checkbox("비교 계산기", key="share_summary", on_change=sync_parent_to_children, args=("summary",))
         st.checkbox("반납형", key="share_summary_return", disabled=not st.session_state.get("share_summary", True), on_change=sync_children_to_parent, args=("summary",))
         st.checkbox("인수형", key="share_summary_takeover", disabled=not st.session_state.get("share_summary", True), on_change=sync_children_to_parent, args=("summary",))
-    with child_cols[3]:
-        st.markdown('<div class="share-row-spacer"></div>', unsafe_allow_html=True)
-    with child_cols[4]:
+        st.markdown('<div class="share-group-divider"></div>', unsafe_allow_html=True)
+
+    with group_cols[2]:
+        st.checkbox("검증 요율표", key="share_rate_table")
+        st.markdown('<div class="share-empty-child-slot"></div>', unsafe_allow_html=True)
+        st.markdown('<div class="share-group-divider"></div>', unsafe_allow_html=True)
+
+    with group_cols[3]:
+        st.checkbox("비교표", key="share_compare", on_change=sync_parent_to_children, args=("compare",))
         st.checkbox("할부", key="share_compare_installment", disabled=not st.session_state.get("share_compare", True), on_change=sync_children_to_parent, args=("compare",))
         st.checkbox("렌트", key="share_compare_rent", disabled=not st.session_state.get("share_compare", True), on_change=sync_children_to_parent, args=("compare",))
         st.checkbox("리스", key="share_compare_lease", disabled=not st.session_state.get("share_compare", True), on_change=sync_children_to_parent, args=("compare",))
         st.markdown('<div class="share-mini-note">최소 2개 선택</div>', unsafe_allow_html=True)
-    with child_cols[5]:
+        st.markdown('<div class="share-group-divider"></div>', unsafe_allow_html=True)
+
+    with group_cols[4]:
+        st.checkbox("선택 가이드", key="share_guide", on_change=sync_parent_to_children, args=("guide",))
         st.checkbox("할부", key="share_guide_installment", disabled=not st.session_state.get("share_guide", True), on_change=sync_children_to_parent, args=("guide",))
         st.checkbox("렌트", key="share_guide_rent", disabled=not st.session_state.get("share_guide", True), on_change=sync_children_to_parent, args=("guide",))
         st.checkbox("리스", key="share_guide_lease", disabled=not st.session_state.get("share_guide", True), on_change=sync_children_to_parent, args=("guide",))
+        st.markdown('<div class="share-group-divider"></div>', unsafe_allow_html=True)
 
     selected_compare_count = sum(
         bool(st.session_state.get(f"share_{key}", False))
@@ -1471,7 +1515,7 @@ st.markdown("""
 
     /* 서로 다른 큰 섹션 사이 간격 통일 */
     .section-spacer-soft {
-        height: 14px !important;
+        height: 20px !important;
         line-height: 0 !important;
         margin: 0 !important;
         padding: 0 !important;
@@ -1479,7 +1523,7 @@ st.markdown("""
 
     @media (max-width: 768px) {
         .section-spacer-soft {
-            height: 12px !important;
+            height: 18px !important;
             line-height: 0 !important;
             margin: 0 !important;
             padding: 0 !important;
@@ -2346,11 +2390,13 @@ if not IS_CLIENT_VIEW:
         st.session_state.raw_quote_input = st.session_state.pending_quote_input
         st.session_state.pending_quote_input = None
 
+    st.markdown("#### 📋 렌트 견적 붙여넣기")
     raw_data = st.text_area(
-        "📋 렌트 견적 붙여넣기",
+        "렌트 견적 붙여넣기",
         placeholder="견적 텍스트를 입력하세요.",
         height=80,
-        key="raw_quote_input"
+        key="raw_quote_input",
+        label_visibility="collapsed"
     )
 
     if raw_data:
