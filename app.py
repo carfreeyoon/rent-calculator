@@ -162,30 +162,42 @@ def render_share_section_selector(current_sections):
 
     st.markdown("""
     <style>
+    /* 공유 선택 영역: 헤더 제거 / 이미지 기준 압축 레이아웃 */
     .share-section-small-note {
         color: #6b7280;
         font-size: 12px;
-        line-height: 1.2;
-        margin-top: -4px;
+        line-height: 1.15;
+        margin: 10px 0 0 0;
         text-align: center;
         white-space: nowrap;
     }
 
     html.caprio-dark .share-section-small-note { color: #b7c0cf; }
 
+    .share-section-divider {
+        height: 1px;
+        background: #d8dee8;
+        margin: 8px 0 12px 0;
+        width: 100%;
+    }
+
+    html.caprio-dark .share-section-divider {
+        background: #46566d;
+    }
+
     div[data-testid="stCheckbox"] {
         margin-bottom: 0 !important;
     }
 
     div[data-testid="stCheckbox"] label {
-        min-height: 28px !important;
+        min-height: 30px !important;
         align-items: center !important;
     }
 
     div[data-testid="stCheckbox"] [data-testid="stMarkdownContainer"] p {
         font-weight: 800 !important;
         font-size: 15px !important;
-        line-height: 1.2 !important;
+        line-height: 1.18 !important;
         margin: 0 !important;
         white-space: nowrap !important;
     }
@@ -196,20 +208,25 @@ def render_share_section_selector(current_sections):
         -webkit-text-fill-color: #111827 !important;
     }
 
-    html.caprio-light div[data-testid="stCheckbox"] svg,
-    html:not(.caprio-dark) div[data-testid="stCheckbox"] svg {
-        color: #9ca3af !important;
-        fill: #9ca3af !important;
+    /* 화이트 모드 체크 해제: 검정 박스 방지 */
+    html.caprio-light div[data-testid="stCheckbox"] input:not(:checked) + div,
+    html:not(.caprio-dark) div[data-testid="stCheckbox"] input:not(:checked) + div,
+    html.caprio-light div[data-testid="stCheckbox"] input:not(:checked) ~ div,
+    html:not(.caprio-dark) div[data-testid="stCheckbox"] input:not(:checked) ~ div,
+    html.caprio-light div[data-testid="stCheckbox"] label > div:first-child,
+    html:not(.caprio-dark) div[data-testid="stCheckbox"] label > div:first-child {
+        border-color: #cbd5e1 !important;
     }
 
     html.caprio-light div[data-testid="stCheckbox"] input:not(:checked) + div,
     html:not(.caprio-dark) div[data-testid="stCheckbox"] input:not(:checked) + div {
-        background-color: #d1d5db !important;
-        border-color: #cbd5e1 !important;
+        background-color: #e5e7eb !important;
     }
 
-    html.caprio-light div[data-testid="stCheckbox"] input:not(:checked) ~ div,
-    html:not(.caprio-dark) div[data-testid="stCheckbox"] input:not(:checked) ~ div {
+    html.caprio-light div[data-testid="stCheckbox"] input:not(:checked) + div svg,
+    html:not(.caprio-dark) div[data-testid="stCheckbox"] input:not(:checked) + div svg,
+    html.caprio-light div[data-testid="stCheckbox"] input:not(:checked) ~ div svg,
+    html:not(.caprio-dark) div[data-testid="stCheckbox"] input:not(:checked) ~ div svg {
         color: #9ca3af !important;
         fill: #9ca3af !important;
     }
@@ -229,15 +246,11 @@ def render_share_section_selector(current_sections):
         -webkit-text-fill-color: #111827 !important;
     }
 
-    .share-section-divider {
-        height: 1px;
-        background: #d8dee8;
-        margin: 6px 0 8px 0;
-        width: 100%;
-    }
-
-    html.caprio-dark .share-section-divider {
-        background: #46566d;
+    @media (max-width: 768px) {
+        .share-section-small-note {
+            text-align: left;
+            margin: 4px 0 6px 0;
+        }
     }
     </style>
     """, unsafe_allow_html=True)
@@ -247,17 +260,21 @@ def render_share_section_selector(current_sections):
         for key, default_value in DEFAULT_VISIBLE_SECTIONS.items()
     )
 
-    share_cols = st.columns([0.95, 1.1, 1.18, 1.05, 1.18, 1.18], gap="medium")
-
-    with share_cols[0]:
+    top_col1, top_col2 = st.columns([1.0, 4.2], gap="small")
+    with top_col1:
         if st.button("전체 선택 / 해제", use_container_width=True):
             set_all_sections(not all_selected_now)
             st.rerun()
+    with top_col2:
+        st.markdown('<div class="share-section-small-note" style="text-align:left; margin-top:12px;">비교표 최소 2개</div>', unsafe_allow_html=True)
+
+    share_cols = st.columns([1.05, 1.08, 1.05, 1.06, 1.12], gap="medium")
+
+    with share_cols[0]:
+        st.checkbox("공통조건", key="share_common")
+        st.markdown('<div class="share-section-divider"></div>', unsafe_allow_html=True)
 
     with share_cols[1]:
-        st.checkbox("공통조건", key="share_common")
-
-    with share_cols[2]:
         st.checkbox("비교 계산기", key="share_summary", on_change=sync_parent_to_children, args=("summary",))
         st.markdown('<div class="share-section-divider"></div>', unsafe_allow_html=True)
         sub_a, sub_b = st.columns(2, gap="small")
@@ -266,12 +283,12 @@ def render_share_section_selector(current_sections):
         with sub_b:
             st.checkbox("인수형", key="share_summary_takeover", disabled=not st.session_state.get("share_summary", True), on_change=sync_children_to_parent, args=("summary",))
 
-    with share_cols[3]:
+    with share_cols[2]:
         st.checkbox("검증 요율표", key="share_rate_table")
+        st.markdown('<div class="share-section-divider"></div>', unsafe_allow_html=True)
 
-    with share_cols[4]:
+    with share_cols[3]:
         st.checkbox("비교표", key="share_compare", on_change=sync_parent_to_children, args=("compare",))
-        st.markdown('<div class="share-section-small-note">최소 2개 선택</div>', unsafe_allow_html=True)
         st.markdown('<div class="share-section-divider"></div>', unsafe_allow_html=True)
         sub_a, sub_b, sub_c = st.columns(3, gap="small")
         with sub_a:
@@ -280,8 +297,9 @@ def render_share_section_selector(current_sections):
             st.checkbox("렌트", key="share_compare_rent", disabled=not st.session_state.get("share_compare", True), on_change=sync_children_to_parent, args=("compare",))
         with sub_c:
             st.checkbox("리스", key="share_compare_lease", disabled=not st.session_state.get("share_compare", True), on_change=sync_children_to_parent, args=("compare",))
+        st.markdown('<div class="share-section-small-note">최소 2개 선택</div>', unsafe_allow_html=True)
 
-    with share_cols[5]:
+    with share_cols[4]:
         st.checkbox("선택 가이드", key="share_guide", on_change=sync_parent_to_children, args=("guide",))
         st.markdown('<div class="share-section-divider"></div>', unsafe_allow_html=True)
         sub_a, sub_b, sub_c = st.columns(3, gap="small")
@@ -1771,6 +1789,28 @@ st.markdown("""
         fill: #f3f6fb !important;
     }
     
+
+    /* [PATCH] MO 섹션 간격 통일: 모든 섹션 간격을 동일 기준으로 축소 */
+    @media (max-width: 768px) {
+        .excel-header-blue,
+        .excel-header-gray {
+            margin-top: 14px !important;
+            margin-bottom: 10px !important;
+        }
+
+        .mobile-compare-gap {
+            height: 14px !important;
+        }
+
+        .compare-card {
+            margin-top: 14px !important;
+        }
+
+        .common-info-box,
+        .capture-box {
+            margin-bottom: 14px !important;
+        }
+    }
     </style>
 """, unsafe_allow_html=True)
 
@@ -2158,6 +2198,41 @@ if not IS_CLIENT_VIEW:
         st.session_state.setdefault(f"share_{section_key}", section_value)
 
     # ==========================================
+    # [TOP MAIN] 고객 공유 선택 / 견적 저장 이력
+    # ==========================================
+    # 견적 입력칸보다 위에 배치하기 위해 현재 세션 입력값을 먼저 한 번 반영
+    pre_raw_data = st.session_state.get("raw_quote_input", "")
+    if pre_raw_data:
+        pre_parsed_data = auto_convert_quote(pre_raw_data)
+        pre_lines = pre_parsed_data.strip().split('\n')
+        for pre_line in pre_lines:
+            pre_parts = pre_line.split('\t') if '\t' in pre_line else (pre_line.split(':') if ':' in pre_line else pre_line.split())
+            if len(pre_parts) >= 2:
+                pre_key = pre_parts[0].strip()
+                pre_val = "".join(pre_parts[1:]).strip()
+                def pre_clean_num(v): return int("".join(filter(str.isdigit, v))) if any(char.isdigit() for char in v) else 0
+
+                if "차량명" in pre_key: car_name = pre_val
+                elif "옵션" in pre_key: car_option = pre_val
+                elif "차량가" in pre_key: car_price = pre_clean_num(pre_val)
+                elif "개월수" in pre_key: months = pre_clean_num(pre_val)
+                elif "약정거리" in pre_key: mileage = pre_val.replace(" ", "")
+                elif "월납입" in pre_key: rent_monthly_pay = pre_clean_num(pre_val)
+                elif "선납금" in pre_key or "보증금" in pre_key: rent_deposit = pre_clean_num(pre_val)
+                elif "잔존" in pre_key: rent_resale_pct = float(pre_val.replace("%", "").replace(" ", ""))
+                elif pre_key == "CC원문": cc_raw_text = pre_val.replace(" ", "")
+                elif pre_key == "유종": fuel_text = pre_val.replace(" ", "")
+                elif pre_key == "인승": passenger_count = pre_clean_num(pre_val)
+                elif "CC" in pre_key: cc_text = pre_val.replace(" ", "")
+                elif "형태" in pre_key: car_shape = pre_val.replace(" ", "")
+
+    control_col, history_col = st.columns([0.68, 0.32], gap="medium")
+    with control_col:
+        visible_sections = render_share_section_selector(visible_sections)
+    with history_col:
+        render_quote_history_area(pre_raw_data, car_name, rent_monthly_pay, months, mileage, rent_resale_pct, make_share_url, visible_sections)
+
+    # ==========================================
     # [TOP MAIN] 타사 견적 파싱 구역
     # ==========================================
     if st.session_state.pending_quote_input is not None:
@@ -2290,15 +2365,6 @@ if not IS_CLIENT_VIEW:
     {rent_resale_pct:g}
     </div>
     """, unsafe_allow_html=True)
-
-    # ==========================================
-    # [고객 공유 항목 선택 / 견적 저장 이력]
-    # ==========================================
-    control_col, history_col = st.columns([0.68, 0.32], gap="medium")
-    with control_col:
-        visible_sections = render_share_section_selector(visible_sections)
-    with history_col:
-        render_quote_history_area(raw_data, car_name, rent_monthly_pay, months, mileage, rent_resale_pct, make_share_url, visible_sections)
 
 # ==========================================
 # [BACKEND] 연산 로직
