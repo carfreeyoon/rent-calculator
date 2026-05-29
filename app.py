@@ -381,7 +381,7 @@ def render_share_section_selector(current_sections):
 
     return collect_visible_sections_from_state()
 
-def render_quote_history_area(raw_data, car_name, rent_monthly_pay, months, mileage, rent_resale_pct, make_share_url_func, visible_sections):
+def render_quote_history_area(raw_data, car_name, rent_monthly_pay, months, mileage, rent_resale_pct, rent_deposit, make_share_url_func, visible_sections, has_active_quote=True):
     st.markdown('<div class="quote-history-panel">', unsafe_allow_html=True)
     st.markdown('<div class="quote-history-title">🕘 견적 저장 / 이력</div>', unsafe_allow_html=True)
 
@@ -397,7 +397,7 @@ def render_quote_history_area(raw_data, car_name, rent_monthly_pay, months, mile
         st.rerun()
 
     if save_clicked:
-        if raw_data.strip() or car_name:
+        if raw_data.strip() or has_active_quote:
             short_car_name = car_name[:15] + "..." if len(car_name) > 15 else car_name
             history_title = (
                 f"{short_car_name}\n"
@@ -414,6 +414,9 @@ def render_quote_history_area(raw_data, car_name, rent_monthly_pay, months, mile
                         "rent_resale_pct": rent_resale_pct,
                         "months": months,
                         "mileage": mileage,
+                        "rent_deposit": rent_deposit,
+                        "prepayment_mode": st.session_state.get("quick_prepayment_mode", "원" if rent_deposit else "%"),
+                        "prepayment_value": st.session_state.get("quick_prepayment_value", f"{rent_deposit:,}" if rent_deposit else ""),
                     },
                     "visible_sections": normalize_visible_sections(visible_sections),
                 }
@@ -1863,6 +1866,140 @@ st.markdown("""
         color: #f3f6fb !important;
         fill: #f3f6fb !important;
     }
+
+
+    /* [PATCH] 다크모드 전역 입력/버튼 색상 보정: 폼 밖 영역 포함 */
+    html.caprio-dark [data-testid="stSidebar"] {
+        background-color: #111827 !important;
+        color: #f3f6fb !important;
+        border-right: 1px solid #26364c !important;
+    }
+
+    html.caprio-dark [data-testid="stSidebar"] * {
+        color: inherit;
+    }
+
+    html.caprio-dark input,
+    html.caprio-dark textarea,
+    html.caprio-dark select,
+    html.caprio-dark div[data-baseweb="input"],
+    html.caprio-dark div[data-baseweb="input"] > div,
+    html.caprio-dark div[data-baseweb="input"] input,
+    html.caprio-dark div[data-baseweb="textarea"],
+    html.caprio-dark div[data-baseweb="textarea"] textarea,
+    html.caprio-dark div[data-baseweb="select"] > div {
+        background-color: #232631 !important;
+        color: #f3f6fb !important;
+        -webkit-text-fill-color: #f3f6fb !important;
+        border-color: #46566d !important;
+        box-shadow: none !important;
+    }
+
+    html.caprio-dark input::placeholder,
+    html.caprio-dark textarea::placeholder {
+        color: #9aa7bb !important;
+        -webkit-text-fill-color: #9aa7bb !important;
+        opacity: 1 !important;
+    }
+
+    html.caprio-dark div[data-baseweb="select"] svg,
+    html.caprio-dark div[data-baseweb="input"] svg {
+        color: #f3f6fb !important;
+        fill: #f3f6fb !important;
+    }
+
+    html.caprio-dark div[data-testid="stButton"] button,
+    html.caprio-dark div[data-testid="stNumberInput"] button {
+        background-color: #131a24 !important;
+        color: #f3f6fb !important;
+        border: 1px solid #46566d !important;
+        box-shadow: none !important;
+        -webkit-text-fill-color: #f3f6fb !important;
+    }
+
+    html.caprio-dark div[data-testid="stButton"] button p,
+    html.caprio-dark div[data-testid="stNumberInput"] button p {
+        color: #f3f6fb !important;
+        -webkit-text-fill-color: #f3f6fb !important;
+    }
+
+    html.caprio-dark div[data-testid="stButton"] button svg,
+    html.caprio-dark div[data-testid="stNumberInput"] button svg {
+        color: #f3f6fb !important;
+        fill: #f3f6fb !important;
+    }
+
+    /* 다크모드: number_input 내부 테두리/체크박스 텍스트 통합 보정 */
+    html.caprio-dark [data-testid="stSidebar"] div[data-testid="stNumberInput"] > div,
+    html.caprio-dark [data-testid="stSidebar"] div[data-testid="stNumberInput"] > div > div,
+    html.caprio-dark [data-testid="stSidebar"] div[data-testid="stNumberInput"] div[data-baseweb="input"],
+    html.caprio-dark [data-testid="stSidebar"] div[data-testid="stNumberInput"] div[data-baseweb="input"] > div,
+    html.caprio-dark [data-testid="stSidebar"] div[data-testid="stNumberInput"] div[data-baseweb="base-input"],
+    html.caprio-dark [data-testid="stSidebar"] div[data-testid="stNumberInput"] input,
+    html.caprio-dark [data-testid="stSidebar"] div[data-testid="stNumberInput"] button,
+    html.caprio-dark [data-testid="stSidebar"] div[data-testid="stNumberInput"] div[role="button"] {
+        background-color: #232631 !important;
+        color: #f3f6fb !important;
+        -webkit-text-fill-color: #f3f6fb !important;
+        border-color: #46566d !important;
+        box-shadow: none !important;
+        outline-color: #46566d !important;
+    }
+
+    html.caprio-dark div[data-testid="stCheckbox"],
+    html.caprio-dark div[data-testid="stCheckbox"] *,
+    html.caprio-dark div[data-testid="stCheckbox"] label,
+    html.caprio-dark div[data-testid="stCheckbox"] label *,
+    html.caprio-dark div[data-testid="stCheckbox"] [data-testid="stMarkdownContainer"],
+    html.caprio-dark div[data-testid="stCheckbox"] [data-testid="stMarkdownContainer"] *,
+    html.caprio-dark div[data-testid="stCheckbox"] [data-testid="stMarkdownContainer"] p,
+    html.caprio-dark div[data-testid="stCheckbox"] [aria-disabled="true"],
+    html.caprio-dark div[data-testid="stCheckbox"] [aria-disabled="true"] *,
+    html.caprio-dark div[data-testid="stCheckbox"] [disabled],
+    html.caprio-dark div[data-testid="stCheckbox"] [disabled] * {
+        color: #f3f6fb !important;
+        -webkit-text-fill-color: #f3f6fb !important;
+        opacity: 1 !important;
+        filter: none !important;
+    }
+
+    html.caprio-dark div[data-testid="stButton"] button:disabled,
+    html.caprio-dark div[data-testid="stNumberInput"] button:disabled {
+        background-color: #1a2230 !important;
+        color: #8b98aa !important;
+        border-color: #344256 !important;
+        -webkit-text-fill-color: #8b98aa !important;
+    }
+
+    html.caprio-dark div[data-testid="stButton"] button:disabled p,
+    html.caprio-dark div[data-testid="stNumberInput"] button:disabled p {
+        color: #8b98aa !important;
+        -webkit-text-fill-color: #8b98aa !important;
+    }
+    html.caprio-dark .share-selector-anchor + div[data-testid="stHorizontalBlock"],
+    html.caprio-dark .share-selector-anchor + div[data-testid="stHorizontalBlock"] *,
+    html.caprio-dark .share-selector-anchor + div[data-testid="stHorizontalBlock"] div[data-testid="stCheckbox"],
+    html.caprio-dark .share-selector-anchor + div[data-testid="stHorizontalBlock"] div[data-testid="stCheckbox"] *,
+    html.caprio-dark .share-selector-anchor + div[data-testid="stHorizontalBlock"] div[data-testid="stCheckbox"] label,
+    html.caprio-dark .share-selector-anchor + div[data-testid="stHorizontalBlock"] div[data-testid="stCheckbox"] label *,
+    html.caprio-dark .share-selector-anchor + div[data-testid="stHorizontalBlock"] div[data-testid="stCheckbox"] [data-testid="stMarkdownContainer"],
+    html.caprio-dark .share-selector-anchor + div[data-testid="stHorizontalBlock"] div[data-testid="stCheckbox"] [data-testid="stMarkdownContainer"] *,
+    html.caprio-dark .share-selector-anchor + div[data-testid="stHorizontalBlock"] div[data-testid="stCheckbox"] [data-testid="stMarkdownContainer"] p {
+        color: #f3f6fb !important;
+        -webkit-text-fill-color: #f3f6fb !important;
+        opacity: 1 !important;
+        filter: none !important;
+    }
+
+    html.caprio-dark .share-selector-anchor + div[data-testid="stHorizontalBlock"] div[data-testid="stCheckbox"] label:has(input:disabled),
+    html.caprio-dark .share-selector-anchor + div[data-testid="stHorizontalBlock"] div[data-testid="stCheckbox"] label:has(input:disabled) *,
+    html.caprio-dark .share-selector-anchor + div[data-testid="stHorizontalBlock"] div[data-testid="stCheckbox"] input:disabled ~ * {
+        color: #f3f6fb !important;
+        -webkit-text-fill-color: #f3f6fb !important;
+        opacity: 1 !important;
+        filter: none !important;
+    }
+
     
 
     /* [PATCH] MO 섹션 간격 통일: 섹션별 중복 여백 제거 + 단일 간격 적용 */
@@ -2151,7 +2288,7 @@ def make_share_url():
         "installment_resale_pct": installment_resale_pct,
         "insurance_annual": insurance_annual if "insurance_annual" in globals() else 1000000,
         "installment_rate": installment_rate if "installment_rate" in globals() else 5.0,
-        "installment_prepaid": installment_prepaid if "installment_prepaid" in globals() else 10000000,
+        "installment_prepaid": installment_prepaid if "installment_prepaid" in globals() else 0,
         "is_corporate": is_corporate if "is_corporate" in globals() else False,
         "rent_resale_pct": rent_resale_pct,
         "visible_sections": normalize_visible_sections(visible_sections)
@@ -2168,7 +2305,7 @@ def make_share_url():
 # ==========================================
 if IS_CLIENT_VIEW:
     is_corporate = bool(shared_quote_data.get("is_corporate", False))
-    installment_prepaid = int(shared_quote_data.get("installment_prepaid", 10000000))
+    installment_prepaid = int(shared_quote_data.get("installment_prepaid", 0))
     installment_rate = float(shared_quote_data.get("installment_rate", 5.0))
     insurance_annual = int(shared_quote_data.get("insurance_annual", 1000000))
 else:
@@ -2182,7 +2319,7 @@ else:
     installment_prepaid = int(
         st.sidebar.text_input(
             "💵 할부 선납금",
-            value=f"{int(shared_quote_data.get('installment_prepaid', 10000000)):,}"
+            value=f"{int(shared_quote_data.get('installment_prepaid', 0)):,}"
         ).replace(",", "")
     )
 
@@ -2343,6 +2480,12 @@ if not IS_CLIENT_VIEW:
     if "pending_visible_sections" not in st.session_state:
         st.session_state.pending_visible_sections = None
 
+    if "active_quote_data" not in st.session_state:
+        st.session_state.active_quote_data = None
+
+    if "active_quote_raw" not in st.session_state:
+        st.session_state.active_quote_raw = ""
+
     if st.session_state.pending_visible_sections is not None:
         apply_visible_sections_to_state(st.session_state.pending_visible_sections)
         visible_sections = normalize_visible_sections(st.session_state.pending_visible_sections)
@@ -2381,11 +2524,81 @@ if not IS_CLIENT_VIEW:
                 elif "CC" in pre_key: cc_text = pre_val.replace(" ", "")
                 elif "형태" in pre_key: car_shape = pre_val.replace(" ", "")
 
+        st.session_state.active_quote_data = {
+            "car_name": car_name,
+            "car_option": car_option,
+            "car_price": car_price,
+            "months": months,
+            "mileage": mileage,
+            "rent_monthly_pay": rent_monthly_pay,
+            "rent_deposit": rent_deposit,
+            "cc_text": cc_text,
+            "cc_raw_text": cc_raw_text,
+            "fuel_text": fuel_text,
+            "passenger_count": passenger_count,
+            "car_shape": car_shape,
+            "rent_resale_pct": rent_resale_pct,
+        }
+        st.session_state.active_quote_raw = pre_raw_data
+    elif st.session_state.active_quote_data:
+        active_quote_data = st.session_state.active_quote_data
+        car_name = active_quote_data.get("car_name", car_name)
+        car_option = active_quote_data.get("car_option", car_option)
+        car_price = int(active_quote_data.get("car_price", car_price))
+        months = int(active_quote_data.get("months", months))
+        mileage = active_quote_data.get("mileage", mileage)
+        rent_monthly_pay = int(active_quote_data.get("rent_monthly_pay", rent_monthly_pay))
+        rent_deposit = int(active_quote_data.get("rent_deposit", rent_deposit))
+        cc_text = active_quote_data.get("cc_text", cc_text)
+        cc_raw_text = active_quote_data.get("cc_raw_text", cc_raw_text)
+        fuel_text = active_quote_data.get("fuel_text", fuel_text)
+        passenger_count = int(active_quote_data.get("passenger_count", passenger_count))
+        car_shape = active_quote_data.get("car_shape", car_shape)
+        rent_resale_pct = float(active_quote_data.get("rent_resale_pct", rent_resale_pct))
+
+    def pre_history_money_to_int(value):
+        value_text = str(value).replace(",", "").strip()
+        return int("".join(filter(str.isdigit, value_text))) if any(ch.isdigit() for ch in value_text) else 0
+
+    def pre_history_pct_to_float(value, default_value):
+        try:
+            return float(str(value).replace("%", "").replace(",", "").strip())
+        except Exception:
+            return float(default_value)
+
+    if st.session_state.get("quick_edit_applied"):
+        rent_monthly_pay = pre_history_money_to_int(st.session_state.get("quick_rent_monthly_pay", rent_monthly_pay))
+        rent_resale_pct = pre_history_pct_to_float(st.session_state.get("quick_rent_resale_pct", rent_resale_pct), rent_resale_pct)
+        months = int(st.session_state.get("quick_months", months))
+        mileage = st.session_state.get("quick_mileage", mileage)
+        quick_prepayment_input_value = st.session_state.get("quick_prepayment_value", "")
+        if st.session_state.get("quick_prepayment_mode", "%") == "%":
+            rent_deposit = int(car_price * (pre_history_pct_to_float(quick_prepayment_input_value, 0) / 100))
+        else:
+            rent_deposit = pre_history_money_to_int(quick_prepayment_input_value)
+        st.session_state.active_quote_data = {
+            "car_name": car_name,
+            "car_option": car_option,
+            "car_price": car_price,
+            "months": months,
+            "mileage": mileage,
+            "rent_monthly_pay": rent_monthly_pay,
+            "rent_deposit": rent_deposit,
+            "cc_text": cc_text,
+            "cc_raw_text": cc_raw_text,
+            "fuel_text": fuel_text,
+            "passenger_count": passenger_count,
+            "car_shape": car_shape,
+            "rent_resale_pct": rent_resale_pct,
+        }
+
+    history_raw_data = st.session_state.get("active_quote_raw", pre_raw_data) if st.session_state.active_quote_data else pre_raw_data
+
     control_col, history_col = st.columns([0.68, 0.32], gap="medium")
     with control_col:
         visible_sections = render_share_section_selector(visible_sections)
     with history_col:
-        render_quote_history_area(pre_raw_data, car_name, rent_monthly_pay, months, mileage, rent_resale_pct, make_share_url, visible_sections)
+        render_quote_history_area(history_raw_data, car_name, rent_monthly_pay, months, mileage, rent_resale_pct, rent_deposit, make_share_url, visible_sections, st.session_state.active_quote_data is not None)
 
     # ==========================================
     # [TOP MAIN] 타사 견적 파싱 구역
@@ -2427,10 +2640,27 @@ if not IS_CLIENT_VIEW:
                 elif "CC" in key: cc_text = val.replace(" ", "")
                 elif "형태" in key: car_shape = val.replace(" ", "")
 
+        st.session_state.active_quote_data = {
+            "car_name": car_name,
+            "car_option": car_option,
+            "car_price": car_price,
+            "months": months,
+            "mileage": mileage,
+            "rent_monthly_pay": rent_monthly_pay,
+            "rent_deposit": rent_deposit,
+            "cc_text": cc_text,
+            "cc_raw_text": cc_raw_text,
+            "fuel_text": fuel_text,
+            "passenger_count": passenger_count,
+            "car_shape": car_shape,
+            "rent_resale_pct": rent_resale_pct,
+        }
+        st.session_state.active_quote_raw = raw_data
+
     # ==========================================
     # [렌트 조건 빠른 수정]
     # ==========================================
-    quick_edit_source_signature = raw_data.strip() if raw_data.strip() else f"{car_name}|{car_price}|{months}|{mileage}|{rent_monthly_pay}|{rent_resale_pct}"
+    quick_edit_source_signature = raw_data.strip() if raw_data.strip() else f"{car_name}|{car_price}|{months}|{mileage}|{rent_monthly_pay}|{rent_resale_pct}|{rent_deposit}"
 
     def quick_money_to_int(value):
         value_text = str(value).replace(",", "").strip()
@@ -2442,11 +2672,40 @@ if not IS_CLIENT_VIEW:
         except Exception:
             return float(default_value)
 
+    def quick_prepayment_display_value(mode, value):
+        amount = quick_money_to_int(value)
+        if not amount or not car_price:
+            return ""
+        if mode == "%":
+            prepayment_amount = int(car_price * (quick_pct_to_float(value, 0) / 100))
+            return f"{prepayment_amount:,}원" if prepayment_amount else ""
+        prepayment_pct = (amount / car_price) * 100
+        return f"{prepayment_pct:.1f}%" if prepayment_pct else ""
+
+    def convert_quick_prepayment_value(mode, value):
+        if not car_price:
+            return ""
+        if mode == "%":
+            converted_amount = int(car_price * (quick_pct_to_float(value, 0) / 100))
+            return f"{converted_amount:,}" if converted_amount else ""
+        converted_pct = (quick_money_to_int(value) / car_price) * 100
+        return f"{converted_pct:.1f}" if converted_pct else ""
+
+    def toggle_quick_prepayment_mode():
+        current_mode = st.session_state.get("quick_prepayment_mode", "%")
+        st.session_state.quick_prepayment_value = convert_quick_prepayment_value(
+            current_mode,
+            st.session_state.get("quick_prepayment_value", "")
+        )
+        st.session_state.quick_prepayment_mode = "원" if current_mode == "%" else "%"
+
     if st.session_state.get("quick_edit_source_signature") != quick_edit_source_signature:
         st.session_state.quick_rent_monthly_pay = f"{rent_monthly_pay:,}"
         st.session_state.quick_rent_resale_pct = f"{rent_resale_pct:g}"
         st.session_state.quick_months = int(months)
         st.session_state.quick_mileage = mileage
+        st.session_state.quick_prepayment_mode = "원" if rent_deposit else "%"
+        st.session_state.quick_prepayment_value = f"{rent_deposit:,}" if rent_deposit else ""
         st.session_state.quick_edit_applied = False
         st.session_state.quick_edit_source_signature = quick_edit_source_signature
 
@@ -2456,26 +2715,68 @@ if not IS_CLIENT_VIEW:
         st.session_state.quick_rent_resale_pct = f"{float(pending_quick_edit.get('rent_resale_pct', rent_resale_pct)):g}"
         st.session_state.quick_months = int(pending_quick_edit.get("months", months))
         st.session_state.quick_mileage = pending_quick_edit.get("mileage", mileage)
+        rent_deposit = int(pending_quick_edit.get("rent_deposit", rent_deposit))
+        st.session_state.quick_prepayment_mode = pending_quick_edit.get("prepayment_mode", st.session_state.get("quick_prepayment_mode", "원" if rent_deposit else "%"))
+        st.session_state.quick_prepayment_value = pending_quick_edit.get("prepayment_value", st.session_state.get("quick_prepayment_value", f"{rent_deposit:,}" if rent_deposit else ""))
         st.session_state.quick_edit_applied = True
         st.session_state.pending_quick_edit = None
 
+    # quick edit state 보장 (텍스트 공백/active 유지 대응)
+    st.session_state.setdefault("quick_months", int(months))
+    st.session_state.setdefault("quick_mileage", mileage)
+    st.session_state.setdefault("quick_rent_monthly_pay", f"{rent_monthly_pay:,}")
+    st.session_state.setdefault("quick_rent_resale_pct", f"{rent_resale_pct:g}")
+    st.session_state.setdefault("quick_prepayment_mode", "원" if rent_deposit else "%")
+    st.session_state.setdefault("quick_prepayment_value", f"{rent_deposit:,}" if rent_deposit else "")
+
     quick_month_options = [24, 36, 48, 60]
-    if int(st.session_state.quick_months) not in quick_month_options:
-        quick_month_options.append(int(st.session_state.quick_months))
+    if int(st.session_state.get("quick_months", months)) not in quick_month_options:
+        quick_month_options.append(int(st.session_state.get("quick_months", months)))
         quick_month_options = sorted(quick_month_options)
 
     quick_mileage_options = ["1만KM", "1.5만KM", "2만Km", "3만KM"]
-    if st.session_state.quick_mileage not in quick_mileage_options:
-        quick_mileage_options.append(st.session_state.quick_mileage)
+    if st.session_state.get("quick_mileage", mileage) not in quick_mileage_options:
+        quick_mileage_options.append(st.session_state.get("quick_mileage", mileage))
 
     st.markdown('<div class="quick-rent-condition">', unsafe_allow_html=True)
 
     quick_edit_submitted = False
 
+    st.markdown("""
+    <style>
+    .quick-prepayment-label {
+        min-height: 22px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 6px;
+        margin: 0 0 6px 0;
+        font-size: 14px;
+        font-weight: 700;
+        color: #111827;
+    }
+    .quick-prepayment-helper {
+        font-size: 13px;
+        font-weight: 900;
+        color: #d94b4b;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        max-width: 116px;
+    }
+    html.caprio-dark .quick-prepayment-label {
+        color: #f3f6fb !important;
+    }
+    html.caprio-dark .quick-prepayment-helper {
+        color: #ff8da1 !important;
+    }
+    </style>
+    """, unsafe_allow_html=True)
+
     with st.form("quick_rent_edit_form"):
         st.markdown("#### 🛠️ 렌트 조건 빠른 수정")
 
-        quick_col1, quick_col2, quick_col3, quick_col4, quick_col5 = st.columns([1.2, 1.1, 0.9, 1.0, 0.7])
+        quick_col1, quick_col2, quick_col3, quick_col4, quick_col5, quick_col6, quick_col7 = st.columns([1.18, 1.08, 0.88, 1.02, 0.62, 1.02, 0.72])
 
         with quick_col1:
             st.text_input("월납입", key="quick_rent_monthly_pay")
@@ -2499,6 +2800,33 @@ if not IS_CLIENT_VIEW:
 
         with quick_col5:
             st.markdown("<div style='height:28px;'></div>", unsafe_allow_html=True)
+            quick_prepayment_toggle_clicked = st.form_submit_button(
+                st.session_state.get("quick_prepayment_mode", "%"),
+                use_container_width=True,
+                on_click=toggle_quick_prepayment_mode
+            )
+
+        with quick_col6:
+            quick_prepayment_mode = st.session_state.get("quick_prepayment_mode", "%")
+            quick_prepayment_helper = quick_prepayment_display_value(
+                quick_prepayment_mode,
+                st.session_state.get("quick_prepayment_value", "")
+            )
+            quick_prepayment_label = f"선납금({quick_prepayment_mode})"
+            quick_prepayment_placeholder = "퍼센트 기준으로 입력" if quick_prepayment_mode == "%" else "원 기준으로 입력"
+            st.markdown(
+                f'<div class="quick-prepayment-label"><span>{quick_prepayment_label}</span><span class="quick-prepayment-helper">{quick_prepayment_helper}</span></div>',
+                unsafe_allow_html=True
+            )
+            st.text_input(
+                "선납금",
+                key="quick_prepayment_value",
+                placeholder=quick_prepayment_placeholder,
+                label_visibility="collapsed"
+            )
+
+        with quick_col7:
+            st.markdown("<div style='height:28px;'></div>", unsafe_allow_html=True)
             quick_edit_submitted = st.form_submit_button("적용", use_container_width=True)
 
     st.markdown('</div>', unsafe_allow_html=True)
@@ -2512,6 +2840,26 @@ if not IS_CLIENT_VIEW:
         rent_resale_pct = quick_pct_to_float(st.session_state.quick_rent_resale_pct, rent_resale_pct)
         months = int(st.session_state.quick_months)
         mileage = st.session_state.quick_mileage
+        quick_prepayment_input_value = st.session_state.get("quick_prepayment_value", "")
+        if st.session_state.get("quick_prepayment_mode", "%") == "%":
+            rent_deposit = int(car_price * (quick_pct_to_float(quick_prepayment_input_value, 0) / 100))
+        else:
+            rent_deposit = quick_money_to_int(quick_prepayment_input_value)
+        st.session_state.active_quote_data = {
+            "car_name": car_name,
+            "car_option": car_option,
+            "car_price": car_price,
+            "months": months,
+            "mileage": mileage,
+            "rent_monthly_pay": rent_monthly_pay,
+            "rent_deposit": rent_deposit,
+            "cc_text": cc_text,
+            "cc_raw_text": cc_raw_text,
+            "fuel_text": fuel_text,
+            "passenger_count": passenger_count,
+            "car_shape": car_shape,
+            "rent_resale_pct": rent_resale_pct,
+        }
 
     st.sidebar.markdown(
         '<div class="rent-fixed-resale-label" style="font-size:14px; font-weight:400;">📉 렌트 고정 잔존가치 (%)</div>',
