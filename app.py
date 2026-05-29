@@ -2886,20 +2886,166 @@ if visible_sections.get("compare", True):
 # ==========================================
 # [나에게 맞는 방식 선택 가이드]
 # ==========================================
+# =========================
+# 가이드 카드 HTML 함수
+# =========================
+
+def guide_card_installment():
+    return """
+    <div class="guide-card">
+        <div class="guide-title">💳 [소유형] 할부 구매</div>
+        <div class="guide-copy">내 차라는 확실한 자산, 오래도록 변함없이 타고 싶다면?</div>
+
+        <div class="guide-subtitle">✅ 할부 체크리스트</div>
+        <ol class="guide-list">
+            <li>5~10년 이상 장기 보유할 목적이 확실해요.</li>
+            <li>취등록세와 같은 초기 목돈을 지출할 여력이 있어요.</li>
+            <li>명의가 개인 또는 법인 소유인 온전한 자산을 원해요.</li>
+        </ol>
+
+        <div class="reality-box">
+            <div class="reality-title">💡 현실 체크</div>
+            <div class="reality-item">📉 <b>집 대출 한도 축소</b> : 내 명의로 대출이 잡히기 때문에, 추후 대출한도가 체크 꼭 필요해요!</div>
+            <div class="reality-item">💸 <b>부대 비용 발생</b> : 자동차세·취등록세·보험료 등 지속적인 비용이 발생해요.</div>
+            <div class="reality-item">🛡️ <b>자산 가치 관리</b> : 사고주의 & 관리를 통해 감가를 최소화하는게 중요해요.</div>
+            <div class="reality-item">🏢 <b>법인 시 주의</b> : 판매 시 부가세 10%가 발생하니 미리 대비해야해요!</div>
+        </div>
+
+        <div class="match-card match-installment">
+            <div class="match-icon">💳</div>
+            <div>
+                <div class="match-title">🔥 할부는 이런 경우 고민없이!</div>
+                <ul class="match-list">
+                    <li>✔ 차량가의 30% 이상 초기비용 부담이 가능하고</li>
+                    <li>✔ 5년 이상 장기 보유 예정이며</li>
+                    <li>✔ 사고·감가 리스크가 크게 부담되지 않고</li>
+                    <li>✔ 대출한도 영향이 중요하지 않다면</li>
+                </ul>
+                <div class="match-result">→ 할부가 잘 맞아요.</div>
+            </div>
+        </div>
+    </div>
+    """
+
+
+def guide_card_rent():
+    return """
+    <div class="guide-card">
+        <div class="guide-title">🚗 [재테크형] 장기렌트</div>
+        <div class="guide-copy">대출 한도 보호와 차량 관리의 효율성을 동시에!</div>
+
+        <div class="guide-subtitle">✅ 렌트 체크리스트</div>
+        <ol class="guide-list">
+            <li>추후 주택 마련 등을 위해 대출 한도를 확보해야 해요.</li>
+            <li>3~5년마다 새로운 차량으로 교체하는 주기를 선호해요.</li>
+            <li>정비·세금·사고처리 등 번거로운 일은 맡기고 싶어요.</li>
+        </ol>
+
+        <div class="reality-box">
+            <div class="reality-title">💡 현실 체크</div>
+            <div class="reality-item">🔓 <b>대출 한도 영향 없음</b> : 렌트사 명의라 개인 대출 한도에 영향이 없어요.</div>
+            <div class="reality-item">💵 <b>세금 할증 없음</b> : 재산세 등 세금 인상은 걱정하지 않으셔도 괜찮아요.</div>
+            <div class="reality-item">🚫 <b>보험·사고 기록</b> : 사고 시, 정해진 면책금으로 해결하고 개인 보험 이력에 남지 않아요.</div>
+            <div class="reality-item">🗓️ <b>관리 비용 최소화</b> : 보험·세금이 모두 월 이용료에 포함되며 추가 비용 부담이 없어요!</div>
+        </div>
+
+        <div class="match-card match-rent">
+            <div class="match-icon">🚗</div>
+            <div>
+                <div class="match-title">🔥 렌트는 이런 경우 고민없이!</div>
+                <ul class="match-list">
+                    <li>✔ DSR·대출한도 보호가 중요하고</li>
+                    <li>✔ 보험료가 높거나 사고이력이 부담되며</li>
+                    <li>✔ 5년 이하 운행 또는 주기적 신차 교체를 선호하고</li>
+                    <li>✔ 사고·세금·보험 처리를 간편하게 맡기고 싶다면</li>
+                </ul>
+                <div class="match-result">→ 장기렌트가 잘 맞아요.</div>
+            </div>
+        </div>
+    </div>
+    """
+
+
+def guide_card_lease():
+    return """
+    <div class="guide-card">
+        <div class="guide-title">✨ [이미지형] 리스</div>
+        <div class="guide-copy">품격은 일반 번호판으로, 초기 비용은 리스로 합리적으로!</div>
+
+        <div class="guide-subtitle">✅ 리스 체크리스트</div>
+        <ol class="guide-list">
+            <li>취등록세 초기 목돈 지출이 부담스러워요.</li>
+            <li>하·허·호 대신 일반 번호판을 원해요.</li>
+            <li>렌트보다 자차와 유사한 만족감을 원해요.</li>
+        </ol>
+
+        <div class="reality-box">
+            <div class="reality-title">💡 현실 체크</div>
+            <div class="reality-item">📉 <b>개인 보험요율 유지</b> : 무사고 경력이 길고 보험료가 낮다면 유리할 수 있어요.</div>
+            <div class="reality-item">✨ <b>일반 번호판</b> : 자가용과 동일한 번호판을 유지해요.</div>
+            <div class="reality-item">💰 <b>효율적 비용 구성</b> : 자동차세 포함 + 초기비용 부담을 낮출 수 있어요.</div>
+            <div class="reality-item">💵 <b>세금 인상</b> : 재산세 등 세금 인상은 걱정하지 않으셔도 괜찮아요!</div>
+        </div>
+
+        <div class="match-card match-lease">
+            <div class="match-icon">✨</div>
+            <div>
+                <div class="match-title">🔥 리스는 이런 경우 고민없이!</div>
+                <ul class="match-list">
+                    <li>✔ 초기비용은 줄이고 싶고</li>
+                    <li>✔ 무사고 경력이 길어 보험료가 낮으며</li>
+                    <li>✔ 할부보다 대출 영향은 줄이고 싶다면</li>
+                </ul>
+                <div class="match-result">→ 리스가 잘 맞아요.</div>
+            </div>
+        </div>
+    </div>
+    """
+
+
+# =========================
+# 가이드 출력
+# =========================
+
 if visible_sections.get("guide", True):
+
     selected_guide_cards = []
+
     if visible_sections.get("guide_installment", True):
-        selected_guide_cards.append('<div class="guide-card">\n<div class="guide-title">💳 [소유형] 할부 구매</div>\n<div class="guide-copy">내 차라는 확실한 자산, 오래도록 변함없이 타고 싶다면?</div>\n<div class="guide-subtitle">✅ 할부 체크리스트</div>\n<ol class="guide-list">\n<li>5~10년 이상 장기 보유할 목적이 확실해요.</li>\n<li>취등록세와 같은 초기 목돈을 지출할 여력이 있어요.</li>\n<li>명의가 개인 또는 법인 소유인 온전한 자산을 원해요.</li>\n</ol>\n<div class="reality-box">\n<div class="reality-title">💡 현실 체크</div>\n<div class="reality-item">📉 <b>집 대출 한도 축소</b> : 내 명의로 대출이 잡히기 때문에, 추후 대출한도가 체크 꼭 필요해요!</div>\n<div class="reality-item">💸 <b>부대 비용 발생</b> : 자동차세·취등록세·보험료 등 지속적인 비용이 발생해요.</div>\n<div class="reality-item">🛡️ <b>자산 가치 관리</b> : 사고주의 & 관리를 통해 감가를 최소화하는게 중요해요.</div>\n<div class="reality-item">🏢 <b>법인 시 주의</b> : 판매 시 부가세 10%가 발생하니 미리 대비해야해요!</div>\n</div>\n<div class="match-card match-installment">\n<div class="match-icon">💳</div>\n<div>\n<div class="match-title">🔥 할부는 이런 경우 고민없이!</div>\n<ul class="match-list">\n<li>✔ 차량가의 30% 이상 초기비용 부담이 가능하고</li>\n<li>✔ 5년 이상 장기 보유 예정이며</li>\n<li>✔ 사고·감가 리스크가 크게 부담되지 않고</li>\n<li>✔ 대출한도 영향이 중요하지 않다면</li>\n</ul>\n<div class="match-result">→ 할부가 잘 맞아요.</div>\n</div>\n</div>\n</div>')
+        selected_guide_cards.append(guide_card_installment())
+
     if visible_sections.get("guide_rent", True):
-        selected_guide_cards.append('<div class="guide-card">\n<div class="guide-title">🚗 [재테크형] 장기렌트</div>\n<div class="guide-copy">대출 한도 보호와 차량 관리의 효율성을 동시에!</div>\n<div class="guide-subtitle">✅ 렌트 체크리스트</div>\n<ol class="guide-list">\n<li>추후 주택 마련 등을 위해 대출 한도를 확보해야 해요.</li>\n<li>3~5년마다 새로운 차량으로 교체하는 주기를 선호해요.</li>\n<li>정비·세금·사고처리 등 번거로운 일은 맡기고 싶어요.</li>\n</ol>\n<div class="reality-box">\n<div class="reality-title">💡 현실 체크</div>\n<div class="reality-item">🔓 <b>대출 한도 영향 없음</b> : 렌트사 명의라 개인 대출 한도에 영향이 없어요.</div>\n<div class="reality-item">💵 <b>세금 할증 없음</b> : 재산세 등 세금 인상은 걱정하지 않으셔도 괜찮아요.</div>\n<div class="reality-item">🚫 <b>보험·사고 기록</b> : 사고 시, 정해진 면책금으로 해결하고 개인 보험 이력에 남지 않아요.</div>\n<div class="reality-item">🗓️ <b>관리 비용 최소화</b> : 보험·세금이 모두 월 이용료에 포함되며 추가 비용 부담이 없어요!</div>\n</div>\n<div class="match-card match-rent">\n<div class="match-icon">🚗</div>\n<div>\n<div class="match-title">🔥 렌트는 이런 경우 고민없이!</div>\n<ul class="match-list">\n<li>✔ DSR·대출한도 보호가 중요하고</li>\n<li>✔ 보험료가 높거나 사고이력이 부담되며</li>\n<li>✔ 5년 이하 운행 또는 주기적 신차 교체를 선호하고</li>\n<li>✔ 사고·세금·보험 처리를 간편하게 맡기고 싶다면</li>\n</ul>\n<div class="match-result">→ 장기렌트가 잘 맞아요.</div>\n</div>\n</div>\n</div>')
+        selected_guide_cards.append(guide_card_rent())
+
     if visible_sections.get("guide_lease", True):
-        selected_guide_cards.append('<div class="guide-card">\n<div class="guide-title">✨ [이미지형] 리스</div>\n<div class="guide-copy">품격은 일반 번호판으로, 초기 비용은 리스로 합리적으로!</div>\n<div class="guide-subtitle">✅ 리스 체크리스트</div>\n<ol class="guide-list">\n<li>취등록세 초기 목돈 지출이 부담스러워요.</li>\n<li>하·허·호 대신 일반 번호판을 원해요.</li>\n<li>렌트보다 자차와 유사한 만족감을 원해요.</li>\n</ol>\n<div class="reality-box">\n<div class="reality-title">💡 현실 체크</div>\n<div class="reality-item">📉 <b>개인 보험요율 유지</b> : 무사고 경력이 길고 보험료가 낮다면 유리할 수 있어요.</div>\n<div class="reality-item">✨ <b>일반 번호판</b> : 자가용과 동일한 번호판을 유지해요.</div>\n<div class="reality-item">💰 <b>효율적 비용 구성</b> : 자동차세 포함 + 초기비용 부담을 낮출 수 있어요.</div>\n<div class="reality-item">💵 <b>세금 인상</b> : 재산세 등 세금 인상은 걱정하지 않으셔도 괜찮아요!</div>\n</div>\n<div class="match-card match-lease">\n<div class="match-icon">✨</div>\n<div>\n<div class="match-title">🔥 리스는 이런 경우 고민없이!</div>\n<ul class="match-list">\n<li>✔ 초기비용은 줄이고 싶고</li>\n<li>✔ 무사고 경력이 길어 보험료가 낮으며</li>\n<li>✔ 할부보다 대출 영향은 줄이고 싶다면</li>\n</ul>\n<div class="match-result">→ 리스가 잘 맞아요.</div>\n</div>\n</div>\n</div>')
+        selected_guide_cards.append(guide_card_lease())
 
     if selected_guide_cards:
-        if (visible_sections.get("common", True) or visible_sections.get("installment_condition", True) or selected_summary_views or visible_sections.get("rate_table", True) or (visible_sections.get("compare", True) and len(selected_compare_methods) >= 2)):
+
+        if (
+            visible_sections.get("common", True)
+            or visible_sections.get("installment_condition", True)
+            or selected_summary_views
+            or visible_sections.get("rate_table", True)
+            or (
+                visible_sections.get("compare", True)
+                and len(selected_compare_methods) >= 2
+            )
+        ):
             render_output_section_gap()
-        st.markdown('<div class="excel-header-gray">🚗 나에게 맞는 방식 선택 가이드</div>', unsafe_allow_html=True)
-        guide_html = """
+
+        st.markdown(
+            '<div class="excel-header-gray">🚗 나에게 맞는 방식 선택 가이드</div>',
+            unsafe_allow_html=True
+        )
+
+        guide_html = f"""
+        <div class="guide-grid">
+            {''.join(selected_guide_cards)}
+        </div>
+        """
+
+        st.markdown(guide_html, unsafe_allow_html=True)
 <style>
 .guide-wrap{
     width:100%;
