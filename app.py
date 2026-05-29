@@ -125,74 +125,117 @@ def render_share_section_selector(current_sections):
     .share-section-box {
         border: 1px solid #d8dee8;
         border-radius: 12px;
-        padding: 14px 16px 12px 16px;
-        margin: 8px 0 14px 0;
+        padding: 12px 14px 10px 14px;
+        margin: 0 0 10px 0;
         background: rgba(255,255,255,0.78);
+    }
+    .share-section-title-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        margin-bottom: 4px;
     }
     .share-section-title {
         font-size: 17px;
         font-weight: 900;
         color: #0b3873;
-        margin-bottom: 2px;
+        margin: 0;
     }
     .share-section-desc {
         font-size: 12px;
         color: #6b7280;
-        margin-bottom: 10px;
+        margin: 0;
+    }
+    .share-section-small-note {
+        color: #6b7280;
+        font-size: 12px;
+        line-height: 1.4;
+        padding-top: 2px;
     }
     html.caprio-dark .share-section-box {
         background: rgba(16,23,34,0.92);
         border-color: #46566d;
     }
     html.caprio-dark .share-section-title { color: #9fc7ff; }
-    html.caprio-dark .share-section-desc { color: #b7c0cf; }
+    html.caprio-dark .share-section-desc,
+    html.caprio-dark .share-section-small-note { color: #b7c0cf; }
+
+    html.caprio-light div[data-testid="stCheckbox"] [data-testid="stMarkdownContainer"] p,
+    html:not(.caprio-dark) div[data-testid="stCheckbox"] [data-testid="stMarkdownContainer"] p {
+        color: #111827 !important;
+        -webkit-text-fill-color: #111827 !important;
+    }
+    html.caprio-light div[data-testid="stCheckbox"] svg,
+    html:not(.caprio-dark) div[data-testid="stCheckbox"] svg {
+        color: #6b7280 !important;
+        fill: #6b7280 !important;
+    }
+    html.caprio-light div[data-testid="stButton"] button,
+    html:not(.caprio-dark) div[data-testid="stButton"] button {
+        background-color: #ffffff !important;
+        color: #111827 !important;
+        border: 1px solid #d8dee8 !important;
+        box-shadow: none !important;
+        -webkit-text-fill-color: #111827 !important;
+    }
+    html.caprio-light div[data-testid="stButton"] button p,
+    html:not(.caprio-dark) div[data-testid="stButton"] button p {
+        color: #111827 !important;
+        -webkit-text-fill-color: #111827 !important;
+    }
     </style>
     <div class="share-section-box">
-        <div class="share-section-title">📤 고객 공유 항목 선택</div>
-        <div class="share-section-desc">체크한 항목만 영업자 화면과 고객 공유 링크에 표시됩니다.</div>
+        <div class="share-section-title-row">
+            <div>
+                <div class="share-section-title">📤 고객 공유 항목 선택</div>
+                <div class="share-section-desc">체크한 항목만 영업자 화면과 고객 공유 링크에 표시됩니다.</div>
+            </div>
+        </div>
     </div>
     """, unsafe_allow_html=True)
 
-    ctrl_col1, ctrl_col2, ctrl_col3 = st.columns([1.1, 1.1, 4.8])
-    with ctrl_col1:
-        if st.button("전체 표시", use_container_width=True):
-            set_all_sections(True)
-            st.rerun()
-    with ctrl_col2:
-        if st.button("전체 해제", use_container_width=True):
-            set_all_sections(False)
-            st.rerun()
+    top_col1, top_col2, top_col3, top_col4, top_col5 = st.columns([1.2, 1.05, 1.0, 1.35, 1.45])
+    with top_col1:
+        st.checkbox("비교 차량 공통 조건", key="share_common")
+    with top_col2:
+        st.checkbox("비교 계산기", key="share_summary", on_change=sync_parent_to_children, args=("summary",))
+    with top_col3:
+        st.checkbox("검증 요율표", key="share_rate_table")
+    with top_col4:
+        st.checkbox("할부 · 렌트 · 리스 비교표", key="share_compare", on_change=sync_parent_to_children, args=("compare",))
+    with top_col5:
+        st.checkbox("나에게 맞는 방식 선택 가이드", key="share_guide", on_change=sync_parent_to_children, args=("guide",))
 
-    st.checkbox("비교 차량 공통 조건", key="share_common")
-
-    st.checkbox("견적 요약", key="share_summary", on_change=sync_parent_to_children, args=("summary",))
-    summary_col1, summary_col2, summary_col3 = st.columns([1, 1, 3])
-    with summary_col1:
+    sub_col1, sub_col2, sub_col3, sub_col4, sub_col5, sub_col6, sub_col7, sub_col8, sub_col9, sub_col10 = st.columns([0.75, 0.75, 0.75, 0.75, 0.75, 0.75, 0.75, 0.75, 0.75, 1.4])
+    with sub_col1:
         st.checkbox("반납형", key="share_summary_return", disabled=not st.session_state.get("share_summary", True), on_change=sync_children_to_parent, args=("summary",))
-    with summary_col2:
+    with sub_col2:
         st.checkbox("인수형", key="share_summary_takeover", disabled=not st.session_state.get("share_summary", True), on_change=sync_children_to_parent, args=("summary",))
-
-    st.checkbox("검증 요율표", key="share_rate_table")
-
-    st.checkbox("할부 · 렌트 · 리스 비교표", key="share_compare", on_change=sync_parent_to_children, args=("compare",))
-    compare_col1, compare_col2, compare_col3, compare_col4 = st.columns([1, 1, 1, 2.5])
-    with compare_col1:
+    with sub_col3:
         st.checkbox("할부", key="share_compare_installment", disabled=not st.session_state.get("share_compare", True), on_change=sync_children_to_parent, args=("compare",))
-    with compare_col2:
+    with sub_col4:
         st.checkbox("렌트", key="share_compare_rent", disabled=not st.session_state.get("share_compare", True), on_change=sync_children_to_parent, args=("compare",))
-    with compare_col3:
+    with sub_col5:
         st.checkbox("리스", key="share_compare_lease", disabled=not st.session_state.get("share_compare", True), on_change=sync_children_to_parent, args=("compare",))
-    with compare_col4:
-        st.caption("비교표는 최소 2개 선택")
-
-    st.checkbox("나에게 맞는 방식 선택 가이드", key="share_guide", on_change=sync_parent_to_children, args=("guide",))
-    guide_col1, guide_col2, guide_col3, guide_col4 = st.columns([1, 1, 1, 2.5])
-    with guide_col1:
+    with sub_col6:
         st.checkbox("할부", key="share_guide_installment", disabled=not st.session_state.get("share_guide", True), on_change=sync_children_to_parent, args=("guide",))
-    with guide_col2:
+    with sub_col7:
         st.checkbox("렌트", key="share_guide_rent", disabled=not st.session_state.get("share_guide", True), on_change=sync_children_to_parent, args=("guide",))
-    with guide_col3:
+    with sub_col8:
         st.checkbox("리스", key="share_guide_lease", disabled=not st.session_state.get("share_guide", True), on_change=sync_children_to_parent, args=("guide",))
+    with sub_col9:
+        st.markdown('<div class="share-section-small-note">비교표 최소 2개</div>', unsafe_allow_html=True)
+    with sub_col10:
+        all_col1, all_col2 = st.columns(2, gap="small")
+        with all_col1:
+            if st.button("전체 표시", use_container_width=True):
+                set_all_sections(True)
+                st.rerun()
+        with all_col2:
+            if st.button("전체 해제", use_container_width=True):
+                set_all_sections(False)
+                st.rerun()
 
     selected_compare_count = sum(
         bool(st.session_state.get(f"share_{key}", False))
@@ -205,10 +248,20 @@ def render_share_section_selector(current_sections):
 
 
 def render_quote_history_area(raw_data, car_name, rent_monthly_pay, months, mileage, rent_resale_pct, make_share_url_func, visible_sections):
-    st.markdown("---")
     st.markdown("### 🕘 견적 저장 / 이력")
 
-    if st.button("➕ 현재 견적 저장", use_container_width=True):
+    save_col1, save_col2 = st.columns([1, 1], gap="small")
+    with save_col1:
+        save_clicked = st.button("➕ 현재 견적 저장", use_container_width=True)
+    with save_col2:
+        clear_clicked = st.button("🗑️ 이력 전체 삭제", use_container_width=True)
+
+    if clear_clicked:
+        st.session_state.quote_history = []
+        st.session_state.raw_quote_input = ""
+        st.rerun()
+
+    if save_clicked:
         if raw_data.strip() or car_name:
             short_car_name = car_name[:15] + "..." if len(car_name) > 15 else car_name
             history_title = (
@@ -237,7 +290,7 @@ def render_quote_history_area(raw_data, car_name, rent_monthly_pay, months, mile
 
     if st.session_state.quote_history:
         for idx, item in enumerate(st.session_state.quote_history):
-            history_col1, history_col2 = st.columns([0.82, 0.18], gap="small")
+            history_col1, history_col2 = st.columns([0.78, 0.22], gap="small")
             with history_col1:
                 if st.button(
                     f"📄 견적 {idx+1}",
@@ -255,19 +308,19 @@ def render_quote_history_area(raw_data, car_name, rent_monthly_pay, months, mile
                     <html>
                     <head>
                     <style>
-                        html, body {{ margin:0; padding:0; width:100%; height:40px; overflow:hidden; }}
+                        html, body {{ margin:0; padding:0; width:100%; height:38px; overflow:hidden; }}
                         button {{
                             width:100%;
-                            height:40px;
-                            min-height:40px;
+                            height:38px;
+                            min-height:38px;
                             padding:0;
                             border-radius:8px;
                             border:1px solid #e3c86a;
                             background:#fff4c2;
                             color:#7a5b00;
                             cursor:pointer;
-                            font-size:16px;
-                            line-height:40px;
+                            font-size:15px;
+                            line-height:38px;
                             display:flex;
                             align-items:center;
                             justify-content:center;
@@ -288,13 +341,8 @@ def render_quote_history_area(raw_data, car_name, rent_monthly_pay, months, mile
                     </body>
                     </html>
                     """,
-                    height=40,
+                    height=38,
                 )
-
-        if st.button("🗑️ 이력 전체 삭제", use_container_width=True):
-            st.session_state.quote_history = []
-            st.session_state.raw_quote_input = ""
-            st.rerun()
     else:
         st.caption("저장된 견적이 없습니다.")
 
@@ -1356,9 +1404,9 @@ st.markdown("""
         }
     }
 
-    .common-table-desktop { display: table; }
+    .common-table-desktop { display: none !important; }
     .vehicle-table-mobile-primary,
-    .vehicle-table-mobile-secondary { display: none; }
+    .vehicle-table-mobile-secondary { display: table; }
 
     .vehicle-table-mobile-primary,
     .vehicle-table-mobile-secondary {
@@ -1586,6 +1634,27 @@ st.markdown("""
 
     html.caprio-light div[data-testid="stFormSubmitButton"] button p,
     html:not(.caprio-dark) div[data-testid="stFormSubmitButton"] button p {
+        color: #111827 !important;
+        -webkit-text-fill-color: #111827 !important;
+    }
+
+
+
+    /* [PATCH] 공유 선택/견적 이력 화이트모드 색상 보정 */
+    html.caprio-light .common-info-box div[style*="color:#0b3873"],
+    html:not(.caprio-dark) .common-info-box div[style*="color:#0b3873"] {
+        color: #0b3873 !important;
+    }
+    html.caprio-light div[data-testid="stButton"] button,
+    html:not(.caprio-dark) div[data-testid="stButton"] button {
+        background-color: #ffffff !important;
+        color: #111827 !important;
+        border: 1px solid #d8dee8 !important;
+        box-shadow: none !important;
+        -webkit-text-fill-color: #111827 !important;
+    }
+    html.caprio-light div[data-testid="stButton"] button p,
+    html:not(.caprio-dark) div[data-testid="stButton"] button p {
         color: #111827 !important;
         -webkit-text-fill-color: #111827 !important;
     }
@@ -2025,7 +2094,9 @@ if not IS_CLIENT_VIEW:
         visible_sections = normalize_visible_sections(st.session_state.pending_visible_sections)
         st.session_state.pending_visible_sections = None
 
-    visible_sections = render_share_section_selector(visible_sections)
+    visible_sections = normalize_visible_sections(visible_sections)
+    for section_key, section_value in visible_sections.items():
+        st.session_state.setdefault(f"share_{section_key}", section_value)
 
     # ==========================================
     # [TOP MAIN] 타사 견적 파싱 구역
@@ -2162,9 +2233,13 @@ if not IS_CLIENT_VIEW:
     """, unsafe_allow_html=True)
 
     # ==========================================
-    # [견적 저장 / 이력 - 메인 상단]
+    # [고객 공유 항목 선택 / 견적 저장 이력]
     # ==========================================
-    render_quote_history_area(raw_data, car_name, rent_monthly_pay, months, mileage, rent_resale_pct, make_share_url, visible_sections)
+    control_col, history_col = st.columns([0.68, 0.32], gap="medium")
+    with control_col:
+        visible_sections = render_share_section_selector(visible_sections)
+    with history_col:
+        render_quote_history_area(raw_data, car_name, rent_monthly_pay, months, mileage, rent_resale_pct, make_share_url, visible_sections)
 
 # ==========================================
 # [BACKEND] 연산 로직
@@ -2339,8 +2414,8 @@ if visible_sections.get("common", True):
     </div>
     """, unsafe_allow_html=True)
 
-# 고객용 링크에서만 조건 설정표 노출
-if IS_CLIENT_VIEW and visible_sections.get("common", True):
+# 고객/영업자 공통 조건 설정표 노출
+if visible_sections.get("common", True):
     st.markdown(f"""
         <div class="common-info-box" style="margin-top:-8px; margin-bottom:20px;">
             <div style="font-size:15px; font-weight:bold; margin-bottom:10px; color:#0b3873;">
@@ -2631,17 +2706,17 @@ if visible_sections.get("guide", True):
     border-radius:14px;
     padding:15px 16px;
     display:grid;
-    grid-template-columns:76px 1fr;
-    gap:14px;
-    align-items:center;
+    grid-template-columns:1fr;
+    gap:8px;
+    align-items:start;
     box-sizing:border-box;
     border:1px solid rgba(0,0,0,0.08);
 }
 .match-icon{
-    width:68px;
-    height:68px;
+    width:0;
+    height:0;
     border-radius:999px;
-    display:flex;
+    display:none;
     align-items:center;
     justify-content:center;
     font-size:33px;
