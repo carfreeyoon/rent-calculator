@@ -3046,6 +3046,8 @@ if visible_sections.get("guide", True):
         """
 
         st.markdown(guide_html, unsafe_allow_html=True)
+
+        st.markdown("""
 <style>
 .guide-wrap{
     width:100%;
@@ -3257,7 +3259,7 @@ html.caprio-dark .match-lease .match-result{
         }
     }
 </style>
-
+""", unsafe_allow_html=True)
 
 <div class="guide-wrap">
 """ + "\n".join(selected_guide_cards) + """
