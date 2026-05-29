@@ -1104,7 +1104,7 @@ st.markdown("""
     @media (max-width: 768px) {
         .mobile-compare-gap {
             display: block;
-            height: 18px;
+            height: 34px;
         }
 
         /* 모바일 - 할부·렌트·리스 비교표 가로폭 보정 */
@@ -1456,7 +1456,7 @@ st.markdown("""
 
     @media (max-width: 768px) {
         .section-spacer-soft {
-            height: 24px !important;
+            height: 34px !important;
             line-height: 0 !important;
             margin: 0 !important;
             padding: 0 !important;
@@ -1874,7 +1874,7 @@ st.markdown("""
         }
 
         .mobile-compare-gap {
-            height: 12px !important;
+            height: 34px !important;
             line-height: 0 !important;
             margin: 0 !important;
             padding: 0 !important;
@@ -1913,8 +1913,8 @@ st.markdown("""
     @media (max-width: 768px) {
         .output-section-gap {
             display: block !important;
-            height: 26px !important;
-            min-height: 26px !important;
+            height: 34px !important;
+            min-height: 34px !important;
             line-height: 0 !important;
             margin: 0 !important;
             padding: 0 !important;
@@ -1922,8 +1922,8 @@ st.markdown("""
 
         .mobile-compare-gap {
             display: block !important;
-            height: 26px !important;
-            min-height: 26px !important;
+            height: 34px !important;
+            min-height: 34px !important;
             line-height: 0 !important;
             margin: 0 !important;
             padding: 0 !important;
@@ -2806,7 +2806,7 @@ if visible_sections.get("rate_table", True):
 
         st.markdown(
             """
-            <div style="margin-top:-22px; margin-left:0px;">
+            <div style="margin-top:6px; margin-bottom:10px; margin-left:0px; line-height:1.25;">
                 <span style="color:#ff7a7a; font-size:11px; font-weight:600;">
                     * 차량별 상이 · 시세 확인 필수
                 </span>
@@ -3102,6 +3102,14 @@ html.caprio-dark .match-lease .match-result{
         padding:15px 16px !important;
     }
 }
+
+
+    /* [FINAL GAP CLEANUP] 요율표 내부 주석/소제목 겹침 방지 */
+    @media (max-width: 768px) {
+        .matrix-table {
+            margin-bottom: 10px !important;
+        }
+    }
 </style>
 
 
