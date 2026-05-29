@@ -194,7 +194,7 @@ def render_share_section_selector(current_sections):
     .share-selector-anchor + div[data-testid="stHorizontalBlock"] {
         align-items: flex-start !important;
         margin-top: 0 !important;
-        margin-bottom: 4px !important;
+        margin-bottom: 0 !important;
     }
 
     .share-selector-anchor + div[data-testid="stHorizontalBlock"] > div {
@@ -204,8 +204,8 @@ def render_share_section_selector(current_sections):
     .share-divider-line {
         height: 1px;
         background: #d8dee8;
-        width: 86%;
-        margin: 9px auto 11px auto;
+        width: 82%;
+        margin: 8px auto 10px auto;
     }
 
     html.caprio-dark .share-divider-line {
@@ -226,17 +226,35 @@ def render_share_section_selector(current_sections):
         color: #b7c0cf !important;
     }
 
-    .share-blank-cell {
-        min-height: 26px;
+    .share-row-spacer {
+        height: 8px;
+    }
+
+    .share-selector-top-row div[data-testid="stButton"] button {
+        min-height: 46px !important;
+        height: 46px !important;
+        border-radius: 8px !important;
+        font-weight: 800 !important;
+        background-color: #f4f7fb !important;
+        border: 1px solid #cfd8e6 !important;
+        color: #111827 !important;
+        -webkit-text-fill-color: #111827 !important;
+    }
+
+    html.caprio-dark .share-selector-top-row div[data-testid="stButton"] button {
+        background-color: #111827 !important;
+        border-color: #46566d !important;
+        color: #f3f6fb !important;
+        -webkit-text-fill-color: #f3f6fb !important;
     }
 
     div[data-testid="stCheckbox"] {
-        margin: 0 0 10px 0 !important;
+        margin: 0 0 9px 0 !important;
         padding: 0 !important;
     }
 
     div[data-testid="stCheckbox"] label {
-        min-height: 26px !important;
+        min-height: 25px !important;
         align-items: center !important;
         justify-content: center !important;
         width: 100% !important;
@@ -250,6 +268,7 @@ def render_share_section_selector(current_sections):
         line-height: 1.15 !important;
         margin: 0 !important;
         white-space: nowrap !important;
+        text-align: center !important;
     }
 
     html.caprio-light div[data-testid="stCheckbox"] [data-testid="stMarkdownContainer"] p,
@@ -258,11 +277,11 @@ def render_share_section_selector(current_sections):
         -webkit-text-fill-color: #111827 !important;
     }
 
-    /* 화이트 모드 체크 해제: 검정색 방지, 회색 계열 */
+    /* 화이트 모드 체크 해제: 검정 방지, 회색 계열 */
+    html.caprio-light div[data-testid="stCheckbox"] div[role="checkbox"][aria-checked="false"],
+    html:not(.caprio-dark) div[data-testid="stCheckbox"] div[role="checkbox"][aria-checked="false"],
     html.caprio-light div[data-testid="stCheckbox"] div[data-baseweb="checkbox"][aria-checked="false"],
     html:not(.caprio-dark) div[data-testid="stCheckbox"] div[data-baseweb="checkbox"][aria-checked="false"],
-    html.caprio-light div[data-testid="stCheckbox"] div[data-baseweb="checkbox"]:not([aria-checked="true"]),
-    html:not(.caprio-dark) div[data-testid="stCheckbox"] div[data-baseweb="checkbox"]:not([aria-checked="true"]),
     html.caprio-light div[data-testid="stCheckbox"] label:has(input:not(:checked)) > div:first-child,
     html:not(.caprio-dark) div[data-testid="stCheckbox"] label:has(input:not(:checked)) > div:first-child,
     html.caprio-light div[data-testid="stCheckbox"] label:has(input[aria-checked="false"]) > div:first-child,
@@ -276,7 +295,9 @@ def render_share_section_selector(current_sections):
     html.caprio-light div[data-testid="stCheckbox"] label:has(input:not(:checked)) svg,
     html:not(.caprio-dark) div[data-testid="stCheckbox"] label:has(input:not(:checked)) svg,
     html.caprio-light div[data-testid="stCheckbox"] label:has(input[aria-checked="false"]) svg,
-    html:not(.caprio-dark) div[data-testid="stCheckbox"] label:has(input[aria-checked="false"]) svg {
+    html:not(.caprio-dark) div[data-testid="stCheckbox"] label:has(input[aria-checked="false"]) svg,
+    html.caprio-light div[data-testid="stCheckbox"] div[role="checkbox"][aria-checked="false"] svg,
+    html:not(.caprio-dark) div[data-testid="stCheckbox"] div[role="checkbox"][aria-checked="false"] svg {
         color: #64748b !important;
         fill: #64748b !important;
     }
@@ -296,15 +317,28 @@ def render_share_section_selector(current_sections):
         -webkit-text-fill-color: #111827 !important;
     }
 
+    /* 모바일: 체크 UI는 세로 그룹처럼 자연스럽게 붙이고 불필요한 간격 축소 */
     @media (max-width: 768px) {
+        .share-selector-top-row div[data-testid="stButton"] button {
+            min-height: 42px !important;
+            height: 42px !important;
+        }
         .share-divider-line {
-            margin: 8px auto 9px auto;
+            width: 92%;
+            margin: 6px auto 8px auto;
         }
         .share-mini-note {
             font-size: 10px;
+            margin-top: 4px;
         }
         div[data-testid="stCheckbox"] {
-            margin-bottom: 8px !important;
+            margin-bottom: 7px !important;
+        }
+        div[data-testid="stCheckbox"] label {
+            justify-content: flex-start !important;
+        }
+        div[data-testid="stCheckbox"] [data-testid="stMarkdownContainer"] p {
+            text-align: left !important;
         }
     }
     </style>
@@ -315,42 +349,48 @@ def render_share_section_selector(current_sections):
         for key, default_value in DEFAULT_VISIBLE_SECTIONS.items()
     )
 
-    st.markdown('<div class="share-selector-anchor"></div>', unsafe_allow_html=True)
-    share_cols = st.columns([0.95, 1, 1, 1, 1, 1], gap="small")
+    st.markdown('<div class="share-selector-anchor share-selector-top-row"></div>', unsafe_allow_html=True)
+    top_cols = st.columns([0.95, 1, 1, 1, 1, 1], gap="small")
 
-    with share_cols[0]:
+    with top_cols[0]:
         if st.button("전체 선택 / 해제", use_container_width=True):
             set_all_sections(not all_selected_now)
             st.rerun()
-
-    with share_cols[1]:
+    with top_cols[1]:
         st.checkbox("조건설정", key="share_conditions", on_change=sync_parent_to_children, args=("conditions",))
-        st.markdown('<div class="share-divider-line"></div>', unsafe_allow_html=True)
+    with top_cols[2]:
+        st.checkbox("비교 계산기", key="share_summary", on_change=sync_parent_to_children, args=("summary",))
+    with top_cols[3]:
+        st.checkbox("검증 요율표", key="share_rate_table")
+    with top_cols[4]:
+        st.checkbox("비교표", key="share_compare", on_change=sync_parent_to_children, args=("compare",))
+    with top_cols[5]:
+        st.checkbox("선택 가이드", key="share_guide", on_change=sync_parent_to_children, args=("guide",))
+
+    line_cols = st.columns([0.95, 1, 1, 1, 1, 1], gap="small")
+    with line_cols[0]:
+        st.markdown('<div class="share-row-spacer"></div>', unsafe_allow_html=True)
+    for line_col in line_cols[1:]:
+        with line_col:
+            st.markdown('<div class="share-divider-line"></div>', unsafe_allow_html=True)
+
+    child_cols = st.columns([0.95, 1, 1, 1, 1, 1], gap="small")
+    with child_cols[0]:
+        st.markdown('<div class="share-row-spacer"></div>', unsafe_allow_html=True)
+    with child_cols[1]:
         st.checkbox("공통조건", key="share_common", disabled=not st.session_state.get("share_conditions", True), on_change=sync_children_to_parent, args=("conditions",))
         st.checkbox("할부조건", key="share_installment_condition", disabled=not st.session_state.get("share_conditions", True), on_change=sync_children_to_parent, args=("conditions",))
-
-    with share_cols[2]:
-        st.checkbox("비교 계산기", key="share_summary", on_change=sync_parent_to_children, args=("summary",))
-        st.markdown('<div class="share-divider-line"></div>', unsafe_allow_html=True)
+    with child_cols[2]:
         st.checkbox("반납형", key="share_summary_return", disabled=not st.session_state.get("share_summary", True), on_change=sync_children_to_parent, args=("summary",))
         st.checkbox("인수형", key="share_summary_takeover", disabled=not st.session_state.get("share_summary", True), on_change=sync_children_to_parent, args=("summary",))
-
-    with share_cols[3]:
-        st.checkbox("검증 요율표", key="share_rate_table")
-        st.markdown('<div class="share-divider-line"></div>', unsafe_allow_html=True)
-        st.markdown('<div class="share-blank-cell"></div>', unsafe_allow_html=True)
-
-    with share_cols[4]:
-        st.checkbox("비교표", key="share_compare", on_change=sync_parent_to_children, args=("compare",))
-        st.markdown('<div class="share-divider-line"></div>', unsafe_allow_html=True)
+    with child_cols[3]:
+        st.markdown('<div class="share-row-spacer"></div>', unsafe_allow_html=True)
+    with child_cols[4]:
         st.checkbox("할부", key="share_compare_installment", disabled=not st.session_state.get("share_compare", True), on_change=sync_children_to_parent, args=("compare",))
         st.checkbox("렌트", key="share_compare_rent", disabled=not st.session_state.get("share_compare", True), on_change=sync_children_to_parent, args=("compare",))
         st.checkbox("리스", key="share_compare_lease", disabled=not st.session_state.get("share_compare", True), on_change=sync_children_to_parent, args=("compare",))
         st.markdown('<div class="share-mini-note">최소 2개 선택</div>', unsafe_allow_html=True)
-
-    with share_cols[5]:
-        st.checkbox("선택 가이드", key="share_guide", on_change=sync_parent_to_children, args=("guide",))
-        st.markdown('<div class="share-divider-line"></div>', unsafe_allow_html=True)
+    with child_cols[5]:
         st.checkbox("할부", key="share_guide_installment", disabled=not st.session_state.get("share_guide", True), on_change=sync_children_to_parent, args=("guide",))
         st.checkbox("렌트", key="share_guide_rent", disabled=not st.session_state.get("share_guide", True), on_change=sync_children_to_parent, args=("guide",))
         st.checkbox("리스", key="share_guide_lease", disabled=not st.session_state.get("share_guide", True), on_change=sync_children_to_parent, args=("guide",))
@@ -363,7 +403,6 @@ def render_share_section_selector(current_sections):
         st.warning("비교표는 최소 2개 선택이 필요합니다. 저장/공유 시 할부·렌트 기준으로 자동 보정됩니다.")
 
     return collect_visible_sections_from_state()
-
 
 def render_quote_history_area(raw_data, car_name, rent_monthly_pay, months, mileage, rent_resale_pct, make_share_url_func, visible_sections):
     st.markdown('<div class="quote-history-panel">', unsafe_allow_html=True)
