@@ -162,11 +162,11 @@ def render_share_section_selector(current_sections):
 
     st.markdown("""
     <style>
-    /* 공유 선택 영역: 헤더 제거 / 이미지 기준 압축 레이아웃 */
+    /* 공유 선택 영역: 사용자가 준 비주얼 기준 고정 레이아웃 */
     .share-section-small-note {
         color: #6b7280;
         font-size: 12px;
-        line-height: 1.15;
+        line-height: 1.25;
         margin: 10px 0 0 0;
         text-align: center;
         white-space: nowrap;
@@ -177,12 +177,27 @@ def render_share_section_selector(current_sections):
     .share-section-divider {
         height: 1px;
         background: #d8dee8;
-        margin: 8px 0 12px 0;
-        width: 100%;
+        margin: 8px auto 16px auto;
+        width: 92%;
     }
 
     html.caprio-dark .share-section-divider {
         background: #46566d;
+    }
+
+    .share-vertical-separator {
+        width: 1px;
+        min-height: 132px;
+        background: #d8dee8;
+        margin: 6px auto 0 auto;
+    }
+
+    html.caprio-dark .share-vertical-separator {
+        background: #46566d;
+    }
+
+    .share-spacer-blank {
+        min-height: 70px;
     }
 
     div[data-testid="stCheckbox"] {
@@ -192,6 +207,7 @@ def render_share_section_selector(current_sections):
     div[data-testid="stCheckbox"] label {
         min-height: 30px !important;
         align-items: center !important;
+        justify-content: center !important;
     }
 
     div[data-testid="stCheckbox"] [data-testid="stMarkdownContainer"] p {
@@ -209,26 +225,24 @@ def render_share_section_selector(current_sections):
     }
 
     /* 화이트 모드 체크 해제: 검정 박스 방지 */
-    html.caprio-light div[data-testid="stCheckbox"] input:not(:checked) + div,
-    html:not(.caprio-dark) div[data-testid="stCheckbox"] input:not(:checked) + div,
-    html.caprio-light div[data-testid="stCheckbox"] input:not(:checked) ~ div,
-    html:not(.caprio-dark) div[data-testid="stCheckbox"] input:not(:checked) ~ div,
-    html.caprio-light div[data-testid="stCheckbox"] label > div:first-child,
-    html:not(.caprio-dark) div[data-testid="stCheckbox"] label > div:first-child {
+    html.caprio-light div[data-testid="stCheckbox"] label:has(input:not(:checked)) span:first-child,
+    html:not(.caprio-dark) div[data-testid="stCheckbox"] label:has(input:not(:checked)) span:first-child,
+    html.caprio-light div[data-testid="stCheckbox"] label:has(input[aria-checked="false"]) span:first-child,
+    html:not(.caprio-dark) div[data-testid="stCheckbox"] label:has(input[aria-checked="false"]) span:first-child,
+    html.caprio-light div[data-testid="stCheckbox"] label:has(input:not(:checked)) > div:first-child,
+    html:not(.caprio-dark) div[data-testid="stCheckbox"] label:has(input:not(:checked)) > div:first-child {
+        background-color: #d1d5db !important;
         border-color: #cbd5e1 !important;
+        color: #6b7280 !important;
+        fill: #6b7280 !important;
     }
 
-    html.caprio-light div[data-testid="stCheckbox"] input:not(:checked) + div,
-    html:not(.caprio-dark) div[data-testid="stCheckbox"] input:not(:checked) + div {
-        background-color: #e5e7eb !important;
-    }
-
-    html.caprio-light div[data-testid="stCheckbox"] input:not(:checked) + div svg,
-    html:not(.caprio-dark) div[data-testid="stCheckbox"] input:not(:checked) + div svg,
-    html.caprio-light div[data-testid="stCheckbox"] input:not(:checked) ~ div svg,
-    html:not(.caprio-dark) div[data-testid="stCheckbox"] input:not(:checked) ~ div svg {
-        color: #9ca3af !important;
-        fill: #9ca3af !important;
+    html.caprio-light div[data-testid="stCheckbox"] label:has(input:not(:checked)) svg,
+    html:not(.caprio-dark) div[data-testid="stCheckbox"] label:has(input:not(:checked)) svg,
+    html.caprio-light div[data-testid="stCheckbox"] label:has(input[aria-checked="false"]) svg,
+    html:not(.caprio-dark) div[data-testid="stCheckbox"] label:has(input[aria-checked="false"]) svg {
+        color: #6b7280 !important;
+        fill: #6b7280 !important;
     }
 
     html.caprio-light div[data-testid="stButton"] button,
@@ -248,8 +262,11 @@ def render_share_section_selector(current_sections):
 
     @media (max-width: 768px) {
         .share-section-small-note {
-            text-align: left;
-            margin: 4px 0 6px 0;
+            text-align: center;
+            margin: 6px 0 8px 0;
+        }
+        .share-vertical-separator {
+            display: none !important;
         }
     }
     </style>
@@ -260,55 +277,58 @@ def render_share_section_selector(current_sections):
         for key, default_value in DEFAULT_VISIBLE_SECTIONS.items()
     )
 
-    top_col1, top_col2 = st.columns([1.0, 4.2], gap="small")
+    top_col1, top_col2 = st.columns([1.1, 4.9], gap="small")
     with top_col1:
         if st.button("전체 선택 / 해제", use_container_width=True):
             set_all_sections(not all_selected_now)
             st.rerun()
     with top_col2:
-        st.markdown('<div class="share-section-small-note" style="text-align:left; margin-top:12px;">비교표 최소 2개</div>', unsafe_allow_html=True)
+        st.markdown('<div style="height:38px;"></div>', unsafe_allow_html=True)
 
-    share_cols = st.columns([1.05, 1.08, 1.05, 1.06, 1.12], gap="medium")
+    grid_cols = st.columns([1.02, 0.035, 1.08, 0.035, 1.04, 0.035, 1.08, 0.035, 1.10], gap="small")
 
-    with share_cols[0]:
+    with grid_cols[0]:
         st.checkbox("공통조건", key="share_common")
         st.markdown('<div class="share-section-divider"></div>', unsafe_allow_html=True)
+        st.markdown('<div class="share-spacer-blank"></div>', unsafe_allow_html=True)
 
-    with share_cols[1]:
+    with grid_cols[1]:
+        st.markdown('<div class="share-vertical-separator"></div>', unsafe_allow_html=True)
+
+    with grid_cols[2]:
         st.checkbox("비교 계산기", key="share_summary", on_change=sync_parent_to_children, args=("summary",))
         st.markdown('<div class="share-section-divider"></div>', unsafe_allow_html=True)
-        sub_a, sub_b = st.columns(2, gap="small")
-        with sub_a:
-            st.checkbox("반납형", key="share_summary_return", disabled=not st.session_state.get("share_summary", True), on_change=sync_children_to_parent, args=("summary",))
-        with sub_b:
-            st.checkbox("인수형", key="share_summary_takeover", disabled=not st.session_state.get("share_summary", True), on_change=sync_children_to_parent, args=("summary",))
+        st.checkbox("반납형", key="share_summary_return", disabled=not st.session_state.get("share_summary", True), on_change=sync_children_to_parent, args=("summary",))
+        st.checkbox("인수형", key="share_summary_takeover", disabled=not st.session_state.get("share_summary", True), on_change=sync_children_to_parent, args=("summary",))
 
-    with share_cols[2]:
+    with grid_cols[3]:
+        st.markdown('<div class="share-vertical-separator"></div>', unsafe_allow_html=True)
+
+    with grid_cols[4]:
         st.checkbox("검증 요율표", key="share_rate_table")
         st.markdown('<div class="share-section-divider"></div>', unsafe_allow_html=True)
+        st.markdown('<div class="share-spacer-blank"></div>', unsafe_allow_html=True)
 
-    with share_cols[3]:
+    with grid_cols[5]:
+        st.markdown('<div class="share-vertical-separator"></div>', unsafe_allow_html=True)
+
+    with grid_cols[6]:
         st.checkbox("비교표", key="share_compare", on_change=sync_parent_to_children, args=("compare",))
         st.markdown('<div class="share-section-divider"></div>', unsafe_allow_html=True)
-        sub_a, sub_b, sub_c = st.columns(3, gap="small")
-        with sub_a:
-            st.checkbox("할부", key="share_compare_installment", disabled=not st.session_state.get("share_compare", True), on_change=sync_children_to_parent, args=("compare",))
-        with sub_b:
-            st.checkbox("렌트", key="share_compare_rent", disabled=not st.session_state.get("share_compare", True), on_change=sync_children_to_parent, args=("compare",))
-        with sub_c:
-            st.checkbox("리스", key="share_compare_lease", disabled=not st.session_state.get("share_compare", True), on_change=sync_children_to_parent, args=("compare",))
+        st.checkbox("할부", key="share_compare_installment", disabled=not st.session_state.get("share_compare", True), on_change=sync_children_to_parent, args=("compare",))
+        st.checkbox("렌트", key="share_compare_rent", disabled=not st.session_state.get("share_compare", True), on_change=sync_children_to_parent, args=("compare",))
+        st.checkbox("리스", key="share_compare_lease", disabled=not st.session_state.get("share_compare", True), on_change=sync_children_to_parent, args=("compare",))
         st.markdown('<div class="share-section-small-note">최소 2개 선택</div>', unsafe_allow_html=True)
 
-    with share_cols[4]:
+    with grid_cols[7]:
+        st.markdown('<div class="share-vertical-separator"></div>', unsafe_allow_html=True)
+
+    with grid_cols[8]:
         st.checkbox("선택 가이드", key="share_guide", on_change=sync_parent_to_children, args=("guide",))
         st.markdown('<div class="share-section-divider"></div>', unsafe_allow_html=True)
-        sub_a, sub_b, sub_c = st.columns(3, gap="small")
-        with sub_a:
-            st.checkbox("할부", key="share_guide_installment", disabled=not st.session_state.get("share_guide", True), on_change=sync_children_to_parent, args=("guide",))
-        with sub_b:
-            st.checkbox("렌트", key="share_guide_rent", disabled=not st.session_state.get("share_guide", True), on_change=sync_children_to_parent, args=("guide",))
-        with sub_c:
-            st.checkbox("리스", key="share_guide_lease", disabled=not st.session_state.get("share_guide", True), on_change=sync_children_to_parent, args=("guide",))
+        st.checkbox("할부", key="share_guide_installment", disabled=not st.session_state.get("share_guide", True), on_change=sync_children_to_parent, args=("guide",))
+        st.checkbox("렌트", key="share_guide_rent", disabled=not st.session_state.get("share_guide", True), on_change=sync_children_to_parent, args=("guide",))
+        st.checkbox("리스", key="share_guide_lease", disabled=not st.session_state.get("share_guide", True), on_change=sync_children_to_parent, args=("guide",))
 
     selected_compare_count = sum(
         bool(st.session_state.get(f"share_{key}", False))
@@ -1383,12 +1403,12 @@ st.markdown("""
 
     /* 서로 다른 큰 섹션 사이만 미세 간격 추가 */
     .section-spacer-soft {
-        height: 26px;
+        height: 20px;
     }
 
     @media (max-width: 768px) {
         .section-spacer-soft {
-            height: 30px;
+            height: 20px;
         }
     }
 
@@ -1794,21 +1814,21 @@ st.markdown("""
     @media (max-width: 768px) {
         .excel-header-blue,
         .excel-header-gray {
-            margin-top: 14px !important;
-            margin-bottom: 10px !important;
+            margin-top: 10px !important;
+            margin-bottom: 8px !important;
         }
 
         .mobile-compare-gap {
-            height: 14px !important;
+            height: 10px !important;
         }
 
         .compare-card {
-            margin-top: 14px !important;
+            margin-top: 10px !important;
         }
 
         .common-info-box,
         .capture-box {
-            margin-bottom: 14px !important;
+            margin-bottom: 10px !important;
         }
     }
     </style>
@@ -2624,7 +2644,6 @@ if visible_sections.get("rate_table", True):
     # ==========================================
     # [📊 BOTTOM] 검증 요율표 구역
     # ==========================================
-    st.write("")
     st.markdown('<div class="excel-header-gray">💻 내부 데이터 산출 요율 검증표</div>', unsafe_allow_html=True)
     m_col1, m_col2, m_col3, m_col4 = st.columns(4)
 
@@ -2721,7 +2740,6 @@ if visible_sections.get("compare", True):
 
     if len(selected_compare_methods) >= 2:
         st.markdown('<div class="section-spacer-soft"></div>', unsafe_allow_html=True)
-        st.write("")
         st.markdown('<div class="excel-header-gray compare-summary-title" style="width:55%;">🚗 할부 · 렌트 · 리스 비교표</div>', unsafe_allow_html=True)
         st.markdown(render_compare_summary_table(selected_compare_methods), unsafe_allow_html=True)
 
@@ -2739,7 +2757,6 @@ if visible_sections.get("guide", True):
 
     if selected_guide_cards:
         st.markdown('<div class="section-spacer-soft"></div>', unsafe_allow_html=True)
-        st.write("")
         st.markdown('<div class="excel-header-gray">🚗 나에게 맞는 방식 선택 가이드</div>', unsafe_allow_html=True)
         guide_html = """
 <style>
