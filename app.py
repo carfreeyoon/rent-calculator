@@ -162,6 +162,30 @@ def render_share_section_selector(current_sections):
 
     st.markdown("""
     <style>
+
+
+    .quote-history-panel {
+        margin-top: 0 !important;
+        padding-top: 0 !important;
+    }
+
+    .quote-history-title {
+        margin: 0 0 14px 0 !important;
+        padding: 0 !important;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 28px;
+        line-height: 1.15;
+        font-weight: 900;
+        color: var(--text-color, #111827);
+        letter-spacing: -0.04em;
+    }
+
+    html.caprio-dark .quote-history-title {
+        color: #f3f6fb !important;
+    }
+
     /* 공유 선택 영역: 5개 대분류 한 줄 고정 + 중앙정렬 */
     .share-grid-cell {
         min-height: 112px;
@@ -374,7 +398,8 @@ def render_share_section_selector(current_sections):
     return collect_visible_sections_from_state()
 
 def render_quote_history_area(raw_data, car_name, rent_monthly_pay, months, mileage, rent_resale_pct, make_share_url_func, visible_sections):
-    st.markdown("### 🕘 견적 저장 / 이력")
+    st.markdown('<div class="quote-history-panel">', unsafe_allow_html=True)
+    st.markdown('<div class="quote-history-title">🕘 견적 저장 / 이력</div>', unsafe_allow_html=True)
 
     save_col1, save_col2 = st.columns([1, 1], gap="small")
     with save_col1:
@@ -563,6 +588,8 @@ def is_short_code(value):
     value = str(value or "").strip()
     return bool(re.fullmatch(r"[A-Z0-9]{6,10}", value))
 
+
+    st.markdown('</div>', unsafe_allow_html=True)
 
 def generate_share_code(length=6):
     alphabet = string.ascii_uppercase + string.digits
