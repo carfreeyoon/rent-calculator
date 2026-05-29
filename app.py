@@ -8,6 +8,7 @@ import string
 import urllib.request
 import urllib.parse
 import urllib.error
+import html
 
 st.set_page_config(page_title="카프리오 비교 프로그램", layout="wide")
 
@@ -98,6 +99,45 @@ def collect_visible_sections_from_state():
     return normalize_visible_sections(sections)
 
 
+def format_option_html(option_text):
+    option_text = str(option_text or "").strip()
+    if not option_text or option_text == "-":
+        return "-"
+
+    parts = []
+    current = []
+    depth = 0
+    for char in option_text:
+        if char == "(":
+            depth += 1
+        elif char == ")" and depth > 0:
+            depth -= 1
+
+        if char == "," and depth == 0:
+            item = "".join(current).strip()
+            if item:
+                parts.append(item)
+            current = []
+        else:
+            current.append(char)
+
+    item = "".join(current).strip()
+    if item:
+        parts.append(item)
+
+    formatted_parts = []
+    for item in parts:
+        match = re.match(r"^(.*?)(\([^)]*\))$", item)
+        if match:
+            name = html.escape(match.group(1).strip())
+            price = html.escape(match.group(2).strip())
+            formatted_parts.append(f'<div class="option-line"><span class="option-name">{name}</span> <span class="option-price">{price}</span></div>')
+        else:
+            formatted_parts.append(f'<div class="option-line"><span class="option-name">{html.escape(item)}</span></div>')
+
+    return '<div class="option-stack">' + ''.join(formatted_parts) + '</div>'
+
+
 def render_share_section_selector(current_sections):
     current_sections = normalize_visible_sections(current_sections)
 
@@ -122,55 +162,58 @@ def render_share_section_selector(current_sections):
 
     st.markdown("""
     <style>
-    .share-section-box {
-        border: 1px solid #d8dee8;
-        border-radius: 12px;
-        padding: 12px 14px 10px 14px;
-        margin: 0 0 10px 0;
-        background: rgba(255,255,255,0.78);
-    }
-    .share-section-title-row {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        gap: 12px;
-        margin-bottom: 4px;
-    }
-    .share-section-title {
-        font-size: 17px;
-        font-weight: 900;
-        color: #0b3873;
-        margin: 0;
-    }
-    .share-section-desc {
-        font-size: 12px;
-        color: #6b7280;
-        margin: 0;
-    }
     .share-section-small-note {
         color: #6b7280;
         font-size: 12px;
-        line-height: 1.4;
-        padding-top: 2px;
+        line-height: 1.2;
+        margin-top: -4px;
+        text-align: center;
+        white-space: nowrap;
     }
-    html.caprio-dark .share-section-box {
-        background: rgba(16,23,34,0.92);
-        border-color: #46566d;
-    }
-    html.caprio-dark .share-section-title { color: #9fc7ff; }
-    html.caprio-dark .share-section-desc,
+
     html.caprio-dark .share-section-small-note { color: #b7c0cf; }
+
+    div[data-testid="stCheckbox"] {
+        margin-bottom: 0 !important;
+    }
+
+    div[data-testid="stCheckbox"] label {
+        min-height: 28px !important;
+        align-items: center !important;
+    }
+
+    div[data-testid="stCheckbox"] [data-testid="stMarkdownContainer"] p {
+        font-weight: 800 !important;
+        font-size: 15px !important;
+        line-height: 1.2 !important;
+        margin: 0 !important;
+        white-space: nowrap !important;
+    }
 
     html.caprio-light div[data-testid="stCheckbox"] [data-testid="stMarkdownContainer"] p,
     html:not(.caprio-dark) div[data-testid="stCheckbox"] [data-testid="stMarkdownContainer"] p {
         color: #111827 !important;
         -webkit-text-fill-color: #111827 !important;
     }
+
     html.caprio-light div[data-testid="stCheckbox"] svg,
     html:not(.caprio-dark) div[data-testid="stCheckbox"] svg {
-        color: #6b7280 !important;
-        fill: #6b7280 !important;
+        color: #9ca3af !important;
+        fill: #9ca3af !important;
     }
+
+    html.caprio-light div[data-testid="stCheckbox"] input:not(:checked) + div,
+    html:not(.caprio-dark) div[data-testid="stCheckbox"] input:not(:checked) + div {
+        background-color: #d1d5db !important;
+        border-color: #cbd5e1 !important;
+    }
+
+    html.caprio-light div[data-testid="stCheckbox"] input:not(:checked) ~ div,
+    html:not(.caprio-dark) div[data-testid="stCheckbox"] input:not(:checked) ~ div {
+        color: #9ca3af !important;
+        fill: #9ca3af !important;
+    }
+
     html.caprio-light div[data-testid="stButton"] button,
     html:not(.caprio-dark) div[data-testid="stButton"] button {
         background-color: #ffffff !important;
@@ -179,63 +222,75 @@ def render_share_section_selector(current_sections):
         box-shadow: none !important;
         -webkit-text-fill-color: #111827 !important;
     }
+
     html.caprio-light div[data-testid="stButton"] button p,
     html:not(.caprio-dark) div[data-testid="stButton"] button p {
         color: #111827 !important;
         -webkit-text-fill-color: #111827 !important;
     }
+
+    .share-section-divider {
+        height: 1px;
+        background: #d8dee8;
+        margin: 6px 0 8px 0;
+        width: 100%;
+    }
+
+    html.caprio-dark .share-section-divider {
+        background: #46566d;
+    }
     </style>
-    <div class="share-section-box">
-        <div class="share-section-title-row">
-            <div>
-                <div class="share-section-title">📤 고객 공유 항목 선택</div>
-                <div class="share-section-desc">체크한 항목만 영업자 화면과 고객 공유 링크에 표시됩니다.</div>
-            </div>
-        </div>
-    </div>
     """, unsafe_allow_html=True)
 
-    top_col1, top_col2, top_col3, top_col4, top_col5 = st.columns([1.2, 1.05, 1.0, 1.35, 1.45])
-    with top_col1:
-        st.checkbox("비교 차량 공통 조건", key="share_common")
-    with top_col2:
-        st.checkbox("비교 계산기", key="share_summary", on_change=sync_parent_to_children, args=("summary",))
-    with top_col3:
-        st.checkbox("검증 요율표", key="share_rate_table")
-    with top_col4:
-        st.checkbox("할부 · 렌트 · 리스 비교표", key="share_compare", on_change=sync_parent_to_children, args=("compare",))
-    with top_col5:
-        st.checkbox("나에게 맞는 방식 선택 가이드", key="share_guide", on_change=sync_parent_to_children, args=("guide",))
+    all_selected_now = all(
+        bool(st.session_state.get(f"share_{key}", default_value))
+        for key, default_value in DEFAULT_VISIBLE_SECTIONS.items()
+    )
 
-    sub_col1, sub_col2, sub_col3, sub_col4, sub_col5, sub_col6, sub_col7, sub_col8, sub_col9, sub_col10 = st.columns([0.75, 0.75, 0.75, 0.75, 0.75, 0.75, 0.75, 0.75, 0.75, 1.4])
-    with sub_col1:
-        st.checkbox("반납형", key="share_summary_return", disabled=not st.session_state.get("share_summary", True), on_change=sync_children_to_parent, args=("summary",))
-    with sub_col2:
-        st.checkbox("인수형", key="share_summary_takeover", disabled=not st.session_state.get("share_summary", True), on_change=sync_children_to_parent, args=("summary",))
-    with sub_col3:
-        st.checkbox("할부", key="share_compare_installment", disabled=not st.session_state.get("share_compare", True), on_change=sync_children_to_parent, args=("compare",))
-    with sub_col4:
-        st.checkbox("렌트", key="share_compare_rent", disabled=not st.session_state.get("share_compare", True), on_change=sync_children_to_parent, args=("compare",))
-    with sub_col5:
-        st.checkbox("리스", key="share_compare_lease", disabled=not st.session_state.get("share_compare", True), on_change=sync_children_to_parent, args=("compare",))
-    with sub_col6:
-        st.checkbox("할부", key="share_guide_installment", disabled=not st.session_state.get("share_guide", True), on_change=sync_children_to_parent, args=("guide",))
-    with sub_col7:
-        st.checkbox("렌트", key="share_guide_rent", disabled=not st.session_state.get("share_guide", True), on_change=sync_children_to_parent, args=("guide",))
-    with sub_col8:
-        st.checkbox("리스", key="share_guide_lease", disabled=not st.session_state.get("share_guide", True), on_change=sync_children_to_parent, args=("guide",))
-    with sub_col9:
-        st.markdown('<div class="share-section-small-note">비교표 최소 2개</div>', unsafe_allow_html=True)
-    with sub_col10:
-        all_col1, all_col2 = st.columns(2, gap="small")
-        with all_col1:
-            if st.button("전체 표시", use_container_width=True):
-                set_all_sections(True)
-                st.rerun()
-        with all_col2:
-            if st.button("전체 해제", use_container_width=True):
-                set_all_sections(False)
-                st.rerun()
+    share_cols = st.columns([0.95, 1.1, 1.18, 1.05, 1.18, 1.18], gap="medium")
+
+    with share_cols[0]:
+        if st.button("전체 선택 / 해제", use_container_width=True):
+            set_all_sections(not all_selected_now)
+            st.rerun()
+
+    with share_cols[1]:
+        st.checkbox("공통조건", key="share_common")
+
+    with share_cols[2]:
+        st.checkbox("비교 계산기", key="share_summary", on_change=sync_parent_to_children, args=("summary",))
+        st.markdown('<div class="share-section-divider"></div>', unsafe_allow_html=True)
+        sub_a, sub_b = st.columns(2, gap="small")
+        with sub_a:
+            st.checkbox("반납형", key="share_summary_return", disabled=not st.session_state.get("share_summary", True), on_change=sync_children_to_parent, args=("summary",))
+        with sub_b:
+            st.checkbox("인수형", key="share_summary_takeover", disabled=not st.session_state.get("share_summary", True), on_change=sync_children_to_parent, args=("summary",))
+
+    with share_cols[3]:
+        st.checkbox("검증 요율표", key="share_rate_table")
+
+    with share_cols[4]:
+        st.checkbox("비교표", key="share_compare", on_change=sync_parent_to_children, args=("compare",))
+        st.markdown('<div class="share-section-small-note">최소 2개 선택</div>', unsafe_allow_html=True)
+        st.markdown('<div class="share-section-divider"></div>', unsafe_allow_html=True)
+        sub_a, sub_b, sub_c = st.columns(3, gap="small")
+        with sub_a:
+            st.checkbox("할부", key="share_compare_installment", disabled=not st.session_state.get("share_compare", True), on_change=sync_children_to_parent, args=("compare",))
+        with sub_b:
+            st.checkbox("렌트", key="share_compare_rent", disabled=not st.session_state.get("share_compare", True), on_change=sync_children_to_parent, args=("compare",))
+        with sub_c:
+            st.checkbox("리스", key="share_compare_lease", disabled=not st.session_state.get("share_compare", True), on_change=sync_children_to_parent, args=("compare",))
+
+    with share_cols[5]:
+        st.checkbox("선택 가이드", key="share_guide", on_change=sync_parent_to_children, args=("guide",))
+        st.markdown('<div class="share-section-divider"></div>', unsafe_allow_html=True)
+        sub_a, sub_b, sub_c = st.columns(3, gap="small")
+        with sub_a:
+            st.checkbox("할부", key="share_guide_installment", disabled=not st.session_state.get("share_guide", True), on_change=sync_children_to_parent, args=("guide",))
+        with sub_b:
+            st.checkbox("렌트", key="share_guide_rent", disabled=not st.session_state.get("share_guide", True), on_change=sync_children_to_parent, args=("guide",))
+        with sub_c:
+            st.checkbox("리스", key="share_guide_lease", disabled=not st.session_state.get("share_guide", True), on_change=sync_children_to_parent, args=("guide",))
 
     selected_compare_count = sum(
         bool(st.session_state.get(f"share_{key}", False))
@@ -245,7 +300,6 @@ def render_share_section_selector(current_sections):
         st.warning("비교표는 최소 2개 선택이 필요합니다. 저장/공유 시 할부·렌트 기준으로 자동 보정됩니다.")
 
     return collect_visible_sections_from_state()
-
 
 def render_quote_history_area(raw_data, car_name, rent_monthly_pay, months, mileage, rent_resale_pct, make_share_url_func, visible_sections):
     st.markdown("### 🕘 견적 저장 / 이력")
@@ -636,6 +690,11 @@ st.markdown("""
     .common-table { width: 100%; border-collapse: collapse; background-color: #ffffff; text-align: center; font-size: 13px; }
     .common-table th { background-color: #f1f3f5; color: #0b3873; font-weight: bold; padding: 8px; border: 1px solid #dee2e6; }
     .common-table td { padding: 8px; border: 1px solid #dee2e6; color: #333333; }
+    .option-stack { display: inline-flex; flex-direction: column; gap: 1px; line-height: 1.12; align-items: center; justify-content: center; }
+    .option-line { margin: 0; padding: 0; line-height: 1.12; white-space: normal; }
+    .option-name { font-weight: 800; color: inherit; }
+    .option-price { font-size: 0.86em; color: #666666; font-weight: 600; }
+    html.caprio-dark .option-price { color: #b7c0cf !important; }
 
     /* 메인 비교 테이블 */
     .excel-header-blue { background-color: #0b3873; color: white; padding: 8px; text-align: center; font-weight: bold; font-size: 15px; border-radius: 4px; margin-bottom: 12px; }
@@ -2344,6 +2403,8 @@ reg_van = "td-highlight" if e15 != "" else ""
 
 tax_type_text = "승합차(9인승 이상)" if e15 != "" else car_shape
 
+car_option_display = format_option_html(car_option)
+
 if visible_sections.get("common", True):
     # ==========================================
     # [공통 조건 구역]
@@ -2351,36 +2412,6 @@ if visible_sections.get("common", True):
     st.markdown(f"""
     <div class="common-info-box">
         <div style="font-size:15px; font-weight:bold; margin-bottom:10px; color:#0b3873;">🚘 비교 차량 공통 조건</div>
-        <table class="common-table common-table-desktop">
-            <thead>
-                <tr>
-                    <th style="width: 35%;">차량명</th>
-                    <th style="width: 25%;">옵션</th>
-                    <th style="width: 16%;">차량가격</th>
-                    <th style="width: 12%;">계약기간</th>
-                    <th style="width: 12%;">약정거리</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td class="font-bold">{car_name}</td>
-                    <td style="color:#111;">{car_option}</td>
-                    <td class="font-bold" style="color:#111;">{car_price:,} 원</td>
-                    <td>{months} 개월</td>
-                    <td>{mileage}</td>
-                </tr>
-                <tr>
-                    <th>유종</th>
-                    <th>CC</th>
-                    <th colspan="3"></th>
-                </tr>
-                <tr>
-                    <td>{car_shape if fuel_text == "휘발유/전기" else fuel_text}</td>
-                    <td>{cc_raw_text}</td>
-                    <td colspan="3"></td>
-                </tr>
-            </tbody>
-        </table>
         <table class="vehicle-table-mobile-primary">
             <tbody>
                 <tr>
@@ -2390,7 +2421,7 @@ if visible_sections.get("common", True):
                 </tr>
                 <tr>
                     <td>{car_name}</td>
-                    <td>{car_option}</td>
+                    <td>{car_option_display}</td>
                     <td>{car_price:,} 원</td>
                 </tr>
             </tbody>
@@ -2682,7 +2713,7 @@ if visible_sections.get("guide", True):
 .guide-list{
     font-size:14px;
     line-height:1.9;
-    padding-left:20px;
+    padding-left:18px;
     margin:0 0 12px 0;
 }
 .reality-box{
@@ -2734,8 +2765,14 @@ if visible_sections.get("guide", True):
     font-size:14px;
     line-height:1.72;
 }
+.match-card > div{
+    margin:0;
+    padding:0;
+}
 .match-list li{
     margin-bottom:2px;
+    padding-left:0;
+    text-indent:0;
 }
 .match-title,
 .match-list li{
