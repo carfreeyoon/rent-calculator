@@ -1456,7 +1456,7 @@ st.markdown("""
 
     @media (max-width: 768px) {
         .section-spacer-soft {
-            height: 54px !important;
+            height: 24px !important;
             line-height: 0 !important;
             margin: 0 !important;
             padding: 0 !important;
