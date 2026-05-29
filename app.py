@@ -3118,7 +3118,7 @@ def guide_card_installment():
 </ol>
 <div class="reality-box">
 <div class="reality-title">💡 현실 체크</div>
-<div class="reality-item">📉 <b>집 대출 한도 축소</b> : 내 명의로 할부 대출이 잡히기 때문에, 추후 주택담보대출 한도가 줄어들 수 있어요.</div>
+<div class="reality-item">🏠 <b>집 대출 한도 축소</b> : 내 명의로 대출이 잡히기 때문에, DSR 한도체크는 필수예요</div>
 <div class="reality-item">💸 <b>부대 비용 발생</b> : 자동차세·취등록세·보험료 등 지속적인 비용이 발생해요.</div>
 <div class="reality-item">🛡️ <b>자산 가치 관리</b> : 사고주의 & 관리를 통해 감가를 최소화하는게 중요해요.</div>
 <div class="reality-item">🏢 <b>법인 시 주의</b> : 판매 시 부가세 10%가 발생하니 미리 대비해야해요!</div>
@@ -3128,9 +3128,9 @@ def guide_card_installment():
 <div>
 <div class="match-title">🔥 할부는 이런 경우 고민없이!</div>
 <ul class="match-list">
-<li>✔ 차량가의 30% 이상 초기비용 부담이 가능하고</li>
 <li>✔ 5년 이상 장기 보유 예정이며</li>
 <li>✔ 사고·감가 리스크가 크게 부담되지 않고</li>
+<li>✔ 차량가의 30% 이상 초기비용 부담이 가능하고</li>
 <li>✔ 대출한도 영향이 중요하지 않다면</li>
 </ul>
 <div class="match-result">→ 할부가 잘 맞아요.</div>
@@ -3163,9 +3163,9 @@ def guide_card_rent():
 <div>
 <div class="match-title">🔥 렌트는 이런 경우 고민없이!</div>
 <ul class="match-list">
+<li>✔ 5년 이하 운행 또는 주기적 신차 교체를 선호하고</li>
 <li>✔ DSR·대출한도 보호가 중요하고</li>
 <li>✔ 보험료가 높거나 사고이력이 부담되며</li>
-<li>✔ 5년 이하 운행 또는 주기적 신차 교체를 선호하고</li>
 <li>✔ 사고·세금·보험 처리를 간편하게 맡기고 싶다면</li>
 </ul>
 <div class="match-result">→ 장기렌트가 잘 맞아요.</div>
