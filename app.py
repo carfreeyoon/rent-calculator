@@ -3259,12 +3259,12 @@ html.caprio-dark .match-lease .match-result{
         }
     }
 </style>
-""", unsafe_allow_html=True)
+        guide_html = f"""
+        <div class="guide-wrap">
+            {''.join(selected_guide_cards)}
+        </div>
+        """
 
-<div class="guide-wrap">
-""" + "\n".join(selected_guide_cards) + """
-</div>
-"""
         st.markdown(guide_html, unsafe_allow_html=True)
 
 st.markdown("""
