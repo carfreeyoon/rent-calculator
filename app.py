@@ -2028,7 +2028,7 @@ components.html(f"""
                 <div id="caprio-brand-inner">
                     <div id="caprio-brand-logo" aria-label="카프리오"></div>
                     <div id="caprio-brand-divider"></div>
-                    <div id="caprio-brand-slogan">카 라이프에 <span class="free-word">자유</span>를 더하다</div>
+                    <div id="caprio-brand-slogan">카 라이프에 <span class="free-word">자유</span>를 더하다!</div>
                     <button id="caprio-theme-toggle" type="button">🌙 다크</button>
                 </div>
             `;
