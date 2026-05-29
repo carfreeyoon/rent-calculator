@@ -162,24 +162,13 @@ def render_share_section_selector(current_sections):
 
     st.markdown("""
     <style>
-    /* 공유 선택 영역: 사용자가 준 비주얼 기준 고정 레이아웃 */
-    .share-top-note {
-        color: #6b7280;
-        font-size: 13px;
-        line-height: 40px;
-        text-align: left;
-        white-space: nowrap;
-    }
-
-    html.caprio-dark .share-top-note { color: #b7c0cf; }
-
+    /* 공유 선택 영역: 5개 대분류 한 줄 고정 + 중앙정렬 */
     .share-grid-cell {
-        min-height: 174px;
-        padding: 0 16px;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
+        min-height: 132px;
+        padding: 0 6px;
         box-sizing: border-box;
+        text-align: center;
+        overflow: visible;
     }
 
     .share-grid-cell-border {
@@ -190,22 +179,11 @@ def render_share_section_selector(current_sections):
         border-left-color: #46566d;
     }
 
-    .share-section-small-note {
-        color: #6b7280;
-        font-size: 12px;
-        line-height: 1.25;
-        margin: 10px 0 0 0;
-        text-align: center;
-        white-space: nowrap;
-    }
-
-    html.caprio-dark .share-section-small-note { color: #b7c0cf; }
-
     .share-section-divider {
         height: 1px;
         background: #d8dee8;
-        margin: 14px auto 20px auto;
-        width: 100%;
+        margin: 10px auto 14px auto;
+        width: 88%;
     }
 
     html.caprio-dark .share-section-divider {
@@ -214,44 +192,53 @@ def render_share_section_selector(current_sections):
 
     .share-child-stack {
         width: 100%;
-        min-height: 104px;
+        min-height: 78px;
         display: flex;
         flex-direction: column;
         align-items: center;
         justify-content: flex-start;
-        gap: 12px;
+        gap: 6px;
     }
 
     .share-child-empty {
-        min-height: 104px;
+        min-height: 78px;
     }
 
-    .share-spacer-blank {
-        min-height: 70px;
+    .share-section-small-note {
+        color: #6b7280;
+        font-size: 11px;
+        line-height: 1.2;
+        margin: 6px 0 0 0;
+        text-align: center;
+        white-space: nowrap;
     }
+
+    html.caprio-dark .share-section-small-note { color: #b7c0cf; }
 
     div[data-testid="stCheckbox"] {
-        margin-bottom: 0 !important;
+        margin: 0 !important;
+        padding: 0 !important;
     }
 
     div[data-testid="stCheckbox"] label {
-        min-height: 30px !important;
+        min-height: 26px !important;
         align-items: center !important;
         justify-content: center !important;
         width: 100% !important;
         display: flex !important;
+        gap: 6px !important;
     }
 
     .share-grid-cell div[data-testid="stCheckbox"] {
-        width: auto !important;
+        width: 100% !important;
         display: flex !important;
         justify-content: center !important;
     }
 
     div[data-testid="stCheckbox"] [data-testid="stMarkdownContainer"] p {
         font-weight: 800 !important;
-        font-size: 15px !important;
-        line-height: 1.18 !important;
+        font-size: 14px !important;
+        line-height: 1.15 !important;
         margin: 0 !important;
         white-space: nowrap !important;
     }
@@ -263,12 +250,12 @@ def render_share_section_selector(current_sections):
     }
 
     /* 화이트 모드 체크 해제: 검정 박스 방지 */
-    html.caprio-light div[data-testid="stCheckbox"] label:has(input:not(:checked)) span:first-child,
-    html:not(.caprio-dark) div[data-testid="stCheckbox"] label:has(input:not(:checked)) span:first-child,
-    html.caprio-light div[data-testid="stCheckbox"] label:has(input[aria-checked="false"]) span:first-child,
-    html:not(.caprio-dark) div[data-testid="stCheckbox"] label:has(input[aria-checked="false"]) span:first-child,
-    html.caprio-light div[data-testid="stCheckbox"] label:has(input:not(:checked)) > div:first-child,
-    html:not(.caprio-dark) div[data-testid="stCheckbox"] label:has(input:not(:checked)) > div:first-child {
+    html.caprio-light div[data-testid="stCheckbox"] label:has(input:not(:checked)) span,
+    html:not(.caprio-dark) div[data-testid="stCheckbox"] label:has(input:not(:checked)) span,
+    html.caprio-light div[data-testid="stCheckbox"] label:has(input[aria-checked="false"]) span,
+    html:not(.caprio-dark) div[data-testid="stCheckbox"] label:has(input[aria-checked="false"]) span,
+    html.caprio-light div[data-testid="stCheckbox"] label:has(input:not(:checked)) div,
+    html:not(.caprio-dark) div[data-testid="stCheckbox"] label:has(input:not(:checked)) div {
         background-color: #d1d5db !important;
         border-color: #cbd5e1 !important;
         color: #6b7280 !important;
@@ -299,12 +286,14 @@ def render_share_section_selector(current_sections):
     }
 
     @media (max-width: 768px) {
-        .share-section-small-note {
-            text-align: center;
-            margin: 6px 0 8px 0;
+        .share-grid-cell {
+            min-height: auto;
+            padding: 0;
+            border-left: none !important;
         }
-        .share-vertical-separator {
-            display: none !important;
+        .share-child-stack {
+            min-height: auto;
+            gap: 4px;
         }
     }
     </style>
@@ -315,13 +304,13 @@ def render_share_section_selector(current_sections):
         for key, default_value in DEFAULT_VISIBLE_SECTIONS.items()
     )
 
-    top_col1, top_col2 = st.columns([1.4, 4.6], gap="small")
+    top_col1, top_col2 = st.columns([1.15, 5.85], gap="small")
     with top_col1:
         if st.button("전체 선택 / 해제", use_container_width=True):
             set_all_sections(not all_selected_now)
             st.rerun()
     with top_col2:
-        st.markdown('<div class="share-top-note">비교표 최소 2개</div>', unsafe_allow_html=True)
+        st.markdown("<div style='height:1px;'></div>", unsafe_allow_html=True)
 
     grid_cols = st.columns(5, gap="small")
 
