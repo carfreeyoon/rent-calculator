@@ -191,60 +191,47 @@ def render_share_section_selector(current_sections):
         color: #f3f6fb !important;
     }
 
-    .share-selector-tools {
-        margin: 0 0 14px 0 !important;
-        display: flex;
-        align-items: center;
-        gap: 14px;
+    .share-selector-anchor + div[data-testid="stHorizontalBlock"] {
+        align-items: flex-start !important;
+        margin-top: 0 !important;
+        margin-bottom: 4px !important;
     }
 
-    .share-grid-cell {
-        padding: 0 8px 2px 8px;
-        box-sizing: border-box;
-        text-align: center;
-        overflow: visible;
-        min-height: 138px;
+    .share-selector-anchor + div[data-testid="stHorizontalBlock"] > div {
+        padding-top: 0 !important;
     }
 
-    .share-section-divider {
+    .share-divider-line {
         height: 1px;
         background: #d8dee8;
-        margin: 10px auto 18px auto;
-        width: 88%;
+        width: 86%;
+        margin: 9px auto 11px auto;
     }
 
-    html.caprio-dark .share-section-divider {
+    html.caprio-dark .share-divider-line {
         background: #46566d;
     }
 
-    .share-child-stack {
-        width: 100%;
-        min-height: 78px;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: flex-start;
-        gap: 9px;
-    }
-
-    .share-child-empty {
-        min-height: 78px;
-    }
-
-    .share-section-small-note {
+    .share-mini-note {
         color: #6b7280;
         font-size: 11px;
         line-height: 1.2;
-        margin: 5px 0 0 0;
+        margin-top: 6px;
         text-align: center;
         white-space: nowrap;
         width: 100%;
     }
 
-    html.caprio-dark .share-section-small-note { color: #b7c0cf; }
+    html.caprio-dark .share-mini-note {
+        color: #b7c0cf !important;
+    }
+
+    .share-blank-cell {
+        min-height: 26px;
+    }
 
     div[data-testid="stCheckbox"] {
-        margin: 0 !important;
+        margin: 0 0 10px 0 !important;
         padding: 0 !important;
     }
 
@@ -255,12 +242,6 @@ def render_share_section_selector(current_sections):
         width: 100% !important;
         display: flex !important;
         gap: 6px !important;
-    }
-
-    .share-grid-cell div[data-testid="stCheckbox"] {
-        width: 100% !important;
-        display: flex !important;
-        justify-content: center !important;
     }
 
     div[data-testid="stCheckbox"] [data-testid="stMarkdownContainer"] p {
@@ -277,7 +258,11 @@ def render_share_section_selector(current_sections):
         -webkit-text-fill-color: #111827 !important;
     }
 
-    /* 화이트 모드 체크 해제: 검정 박스 방지 */
+    /* 화이트 모드 체크 해제: 검정색 방지, 회색 계열 */
+    html.caprio-light div[data-testid="stCheckbox"] div[data-baseweb="checkbox"][aria-checked="false"],
+    html:not(.caprio-dark) div[data-testid="stCheckbox"] div[data-baseweb="checkbox"][aria-checked="false"],
+    html.caprio-light div[data-testid="stCheckbox"] div[data-baseweb="checkbox"]:not([aria-checked="true"]),
+    html:not(.caprio-dark) div[data-testid="stCheckbox"] div[data-baseweb="checkbox"]:not([aria-checked="true"]),
     html.caprio-light div[data-testid="stCheckbox"] label:has(input:not(:checked)) > div:first-child,
     html:not(.caprio-dark) div[data-testid="stCheckbox"] label:has(input:not(:checked)) > div:first-child,
     html.caprio-light div[data-testid="stCheckbox"] label:has(input[aria-checked="false"]) > div:first-child,
@@ -312,16 +297,14 @@ def render_share_section_selector(current_sections):
     }
 
     @media (max-width: 768px) {
-        .share-grid-cell {
-            min-height: auto;
-            padding: 0;
+        .share-divider-line {
+            margin: 8px auto 9px auto;
         }
-        .share-child-stack {
-            min-height: auto;
-            gap: 5px;
+        .share-mini-note {
+            font-size: 10px;
         }
-        .share-section-divider {
-            margin: 8px auto 10px auto;
+        div[data-testid="stCheckbox"] {
+            margin-bottom: 8px !important;
         }
     }
     </style>
@@ -332,61 +315,45 @@ def render_share_section_selector(current_sections):
         for key, default_value in DEFAULT_VISIBLE_SECTIONS.items()
     )
 
-    tool_col1, tool_col2 = st.columns([1.15, 5.85], gap="small")
-    with tool_col1:
+    st.markdown('<div class="share-selector-anchor"></div>', unsafe_allow_html=True)
+    share_cols = st.columns([0.95, 1, 1, 1, 1, 1], gap="small")
+
+    with share_cols[0]:
         if st.button("전체 선택 / 해제", use_container_width=True):
             set_all_sections(not all_selected_now)
             st.rerun()
-    with tool_col2:
-        st.markdown("<div style='height:1px;'></div>", unsafe_allow_html=True)
 
-    grid_cols = st.columns(5, gap="small")
-
-    with grid_cols[0]:
-        st.markdown('<div class="share-grid-cell">', unsafe_allow_html=True)
+    with share_cols[1]:
         st.checkbox("조건설정", key="share_conditions", on_change=sync_parent_to_children, args=("conditions",))
-        st.markdown('<div class="share-section-divider"></div>', unsafe_allow_html=True)
-        st.markdown('<div class="share-child-stack">', unsafe_allow_html=True)
+        st.markdown('<div class="share-divider-line"></div>', unsafe_allow_html=True)
         st.checkbox("공통조건", key="share_common", disabled=not st.session_state.get("share_conditions", True), on_change=sync_children_to_parent, args=("conditions",))
         st.checkbox("할부조건", key="share_installment_condition", disabled=not st.session_state.get("share_conditions", True), on_change=sync_children_to_parent, args=("conditions",))
-        st.markdown('</div></div>', unsafe_allow_html=True)
 
-    with grid_cols[1]:
-        st.markdown('<div class="share-grid-cell">', unsafe_allow_html=True)
+    with share_cols[2]:
         st.checkbox("비교 계산기", key="share_summary", on_change=sync_parent_to_children, args=("summary",))
-        st.markdown('<div class="share-section-divider"></div>', unsafe_allow_html=True)
-        st.markdown('<div class="share-child-stack">', unsafe_allow_html=True)
+        st.markdown('<div class="share-divider-line"></div>', unsafe_allow_html=True)
         st.checkbox("반납형", key="share_summary_return", disabled=not st.session_state.get("share_summary", True), on_change=sync_children_to_parent, args=("summary",))
         st.checkbox("인수형", key="share_summary_takeover", disabled=not st.session_state.get("share_summary", True), on_change=sync_children_to_parent, args=("summary",))
-        st.markdown('</div></div>', unsafe_allow_html=True)
 
-    with grid_cols[2]:
-        st.markdown('<div class="share-grid-cell">', unsafe_allow_html=True)
+    with share_cols[3]:
         st.checkbox("검증 요율표", key="share_rate_table")
-        st.markdown('<div class="share-section-divider"></div>', unsafe_allow_html=True)
-        st.markdown('<div class="share-child-stack share-child-empty"></div>', unsafe_allow_html=True)
-        st.markdown('</div>', unsafe_allow_html=True)
+        st.markdown('<div class="share-divider-line"></div>', unsafe_allow_html=True)
+        st.markdown('<div class="share-blank-cell"></div>', unsafe_allow_html=True)
 
-    with grid_cols[3]:
-        st.markdown('<div class="share-grid-cell">', unsafe_allow_html=True)
+    with share_cols[4]:
         st.checkbox("비교표", key="share_compare", on_change=sync_parent_to_children, args=("compare",))
-        st.markdown('<div class="share-section-divider"></div>', unsafe_allow_html=True)
-        st.markdown('<div class="share-child-stack">', unsafe_allow_html=True)
+        st.markdown('<div class="share-divider-line"></div>', unsafe_allow_html=True)
         st.checkbox("할부", key="share_compare_installment", disabled=not st.session_state.get("share_compare", True), on_change=sync_children_to_parent, args=("compare",))
         st.checkbox("렌트", key="share_compare_rent", disabled=not st.session_state.get("share_compare", True), on_change=sync_children_to_parent, args=("compare",))
         st.checkbox("리스", key="share_compare_lease", disabled=not st.session_state.get("share_compare", True), on_change=sync_children_to_parent, args=("compare",))
-        st.markdown('<div class="share-section-small-note">최소 2개 선택</div>', unsafe_allow_html=True)
-        st.markdown('</div></div>', unsafe_allow_html=True)
+        st.markdown('<div class="share-mini-note">최소 2개 선택</div>', unsafe_allow_html=True)
 
-    with grid_cols[4]:
-        st.markdown('<div class="share-grid-cell">', unsafe_allow_html=True)
+    with share_cols[5]:
         st.checkbox("선택 가이드", key="share_guide", on_change=sync_parent_to_children, args=("guide",))
-        st.markdown('<div class="share-section-divider"></div>', unsafe_allow_html=True)
-        st.markdown('<div class="share-child-stack">', unsafe_allow_html=True)
+        st.markdown('<div class="share-divider-line"></div>', unsafe_allow_html=True)
         st.checkbox("할부", key="share_guide_installment", disabled=not st.session_state.get("share_guide", True), on_change=sync_children_to_parent, args=("guide",))
         st.checkbox("렌트", key="share_guide_rent", disabled=not st.session_state.get("share_guide", True), on_change=sync_children_to_parent, args=("guide",))
         st.checkbox("리스", key="share_guide_lease", disabled=not st.session_state.get("share_guide", True), on_change=sync_children_to_parent, args=("guide",))
-        st.markdown('</div></div>', unsafe_allow_html=True)
 
     selected_compare_count = sum(
         bool(st.session_state.get(f"share_{key}", False))
@@ -396,6 +363,7 @@ def render_share_section_selector(current_sections):
         st.warning("비교표는 최소 2개 선택이 필요합니다. 저장/공유 시 할부·렌트 기준으로 자동 보정됩니다.")
 
     return collect_visible_sections_from_state()
+
 
 def render_quote_history_area(raw_data, car_name, rent_monthly_pay, months, mileage, rent_resale_pct, make_share_url_func, visible_sections):
     st.markdown('<div class="quote-history-panel">', unsafe_allow_html=True)
@@ -1464,12 +1432,12 @@ st.markdown("""
 
     /* 서로 다른 큰 섹션 사이만 미세 간격 추가 */
     .section-spacer-soft {
-        height: 20px;
+        height: 16px;
     }
 
     @media (max-width: 768px) {
         .section-spacer-soft {
-            height: 20px;
+            height: 16px;
         }
     }
 
