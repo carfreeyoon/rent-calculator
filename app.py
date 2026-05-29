@@ -22,7 +22,9 @@ APP_BASE_URL = "https://carfreeoh-rentcalculator.streamlit.app"
 # [고객 공유 항목 선택 기본값/유틸]
 # ==========================================
 DEFAULT_VISIBLE_SECTIONS = {
+    "conditions": True,
     "common": True,
+    "installment_condition": True,
     "summary": True,
     "summary_return": True,
     "summary_takeover": True,
@@ -38,6 +40,7 @@ DEFAULT_VISIBLE_SECTIONS = {
 }
 
 SHARE_SECTION_GROUPS = {
+    "conditions": ["common", "installment_condition"],
     "summary": ["summary_return", "summary_takeover"],
     "compare": ["compare_installment", "compare_rent", "compare_lease"],
     "guide": ["guide_installment", "guide_rent", "guide_lease"],
@@ -50,6 +53,10 @@ def normalize_visible_sections(data=None):
         for key in sections:
             if key in data:
                 sections[key] = bool(data.get(key))
+
+    if not sections.get("conditions", True):
+        sections["common"] = False
+        sections["installment_condition"] = False
 
     if not sections.get("summary", True):
         sections["summary_return"] = False
@@ -162,8 +169,6 @@ def render_share_section_selector(current_sections):
 
     st.markdown("""
     <style>
-
-
     .quote-history-panel {
         margin-top: 0 !important;
         padding-top: 0 !important;
@@ -186,31 +191,25 @@ def render_share_section_selector(current_sections):
         color: #f3f6fb !important;
     }
 
-    /* 공유 선택 영역: 5개 대분류 한 줄 고정 + 중앙정렬 */
+    .share-selector-tools {
+        margin: 0 0 14px 0 !important;
+        display: flex;
+        align-items: center;
+        gap: 14px;
+    }
+
     .share-grid-cell {
-        min-height: 112px;
-        padding: 0 6px;
+        padding: 0 8px 2px 8px;
         box-sizing: border-box;
         text-align: center;
         overflow: visible;
-        border-left: none !important;
-        border-right: none !important;
-    }
-
-    .share-grid-cell-border {
-        border-left: none !important;
-        border-right: none !important;
-    }
-
-    html.caprio-dark .share-grid-cell-border {
-        border-left: none !important;
-        border-right: none !important;
+        min-height: 138px;
     }
 
     .share-section-divider {
         height: 1px;
         background: #d8dee8;
-        margin: 10px auto 12px auto;
+        margin: 10px auto 18px auto;
         width: 88%;
     }
 
@@ -220,25 +219,26 @@ def render_share_section_selector(current_sections):
 
     .share-child-stack {
         width: 100%;
-        min-height: 58px;
+        min-height: 78px;
         display: flex;
         flex-direction: column;
         align-items: center;
         justify-content: flex-start;
-        gap: 6px;
+        gap: 9px;
     }
 
     .share-child-empty {
-        min-height: 58px;
+        min-height: 78px;
     }
 
     .share-section-small-note {
         color: #6b7280;
         font-size: 11px;
         line-height: 1.2;
-        margin: 6px 0 0 0;
+        margin: 5px 0 0 0;
         text-align: center;
         white-space: nowrap;
+        width: 100%;
     }
 
     html.caprio-dark .share-section-small-note { color: #b7c0cf; }
@@ -278,24 +278,22 @@ def render_share_section_selector(current_sections):
     }
 
     /* 화이트 모드 체크 해제: 검정 박스 방지 */
-    html.caprio-light div[data-testid="stCheckbox"] label:has(input:not(:checked)) span,
-    html:not(.caprio-dark) div[data-testid="stCheckbox"] label:has(input:not(:checked)) span,
-    html.caprio-light div[data-testid="stCheckbox"] label:has(input[aria-checked="false"]) span,
-    html:not(.caprio-dark) div[data-testid="stCheckbox"] label:has(input[aria-checked="false"]) span,
-    html.caprio-light div[data-testid="stCheckbox"] label:has(input:not(:checked)) div,
-    html:not(.caprio-dark) div[data-testid="stCheckbox"] label:has(input:not(:checked)) div {
-        background-color: #d1d5db !important;
+    html.caprio-light div[data-testid="stCheckbox"] label:has(input:not(:checked)) > div:first-child,
+    html:not(.caprio-dark) div[data-testid="stCheckbox"] label:has(input:not(:checked)) > div:first-child,
+    html.caprio-light div[data-testid="stCheckbox"] label:has(input[aria-checked="false"]) > div:first-child,
+    html:not(.caprio-dark) div[data-testid="stCheckbox"] label:has(input[aria-checked="false"]) > div:first-child {
+        background-color: #cbd5e1 !important;
         border-color: #cbd5e1 !important;
-        color: #6b7280 !important;
-        fill: #6b7280 !important;
+        color: #64748b !important;
+        fill: #64748b !important;
     }
 
     html.caprio-light div[data-testid="stCheckbox"] label:has(input:not(:checked)) svg,
     html:not(.caprio-dark) div[data-testid="stCheckbox"] label:has(input:not(:checked)) svg,
     html.caprio-light div[data-testid="stCheckbox"] label:has(input[aria-checked="false"]) svg,
     html:not(.caprio-dark) div[data-testid="stCheckbox"] label:has(input[aria-checked="false"]) svg {
-        color: #6b7280 !important;
-        fill: #6b7280 !important;
+        color: #64748b !important;
+        fill: #64748b !important;
     }
 
     html.caprio-light div[data-testid="stButton"] button,
@@ -317,12 +315,13 @@ def render_share_section_selector(current_sections):
         .share-grid-cell {
             min-height: auto;
             padding: 0;
-            border-left: none !important;
-            border-right: none !important;
         }
         .share-child-stack {
             min-height: auto;
-            gap: 4px;
+            gap: 5px;
+        }
+        .share-section-divider {
+            margin: 8px auto 10px auto;
         }
     }
     </style>
@@ -333,25 +332,27 @@ def render_share_section_selector(current_sections):
         for key, default_value in DEFAULT_VISIBLE_SECTIONS.items()
     )
 
-    top_col1, top_col2 = st.columns([1.15, 5.85], gap="small")
-    with top_col1:
+    tool_col1, tool_col2 = st.columns([1.15, 5.85], gap="small")
+    with tool_col1:
         if st.button("전체 선택 / 해제", use_container_width=True):
             set_all_sections(not all_selected_now)
             st.rerun()
-    with top_col2:
+    with tool_col2:
         st.markdown("<div style='height:1px;'></div>", unsafe_allow_html=True)
 
     grid_cols = st.columns(5, gap="small")
 
     with grid_cols[0]:
         st.markdown('<div class="share-grid-cell">', unsafe_allow_html=True)
-        st.checkbox("공통조건", key="share_common")
+        st.checkbox("조건설정", key="share_conditions", on_change=sync_parent_to_children, args=("conditions",))
         st.markdown('<div class="share-section-divider"></div>', unsafe_allow_html=True)
-        st.markdown('<div class="share-child-stack share-child-empty"></div>', unsafe_allow_html=True)
-        st.markdown('</div>', unsafe_allow_html=True)
+        st.markdown('<div class="share-child-stack">', unsafe_allow_html=True)
+        st.checkbox("공통조건", key="share_common", disabled=not st.session_state.get("share_conditions", True), on_change=sync_children_to_parent, args=("conditions",))
+        st.checkbox("할부조건", key="share_installment_condition", disabled=not st.session_state.get("share_conditions", True), on_change=sync_children_to_parent, args=("conditions",))
+        st.markdown('</div></div>', unsafe_allow_html=True)
 
     with grid_cols[1]:
-        st.markdown('<div class="share-grid-cell share-grid-cell-border">', unsafe_allow_html=True)
+        st.markdown('<div class="share-grid-cell">', unsafe_allow_html=True)
         st.checkbox("비교 계산기", key="share_summary", on_change=sync_parent_to_children, args=("summary",))
         st.markdown('<div class="share-section-divider"></div>', unsafe_allow_html=True)
         st.markdown('<div class="share-child-stack">', unsafe_allow_html=True)
@@ -360,15 +361,14 @@ def render_share_section_selector(current_sections):
         st.markdown('</div></div>', unsafe_allow_html=True)
 
     with grid_cols[2]:
-        st.markdown('<div class="share-grid-cell share-grid-cell-border">', unsafe_allow_html=True)
+        st.markdown('<div class="share-grid-cell">', unsafe_allow_html=True)
         st.checkbox("검증 요율표", key="share_rate_table")
         st.markdown('<div class="share-section-divider"></div>', unsafe_allow_html=True)
-        st.markdown('<div class="share-child-stack">', unsafe_allow_html=True)
-        st.checkbox("리스", key="share_rate_lease_dummy")
-        st.markdown('</div></div>', unsafe_allow_html=True)
+        st.markdown('<div class="share-child-stack share-child-empty"></div>', unsafe_allow_html=True)
+        st.markdown('</div>', unsafe_allow_html=True)
 
     with grid_cols[3]:
-        st.markdown('<div class="share-grid-cell share-grid-cell-border">', unsafe_allow_html=True)
+        st.markdown('<div class="share-grid-cell">', unsafe_allow_html=True)
         st.checkbox("비교표", key="share_compare", on_change=sync_parent_to_children, args=("compare",))
         st.markdown('<div class="share-section-divider"></div>', unsafe_allow_html=True)
         st.markdown('<div class="share-child-stack">', unsafe_allow_html=True)
@@ -379,7 +379,7 @@ def render_share_section_selector(current_sections):
         st.markdown('</div></div>', unsafe_allow_html=True)
 
     with grid_cols[4]:
-        st.markdown('<div class="share-grid-cell share-grid-cell-border">', unsafe_allow_html=True)
+        st.markdown('<div class="share-grid-cell">', unsafe_allow_html=True)
         st.checkbox("선택 가이드", key="share_guide", on_change=sync_parent_to_children, args=("guide",))
         st.markdown('<div class="share-section-divider"></div>', unsafe_allow_html=True)
         st.markdown('<div class="share-child-stack">', unsafe_allow_html=True)
@@ -2592,8 +2592,8 @@ if visible_sections.get("common", True):
     </div>
     """, unsafe_allow_html=True)
 
-# 고객/영업자 공통 조건 설정표 노출
-if visible_sections.get("common", True):
+# 고객/영업자 할부 조건 설정표 노출
+if visible_sections.get("installment_condition", True):
     st.markdown(f"""
         <div class="common-info-box" style="margin-top:-8px; margin-bottom:20px;">
             <div style="font-size:15px; font-weight:bold; margin-bottom:10px; color:#0b3873;">
