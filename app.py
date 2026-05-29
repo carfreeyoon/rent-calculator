@@ -3131,7 +3131,7 @@ def guide_card_installment():
 <li>✔ 5년 이상 장기 보유 예정이며</li>
 <li>✔ 사고·감가 리스크가 크게 부담되지 않고</li>
 <li>✔ 차량가의 30% 이상 초기비용 부담이 가능하고</li>
-<li>✔ 대출한도 영향이 중요하지 않다면?</li>
+<li>✔ DSR·대출한도 영향이 중요하지 않다면?</li>
 </ul>
 <div class="match-result">→ 할부가 잘 맞아요.</div>
 </div>
