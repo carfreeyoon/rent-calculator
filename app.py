@@ -3131,7 +3131,7 @@ def guide_card_installment():
 <li>✔ 5년 이상 장기 보유 예정이며</li>
 <li>✔ 사고·감가 리스크가 크게 부담되지 않고</li>
 <li>✔ 차량가의 30% 이상 초기비용 부담이 가능하고</li>
-<li>✔ 대출한도 영향이 중요하지 않다면</li>
+<li>✔ 대출한도 영향이 중요하지 않다면?</li>
 </ul>
 <div class="match-result">→ 할부가 잘 맞아요.</div>
 </div>
@@ -3164,9 +3164,9 @@ def guide_card_rent():
 <div class="match-title">🔥 렌트는 이런 경우 고민없이!</div>
 <ul class="match-list">
 <li>✔ 5년 이하 운행 또는 주기적 신차 교체를 선호하고</li>
-<li>✔ DSR·대출한도 보호가 중요하고</li>
 <li>✔ 보험료가 높거나 사고이력이 부담되며</li>
-<li>✔ 사고·세금·보험 처리를 간편하게 맡기고 싶다면</li>
+<li>✔ 사고·세금·보험 처리를 간편한 걸 원하고</li>
+<li>✔ DSR·대출한도 보호까지 신경 쓴다면?</li>
 </ul>
 <div class="match-result">→ 장기렌트가 잘 맞아요.</div>
 </div>
