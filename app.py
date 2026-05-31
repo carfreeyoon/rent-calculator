@@ -403,8 +403,7 @@ def render_quote_history_area(raw_data, car_name, rent_monthly_pay, months, mile
                 f"{short_car_name}\n"
                 f"월 {rent_monthly_pay:,}원｜{months}개월｜{mileage}"
             )
-            st.session_state.quote_history.insert(
-                0,
+            st.session_state.quote_history.append(
                 {
                     "title": history_title,
                     "raw": raw_data,
@@ -654,6 +653,23 @@ def decode_share_data(encoded_text):
         return json.loads(decoded.decode("utf-8"))
     except Exception:
         return {}
+
+
+def extract_share_query_value(value):
+    value = str(value or "").strip()
+    if not value:
+        return ""
+
+    parsed_url = urllib.parse.urlparse(value)
+    query_value = urllib.parse.parse_qs(parsed_url.query).get("q", [""])[0]
+    if query_value:
+        return query_value.strip()
+
+    query_match = re.search(r"[?&]q=([^&\s]+)", value)
+    if query_match:
+        return urllib.parse.unquote(query_match.group(1)).strip()
+
+    return value.strip()
 
 
 # ==========================================
@@ -2253,6 +2269,9 @@ shared_quote_data = {}
 if st.query_params.get("q"):
     shared_quote_data = decode_share_data(st.query_params.get("q", ""))
 
+if not IS_CLIENT_VIEW and isinstance(st.session_state.get("loaded_share_data"), dict):
+    shared_quote_data = st.session_state.loaded_share_data
+
 if shared_quote_data:
     car_name = shared_quote_data.get("car_name", car_name)
     car_option = shared_quote_data.get("car_option", car_option)
@@ -2291,7 +2310,7 @@ def make_share_url():
         "installment_prepaid": installment_prepaid if "installment_prepaid" in globals() else 0,
         "is_corporate": is_corporate if "is_corporate" in globals() else False,
         "rent_resale_pct": rent_resale_pct,
-        "visible_sections": normalize_visible_sections(visible_sections)
+        "visible_sections": collect_visible_sections_from_state() if not IS_CLIENT_VIEW else normalize_visible_sections(visible_sections)
     }
     short_code = save_share_data(share_data)
     if short_code:
@@ -2496,6 +2515,58 @@ if not IS_CLIENT_VIEW:
         st.session_state.setdefault(f"share_{section_key}", section_value)
 
     # ==========================================
+    # [TOP MAIN] 고객 공유 URL 불러오기
+    # ==========================================
+    st.markdown("#### 🔗 고객 공유 URL 불러오기")
+    share_url_input = st.text_area(
+        "고객 공유 URL 불러오기",
+        placeholder="고객 공유 링크를 붙여넣고 Ctrl+Enter를 누르세요.",
+        height=68,
+        key="share_url_input",
+        label_visibility="collapsed"
+    )
+
+    share_query_value = extract_share_query_value(share_url_input)
+    if share_query_value and share_query_value != st.session_state.get("loaded_share_query_value"):
+        loaded_share_data = decode_share_data(share_query_value)
+        if loaded_share_data:
+            st.session_state.loaded_share_data = loaded_share_data
+            st.session_state.loaded_share_query_value = share_query_value
+            st.session_state.active_quote_data = {
+                "car_name": loaded_share_data.get("car_name", car_name),
+                "car_option": loaded_share_data.get("car_option", car_option),
+                "car_price": int(loaded_share_data.get("car_price", car_price)),
+                "months": int(loaded_share_data.get("months", months)),
+                "mileage": loaded_share_data.get("mileage", mileage),
+                "rent_monthly_pay": int(loaded_share_data.get("rent_monthly_pay", rent_monthly_pay)),
+                "rent_deposit": int(loaded_share_data.get("rent_deposit", rent_deposit)),
+                "cc_text": loaded_share_data.get("cc_text", cc_text),
+                "cc_raw_text": loaded_share_data.get("cc_raw_text", cc_raw_text),
+                "fuel_text": loaded_share_data.get("fuel_text", fuel_text),
+                "passenger_count": int(loaded_share_data.get("passenger_count", passenger_count)),
+                "car_shape": loaded_share_data.get("car_shape", car_shape),
+                "rent_resale_pct": float(loaded_share_data.get("rent_resale_pct", rent_resale_pct)),
+            }
+            st.session_state.active_quote_raw = ""
+            st.session_state.raw_quote_input = ""
+            st.session_state.pending_quick_edit = {
+                "rent_monthly_pay": int(loaded_share_data.get("rent_monthly_pay", rent_monthly_pay)),
+                "rent_resale_pct": float(loaded_share_data.get("rent_resale_pct", rent_resale_pct)),
+                "months": int(loaded_share_data.get("months", months)),
+                "mileage": loaded_share_data.get("mileage", mileage),
+                "rent_deposit": int(loaded_share_data.get("rent_deposit", rent_deposit)),
+                "prepayment_mode": "원" if int(loaded_share_data.get("rent_deposit", rent_deposit)) else "%",
+                "prepayment_value": f"{int(loaded_share_data.get('rent_deposit', rent_deposit)):,}" if int(loaded_share_data.get("rent_deposit", rent_deposit)) else "",
+            }
+            loaded_visible_sections = normalize_visible_sections(loaded_share_data.get("visible_sections"))
+            apply_visible_sections_to_state(loaded_visible_sections)
+            st.session_state.pending_visible_sections = loaded_visible_sections
+            st.success("공유 견적을 불러왔습니다.")
+            st.rerun()
+        else:
+            st.warning("유효한 고객 공유 URL 또는 코드가 아닙니다.")
+
+    # ==========================================
     # [TOP MAIN] 고객 공유 선택 / 견적 저장 이력
     # ==========================================
     # 견적 입력칸보다 위에 배치하기 위해 현재 세션 입력값을 먼저 한 번 반영
@@ -2592,13 +2663,13 @@ if not IS_CLIENT_VIEW:
             "rent_resale_pct": rent_resale_pct,
         }
 
-    history_raw_data = st.session_state.get("active_quote_raw", pre_raw_data) if st.session_state.active_quote_data else pre_raw_data
-
+    # 저장/이력 영역은 화면상으로는 우측 상단에 두되,
+    # 실제 렌더링은 견적 원문 확정/빠른수정 적용값이 모두 반영된 뒤에 실행한다.
+    # 이렇게 해야 2번째 저장부터 이전 스냅샷이 저장되는 문제를 막을 수 있다.
     control_col, history_col = st.columns([0.68, 0.32], gap="medium")
     with control_col:
         visible_sections = render_share_section_selector(visible_sections)
-    with history_col:
-        render_quote_history_area(history_raw_data, car_name, rent_monthly_pay, months, mileage, rent_resale_pct, rent_deposit, make_share_url, visible_sections, st.session_state.active_quote_data is not None)
+    history_area_placeholder = history_col.container()
 
     # ==========================================
     # [TOP MAIN] 타사 견적 파싱 구역
@@ -2860,6 +2931,21 @@ if not IS_CLIENT_VIEW:
             "car_shape": car_shape,
             "rent_resale_pct": rent_resale_pct,
         }
+
+    history_raw_data = st.session_state.get("active_quote_raw", pre_raw_data) if st.session_state.active_quote_data else pre_raw_data
+    with history_area_placeholder:
+        render_quote_history_area(
+            history_raw_data,
+            car_name,
+            rent_monthly_pay,
+            months,
+            mileage,
+            rent_resale_pct,
+            rent_deposit,
+            make_share_url,
+            visible_sections,
+            st.session_state.active_quote_data is not None,
+        )
 
     st.sidebar.markdown(
         '<div class="rent-fixed-resale-label" style="font-size:14px; font-weight:400;">📉 렌트 고정 잔존가치 (%)</div>',
