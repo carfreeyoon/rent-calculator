@@ -22,6 +22,7 @@ APP_BASE_URL = "https://carfreeoh-rentcalculator.streamlit.app"
 # [고객 공유 항목 선택 기본값/유틸]
 # ==========================================
 DEFAULT_VISIBLE_SECTIONS = {
+    "intro": True,
     "conditions": True,
     "common": True,
     "installment_condition": True,
@@ -37,6 +38,7 @@ DEFAULT_VISIBLE_SECTIONS = {
     "guide_installment": True,
     "guide_rent": True,
     "guide_lease": True,
+    "outro": True,
 }
 
 SHARE_SECTION_GROUPS = {
@@ -80,6 +82,10 @@ def normalize_visible_sections(data=None):
         sections["guide_installment"] = False
         sections["guide_rent"] = False
         sections["guide_lease"] = False
+
+    # 인삿말/마무리말은 체크 UI에는 노출하지 않지만 내부 섹션값은 항상 노출(True)로 유지
+    sections["intro"] = True
+    sections["outro"] = True
 
     return sections
 
@@ -382,6 +388,7 @@ def render_share_section_selector(current_sections):
     return collect_visible_sections_from_state()
 
 def render_quote_history_area(raw_data, car_name, rent_monthly_pay, months, mileage, rent_resale_pct, rent_deposit, make_share_url_func, visible_sections, has_active_quote=True):
+    st.text_input("고객명", key="customer_name", placeholder="고객명 입력", label_visibility="visible")
     st.markdown('<div class="quote-history-panel">', unsafe_allow_html=True)
     st.markdown('<div class="quote-history-title">🕘 견적 저장 / 이력</div>', unsafe_allow_html=True)
 
@@ -789,6 +796,7 @@ st.markdown("""
     
     /* 상단 공통 조건 박스 및 테이블 */
     .common-info-box { background-color: #f8f9fa; border: 1px solid #dee2e6; padding: 15px; border-radius: 6px; margin-bottom: 20px; }
+    html.caprio-dark .customer-message-box div { color: #f3f6fb !important; }
     .common-table { width: 100%; border-collapse: collapse; background-color: #ffffff; text-align: center; font-size: 13px; }
     .common-table th { background-color: #f1f3f5; color: #0b3873; font-weight: bold; padding: 8px; border: 1px solid #dee2e6; }
     .common-table td { padding: 8px; border: 1px solid #dee2e6; color: #333333; }
@@ -1789,6 +1797,44 @@ st.markdown("""
         -webkit-text-fill-color: #111827 !important;
     }
 
+    /* [PATCH] 화이트모드 사이드바 입력/구분선 시인성 보완 */
+    html.caprio-light [data-testid="stSidebar"] input,
+    html.caprio-light [data-testid="stSidebar"] textarea,
+    html.caprio-light [data-testid="stSidebar"] select,
+    html.caprio-light [data-testid="stSidebar"] div[data-baseweb="input"],
+    html.caprio-light [data-testid="stSidebar"] div[data-baseweb="input"] > div,
+    html.caprio-light [data-testid="stSidebar"] div[data-baseweb="base-input"],
+    html.caprio-light [data-testid="stSidebar"] div[data-testid="stTextInput"] input,
+    html.caprio-light [data-testid="stSidebar"] div[data-testid="stNumberInput"] input,
+    html.caprio-light [data-testid="stSidebar"] div[data-testid="stNumberInput"] > div,
+    html.caprio-light [data-testid="stSidebar"] div[data-testid="stNumberInput"] > div > div,
+    html:not(.caprio-dark) [data-testid="stSidebar"] input,
+    html:not(.caprio-dark) [data-testid="stSidebar"] textarea,
+    html:not(.caprio-dark) [data-testid="stSidebar"] select,
+    html:not(.caprio-dark) [data-testid="stSidebar"] div[data-baseweb="input"],
+    html:not(.caprio-dark) [data-testid="stSidebar"] div[data-baseweb="input"] > div,
+    html:not(.caprio-dark) [data-testid="stSidebar"] div[data-baseweb="base-input"],
+    html:not(.caprio-dark) [data-testid="stSidebar"] div[data-testid="stTextInput"] input,
+    html:not(.caprio-dark) [data-testid="stSidebar"] div[data-testid="stNumberInput"] input,
+    html:not(.caprio-dark) [data-testid="stSidebar"] div[data-testid="stNumberInput"] > div,
+    html:not(.caprio-dark) [data-testid="stSidebar"] div[data-testid="stNumberInput"] > div > div {
+        border-color: #94a3b8 !important;
+        outline-color: #94a3b8 !important;
+        box-shadow: none !important;
+    }
+
+    html.caprio-light [data-testid="stSidebar"] div[data-testid="stNumberInput"] button,
+    html:not(.caprio-dark) [data-testid="stSidebar"] div[data-testid="stNumberInput"] button {
+        border-color: #94a3b8 !important;
+    }
+
+    html.caprio-light [data-testid="stSidebar"] hr,
+    html:not(.caprio-dark) [data-testid="stSidebar"] hr {
+        border-color: #cbd5e1 !important;
+        background-color: #cbd5e1 !important;
+        opacity: 1 !important;
+    }
+
     html.caprio-light div[data-baseweb="tooltip"],
     html:not(.caprio-dark) div[data-baseweb="tooltip"] {
         background-color: #0b0f17 !important;
@@ -1854,6 +1900,115 @@ st.markdown("""
     html.caprio-dark div[data-testid="stFormSubmitButton"] button p {
         color: #ffffff !important;
         -webkit-text-fill-color: #ffffff !important;
+    }
+
+
+    /* [PATCH] 화이트모드 흐린 선 전체 보강: 입력칸/버튼/카드/구분선만 진하게 */
+    html.caprio-light,
+    html:not(.caprio-dark) {
+        --caprio-light-border-strong: #94a3b8;
+        --caprio-light-border-mid: #a8b3c2;
+        --caprio-light-border-soft: #cbd5e1;
+    }
+
+    /* 전역 입력 박스: textarea 포함 */
+    html.caprio-light div[data-testid="stTextArea"] textarea,
+    html:not(.caprio-dark) div[data-testid="stTextArea"] textarea,
+    html.caprio-light div[data-testid="stTextInput"] input,
+    html:not(.caprio-dark) div[data-testid="stTextInput"] input,
+    html.caprio-light div[data-testid="stNumberInput"] input,
+    html:not(.caprio-dark) div[data-testid="stNumberInput"] input,
+    html.caprio-light input,
+    html:not(.caprio-dark) input,
+    html.caprio-light textarea,
+    html:not(.caprio-dark) textarea,
+    html.caprio-light select,
+    html:not(.caprio-dark) select,
+    html.caprio-light div[data-baseweb="input"],
+    html:not(.caprio-dark) div[data-baseweb="input"],
+    html.caprio-light div[data-baseweb="input"] > div,
+    html:not(.caprio-dark) div[data-baseweb="input"] > div,
+    html.caprio-light div[data-baseweb="textarea"],
+    html:not(.caprio-dark) div[data-baseweb="textarea"],
+    html.caprio-light div[data-baseweb="textarea"] > div,
+    html:not(.caprio-dark) div[data-baseweb="textarea"] > div,
+    html.caprio-light div[data-baseweb="select"] > div,
+    html:not(.caprio-dark) div[data-baseweb="select"] > div {
+        border-color: var(--caprio-light-border-strong) !important;
+        outline-color: var(--caprio-light-border-strong) !important;
+        box-shadow: none !important;
+    }
+
+    /* 사이드바 입력/숫자 +/- 버튼: 조금 더 진하게 */
+    html.caprio-light [data-testid="stSidebar"] div[data-testid="stTextInput"] input,
+    html:not(.caprio-dark) [data-testid="stSidebar"] div[data-testid="stTextInput"] input,
+    html.caprio-light [data-testid="stSidebar"] div[data-testid="stNumberInput"] input,
+    html:not(.caprio-dark) [data-testid="stSidebar"] div[data-testid="stNumberInput"] input,
+    html.caprio-light [data-testid="stSidebar"] div[data-testid="stNumberInput"] > div,
+    html:not(.caprio-dark) [data-testid="stSidebar"] div[data-testid="stNumberInput"] > div,
+    html.caprio-light [data-testid="stSidebar"] div[data-testid="stNumberInput"] > div > div,
+    html:not(.caprio-dark) [data-testid="stSidebar"] div[data-testid="stNumberInput"] > div > div,
+    html.caprio-light [data-testid="stSidebar"] div[data-baseweb="input"],
+    html:not(.caprio-dark) [data-testid="stSidebar"] div[data-baseweb="input"],
+    html.caprio-light [data-testid="stSidebar"] div[data-baseweb="input"] > div,
+    html:not(.caprio-dark) [data-testid="stSidebar"] div[data-baseweb="input"] > div {
+        border-color: #64748b !important;
+        outline-color: #64748b !important;
+    }
+
+    html.caprio-light [data-testid="stSidebar"] div[data-testid="stNumberInput"] button,
+    html:not(.caprio-dark) [data-testid="stSidebar"] div[data-testid="stNumberInput"] button {
+        border-color: #64748b !important;
+        color: #111827 !important;
+        -webkit-text-fill-color: #111827 !important;
+    }
+
+    /* 버튼/이력 버튼/공유 선택 버튼: 흐린 테두리 보강 */
+    html.caprio-light div[data-testid="stButton"] button,
+    html:not(.caprio-dark) div[data-testid="stButton"] button,
+    html.caprio-light div[data-testid="stFormSubmitButton"] button,
+    html:not(.caprio-dark) div[data-testid="stFormSubmitButton"] button,
+    html.caprio-light .share-selector-anchor + div[data-testid="stHorizontalBlock"] div[data-testid="stButton"] button,
+    html:not(.caprio-dark) .share-selector-anchor + div[data-testid="stHorizontalBlock"] div[data-testid="stButton"] button {
+        border-color: var(--caprio-light-border-strong) !important;
+        box-shadow: none !important;
+    }
+
+    /* 고객명/저장영역/텍스트영역 주변 카드와 구분선 */
+    html.caprio-light .quote-history-panel,
+    html:not(.caprio-dark) .quote-history-panel,
+    html.caprio-light .common-info-box,
+    html:not(.caprio-dark) .common-info-box,
+    html.caprio-light .capture-box,
+    html:not(.caprio-dark) .capture-box,
+    html.caprio-light div[data-testid="stForm"],
+    html:not(.caprio-dark) div[data-testid="stForm"] {
+        border-color: var(--caprio-light-border-mid) !important;
+    }
+
+    html.caprio-light .share-group-divider,
+    html:not(.caprio-dark) .share-group-divider,
+    html.caprio-light hr,
+    html:not(.caprio-dark) hr {
+        background-color: var(--caprio-light-border-soft) !important;
+        border-color: var(--caprio-light-border-soft) !important;
+        opacity: 1 !important;
+    }
+
+    /* 테이블 선도 화이트에서 너무 흐리지 않게만 보강 */
+    html.caprio-light .common-table th,
+    html.caprio-light .common-table td,
+    html.caprio-light .pure-table th,
+    html.caprio-light .pure-table td,
+    html.caprio-light .matrix-table th,
+    html.caprio-light .matrix-table td,
+    html:not(.caprio-dark) .common-table th,
+    html:not(.caprio-dark) .common-table td,
+    html:not(.caprio-dark) .pure-table th,
+    html:not(.caprio-dark) .pure-table td,
+    html:not(.caprio-dark) .matrix-table th,
+    html:not(.caprio-dark) .matrix-table td {
+        border-color: #cbd5e1 !important;
     }
 
 
@@ -2288,10 +2443,15 @@ if shared_quote_data:
     installment_resale_pct = int(shared_quote_data.get("installment_resale_pct", installment_resale_pct))
     rent_resale_pct = float(shared_quote_data.get("rent_resale_pct", rent_resale_pct))
 
+customer_name = str(shared_quote_data.get("customer_name", st.session_state.get("customer_name", "")) or "").strip()
+if not IS_CLIENT_VIEW:
+    st.session_state.setdefault("customer_name", customer_name)
+
 visible_sections = normalize_visible_sections(shared_quote_data.get("visible_sections") if IS_CLIENT_VIEW else None)
 
 def make_share_url():
     share_data = {
+        "customer_name": str(st.session_state.get("customer_name", customer_name) or "").strip(),
         "car_name": car_name,
         "car_option": car_option,
         "car_price": car_price,
@@ -2532,6 +2692,7 @@ if not IS_CLIENT_VIEW:
         if loaded_share_data:
             st.session_state.loaded_share_data = loaded_share_data
             st.session_state.loaded_share_query_value = share_query_value
+            st.session_state.customer_name = str(loaded_share_data.get("customer_name", "") or "").strip()
             st.session_state.active_quote_data = {
                 "car_name": loaded_share_data.get("car_name", car_name),
                 "car_option": loaded_share_data.get("car_option", car_option),
@@ -3061,6 +3222,42 @@ reg_van = "td-highlight" if e15 != "" else ""
 tax_type_text = "승합차(9인승 이상)" if e15 != "" else car_shape
 
 car_option_display = format_option_html(car_option)
+
+
+def render_customer_intro_card(customer_name_value):
+    safe_name = html.escape(str(customer_name_value or "").strip())
+    customer_label = f"{safe_name}님" if safe_name else "고객님"
+    st.markdown(f"""
+    <div class="common-info-box customer-message-box">
+        <div style="font-size:15px; font-weight:bold; margin-bottom:9px; line-height:1.45; color:#0b3873;">
+            {customer_label},<br>
+            더 합리적인 선택을 위해 준비했어요 🙂
+        </div>
+        <div style="font-size:13px; line-height:1.6; color:#333333;">
+            복잡한 조건은 대신 정리하고,<br>
+            편하게 선택하실 수 있게 만들었어요.
+        </div>
+    </div>
+    """, unsafe_allow_html=True)
+
+
+def render_customer_outro_card():
+    st.markdown("""
+    <div class="common-info-box customer-message-box">
+        <div style="font-size:15px; font-weight:bold; margin-bottom:9px; line-height:1.45; color:#0b3873;">
+            혼자 비교하기 복잡하다면<br>
+            언제든 카프리오에 물어보세요 🙂
+        </div>
+        <div style="font-size:13px; line-height:1.6; color:#333333;">
+            할부·렌트·리스까지<br>
+            더 유리한 방향으로 도와드릴게요.
+        </div>
+    </div>
+    """, unsafe_allow_html=True)
+
+
+if visible_sections.get("intro", True):
+    render_customer_intro_card(customer_name)
 
 if visible_sections.get("common", True):
     # ==========================================
@@ -3686,6 +3883,28 @@ if visible_sections.get("guide", True):
         )
 
         st.markdown(guide_html, unsafe_allow_html=True)
+
+if visible_sections.get("outro", True):
+    if (
+        visible_sections.get("common", True)
+        or visible_sections.get("installment_condition", True)
+        or selected_summary_views
+        or visible_sections.get("rate_table", True)
+        or (
+            visible_sections.get("compare", True)
+            and len(selected_compare_methods) >= 2
+        )
+        or (
+            visible_sections.get("guide", True)
+            and (
+                visible_sections.get("guide_installment", True)
+                or visible_sections.get("guide_rent", True)
+                or visible_sections.get("guide_lease", True)
+            )
+        )
+    ):
+        render_output_section_gap()
+    render_customer_outro_card()
 
 st.markdown("""
 <div class="caprio-footer-note">
