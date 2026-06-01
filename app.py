@@ -34,11 +34,11 @@ DEFAULT_VISIBLE_SECTIONS = {
     "compare": True,
     "compare_installment": True,
     "compare_rent": True,
-    "compare_lease": True,
+    "compare_lease": False,
     "guide": True,
     "guide_installment": True,
     "guide_rent": True,
-    "guide_lease": True,
+    "guide_lease": False,
     "outro": True,
 }
 
@@ -2520,8 +2520,12 @@ if shared_quote_data:
     installment_resale_pct = int(shared_quote_data.get("installment_resale_pct", installment_resale_pct))
     rent_resale_pct = float(shared_quote_data.get("rent_resale_pct", rent_resale_pct))
 
-customer_name = str(shared_quote_data.get("customer_name", st.session_state.get("customer_name", "")) or "").strip()
-if not IS_CLIENT_VIEW:
+# 고객명은 고객용에서는 공유 데이터 기준으로 고정,
+# 영업자용에서는 불러오기 이후에도 입력창 변경값이 즉시 반영되도록 session_state를 우선합니다.
+if IS_CLIENT_VIEW:
+    customer_name = str(shared_quote_data.get("customer_name", "") or "").strip()
+else:
+    customer_name = str(st.session_state.get("customer_name", shared_quote_data.get("customer_name", "")) or "").strip()
     st.session_state.setdefault("customer_name", customer_name)
 
 finance_mode = str(shared_quote_data.get("finance_mode", st.session_state.get("finance_mode", "rent")) or "rent")
@@ -2777,6 +2781,22 @@ if not IS_CLIENT_VIEW:
     visible_sections = normalize_visible_sections(visible_sections)
     for section_key, section_value in visible_sections.items():
         st.session_state.setdefault(f"share_{section_key}", section_value)
+
+    # 초기 진입 기본값: 렌트 계산기 기준(할부+렌트만 선택, 리스 해제)
+    if "finance_mode_initialized" not in st.session_state:
+        st.session_state.finance_mode = st.session_state.get("finance_mode", "rent")
+        if st.session_state.finance_mode not in ["rent", "lease"]:
+            st.session_state.finance_mode = "rent"
+        if st.session_state.finance_mode == "rent":
+            st.session_state.share_compare = True
+            st.session_state.share_compare_installment = True
+            st.session_state.share_compare_rent = True
+            st.session_state.share_compare_lease = False
+            st.session_state.share_guide = True
+            st.session_state.share_guide_installment = True
+            st.session_state.share_guide_rent = True
+            st.session_state.share_guide_lease = False
+        st.session_state.finance_mode_initialized = True
 
     # ==========================================
     # [TOP MAIN] 고객 공유 선택 / 견적 저장 이력
@@ -3148,16 +3168,29 @@ if not IS_CLIENT_VIEW:
     # [TOP MAIN] 고객 공유 URL 불러오기
     # ==========================================
     st.markdown("#### 🔗 고객 공유 URL 불러오기")
-    share_url_input = st.text_area(
-        "고객 공유 URL 불러오기",
-        placeholder="고객 공유 링크를 붙여넣고 Ctrl+Enter를 누르세요.",
-        height=68,
-        key="share_url_input",
-        label_visibility="collapsed"
-    )
+    st.markdown("""
+    <style>
+    /* 고객 공유 URL 불러오기: Ctrl+Enter 전용으로 사용, 버튼은 화면에서만 숨김 */
+    div[data-testid="stForm"]:has(textarea[aria-label="고객 공유 URL 불러오기"]) div[data-testid="stFormSubmitButton"] {
+        display: none !important;
+    }
+    </style>
+    """, unsafe_allow_html=True)
+    with st.form("share_url_load_form", clear_on_submit=False):
+        share_url_input = st.text_area(
+            "고객 공유 URL 불러오기",
+            placeholder="고객 공유 링크를 붙여넣고 Ctrl+Enter를 누르세요.",
+            height=68,
+            key="share_url_input",
+            label_visibility="collapsed"
+        )
+        share_url_submitted = st.form_submit_button("불러오기", use_container_width=True)
 
     share_query_value = extract_share_query_value(share_url_input)
-    if share_query_value and share_query_value != st.session_state.get("loaded_share_query_value"):
+    # 사용자가 Ctrl+Enter/불러오기 버튼으로 명시 실행한 경우에만 불러온다.
+    # 같은 URL이어도 직접 실행이면 현재 수정값을 버리고 저장된 URL 데이터로 강제 덮어쓴다.
+    should_load_share_url = bool(share_query_value) and bool(share_url_submitted)
+    if should_load_share_url:
         loaded_share_data = decode_share_data(share_query_value)
         if loaded_share_data:
             st.session_state.loaded_share_data = loaded_share_data
@@ -3166,7 +3199,9 @@ if not IS_CLIENT_VIEW:
             loaded_finance_mode = loaded_share_data.get("finance_mode", "rent")
             loaded_finance_mode = loaded_finance_mode if loaded_finance_mode in ["rent", "lease"] else "rent"
             st.session_state.finance_mode = loaded_finance_mode
-            st.session_state.finance_mode_choice = "리스" if loaded_finance_mode == "lease" else "렌트"
+            # finance_mode_choice는 이미 금융방식 위젯이 렌더된 뒤에는 직접 수정하면 Streamlit 오류가 납니다.
+            # 불러오기 값은 pending으로 넘기고, 다음 rerun 초반(UI 렌더 전)에 반영합니다.
+            st.session_state.pending_finance_mode = loaded_finance_mode
             st.session_state.finance_mode_user_override = False
             st.session_state.lease_tax_included = bool(loaded_share_data.get("lease_tax_included", False))
             st.session_state.active_quote_data = {
@@ -3200,7 +3235,8 @@ if not IS_CLIENT_VIEW:
                 "lease_tax_included": bool(loaded_share_data.get("lease_tax_included", False)),
             }
             loaded_visible_sections = normalize_visible_sections(loaded_share_data.get("visible_sections"))
-            apply_visible_sections_to_state(loaded_visible_sections)
+            # 공유 항목 체크박스는 이미 렌더된 뒤 직접 수정하면 Streamlit 위젯 키 오류가 납니다.
+            # 불러오기 값은 pending으로 저장하고, 다음 rerun 초반(UI 렌더 전)에 반영합니다.
             st.session_state.pending_visible_sections = loaded_visible_sections
             st.success("공유 견적을 불러왔습니다.")
             st.rerun()
@@ -3360,7 +3396,9 @@ if not IS_CLIENT_VIEW:
         st.session_state.quick_prepayment_value = pending_quick_edit.get("prepayment_value", st.session_state.get("quick_prepayment_value", f"{rent_deposit:,}" if rent_deposit else ""))
         if pending_quick_edit.get("finance_mode") in ["rent", "lease"]:
             st.session_state.finance_mode = pending_quick_edit.get("finance_mode")
-            st.session_state.finance_mode_choice = "리스" if st.session_state.finance_mode == "lease" else "렌트"
+            # finance_mode_choice 위젯 키는 현재 화면에서 이미 렌더된 뒤일 수 있으므로 직접 수정하지 않습니다.
+            # 다음 rerun 초반에 pending_finance_mode를 통해 안전하게 동기화합니다.
+            st.session_state.pending_finance_mode = st.session_state.finance_mode
         if "lease_tax_included" in pending_quick_edit:
             st.session_state.lease_tax_included = bool(pending_quick_edit.get("lease_tax_included", False))
         st.session_state.quick_edit_applied = True
