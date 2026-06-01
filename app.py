@@ -1968,9 +1968,9 @@ st.markdown("""
     /* [PATCH] 화이트모드 흐린 선 전체 보강: 입력칸/버튼/카드/구분선만 진하게 */
     html.caprio-light,
     html:not(.caprio-dark) {
-        --caprio-light-border-strong: #94a3b8;
-        --caprio-light-border-mid: #a8b3c2;
-        --caprio-light-border-soft: #cbd5e1;
+        --caprio-light-border-strong: #64748b;
+        --caprio-light-border-mid: #94a3b8;
+        --caprio-light-border-soft: #94a3b8;
     }
 
     /* 전역 입력 박스: textarea 포함 */
@@ -2055,6 +2055,21 @@ st.markdown("""
         background-color: var(--caprio-light-border-soft) !important;
         border-color: var(--caprio-light-border-soft) !important;
         opacity: 1 !important;
+    }
+
+
+    /* [v11] 화이트모드 사이드바 구분선만 진하게 보정 - 기존 선 색상값만 보강 */
+    html.caprio-light [data-testid="stSidebar"],
+    html:not(.caprio-dark) [data-testid="stSidebar"] {
+        border-right-color:#94a3b8 !important;
+    }
+    html.caprio-light [data-testid="stSidebar"] hr,
+    html:not(.caprio-dark) [data-testid="stSidebar"] hr,
+    html.caprio-light [data-testid="stSidebar"] [data-testid="stMarkdownContainer"] hr,
+    html:not(.caprio-dark) [data-testid="stSidebar"] [data-testid="stMarkdownContainer"] hr {
+        background-color:#94a3b8 !important;
+        border-color:#94a3b8 !important;
+        opacity:1 !important;
     }
 
     /* 테이블 선도 화이트에서 너무 흐리지 않게만 보강 */
@@ -3067,6 +3082,15 @@ if not IS_CLIENT_VIEW:
     html.caprio-dark .finance-tax-checkbox-anchor + div[data-testid="stCheckbox"] [data-testid="stMarkdownContainer"] p {
         color:#f3f6fb !important;
     }
+
+
+    /* [v11] 화이트모드 금융방식 박스 테두리만 진하게 보정 - 다크모드 영향 없음 */
+    html.caprio-light div[data-testid="stVerticalBlockBorderWrapper"]:has(.finance-radio-anchor),
+    html:not(.caprio-dark) div[data-testid="stVerticalBlockBorderWrapper"]:has(.finance-radio-anchor),
+    html.caprio-light div[data-testid="stVerticalBlock"]:has(.finance-radio-anchor),
+    html:not(.caprio-dark) div[data-testid="stVerticalBlock"]:has(.finance-radio-anchor) {
+        border-color:#94a3b8 !important;
+    }
     @media (max-width: 768px) {
         .finance-mode-row-anchor + div[data-testid="stHorizontalBlock"] {
             display:block !important;
@@ -3371,7 +3395,7 @@ if not IS_CLIENT_VIEW:
     finance_lease_active = current_finance_mode == "lease"
 
     st.markdown('<div class="quick-rent-condition">', unsafe_allow_html=True)
-    st.markdown('<div class="quick-rent-condition-title">🔧 렌트/리스 조건 빠른 수정</div>', unsafe_allow_html=True)
+    st.markdown("#### 🔧 렌트/리스 조건 빠른 수정")
 
     quick_edit_submitted = False
 
