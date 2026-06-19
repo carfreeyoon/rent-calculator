@@ -1394,13 +1394,13 @@ if IS_CLIENT_VIEW:
             };
 
             if (previousTable && previousTable.dataset.caprioCalcVisualDone !== '1') {
-                const onDone = function(){ reveal(260); };
+                const onDone = function(){ reveal(120); };
                 previousTable.addEventListener('caprioCalcVisualDone', onDone, { once: true });
 
                 // 혹시 브라우저/Streamlit 재렌더 타이밍으로 이벤트를 놓쳐도 멈추지 않게 안전장치
                 setTimeout(function(){
                     if (previousTable.dataset.caprioCalcVisualDone === '1') {
-                        reveal(260);
+                        reveal(120);
                     } else {
                         reveal(900);
                     }
