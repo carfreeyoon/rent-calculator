@@ -1302,9 +1302,12 @@ if IS_CLIENT_VIEW:
             const startRows = function(){
                 table.classList.add('caprio-show');
                 const rows = Array.from(table.querySelectorAll('tr'));
+                let lastRowDelay = 0;
+
                 rows.forEach(function(row, index){
                     if (index === 0) return;
                     const rowDelay = Math.min(index * 145, 1450);
+                    lastRowDelay = Math.max(lastRowDelay, rowDelay);
                     setTimeout(function(){
                         row.classList.add('caprio-row-show');
                         row.querySelectorAll('td').forEach(function(cell){
@@ -1312,6 +1315,13 @@ if IS_CLIENT_VIEW:
                         });
                     }, rowDelay);
                 });
+
+                // 절감/유리 카드 숫자는 반드시 바로 위 계산표의 행/숫자 애니메이션이 끝난 뒤 시작한다.
+                // 기존에는 카드가 동시에 viewport에 들어오면 final card 타이머가 먼저 돌아서 엇박자가 생길 수 있었다.
+                setTimeout(function(){
+                    table.dataset.caprioCalcVisualDone = '1';
+                    table.dispatchEvent(new CustomEvent('caprioCalcVisualDone', { bubbles: true }));
+                }, lastRowDelay + 1250);
             };
 
             const loader = table.previousElementSibling && table.previousElementSibling.classList.contains('caprio-calc-loader')
@@ -1339,10 +1349,6 @@ if IS_CLIENT_VIEW:
             const duration = 1050;
             const startAt = performance.now() + startDelay;
 
-            // 최종 절감/유리 카드 숫자는 기존 결과값을 먼저 보여주지 않고,
-            // 카드가 등장하는 순간 0원부터 대기했다가 카운트업되도록 처리한다.
-            el.textContent = prefix + '0원' + suffix;
-
             function step(now) {
                 if (now < startAt) {
                     requestAnimationFrame(step);
@@ -1360,6 +1366,48 @@ if IS_CLIENT_VIEW:
                 }
             }
             requestAnimationFrame(step);
+        }
+
+        function findPreviousCalcTable(el) {
+            const tables = Array.from(doc.querySelectorAll('.pure-table'));
+            let previous = null;
+            tables.forEach(function(table){
+                if (table === el) return;
+                if (table.compareDocumentPosition(el) & Node.DOCUMENT_POSITION_FOLLOWING) {
+                    previous = table;
+                }
+            });
+            return previous;
+        }
+
+        function revealFinalCardAfterPreviousTable(el, fallbackDelay) {
+            if (!el || el.dataset.caprioFinalRevealStarted === '1') return;
+
+            const previousTable = findPreviousCalcTable(el);
+            const reveal = function(delay){
+                if (el.dataset.caprioFinalRevealStarted === '1') return;
+                el.dataset.caprioFinalRevealStarted = '1';
+                setTimeout(function(){
+                    el.classList.add('caprio-show');
+                    animateInlineMoney(el, 320);
+                }, Math.max(0, delay || 0));
+            };
+
+            if (previousTable && previousTable.dataset.caprioCalcVisualDone !== '1') {
+                const onDone = function(){ reveal(260); };
+                previousTable.addEventListener('caprioCalcVisualDone', onDone, { once: true });
+
+                // 혹시 브라우저/Streamlit 재렌더 타이밍으로 이벤트를 놓쳐도 멈추지 않게 안전장치
+                setTimeout(function(){
+                    if (previousTable.dataset.caprioCalcVisualDone === '1') {
+                        reveal(260);
+                    } else {
+                        reveal(900);
+                    }
+                }, 5200);
+            } else {
+                reveal(fallbackDelay);
+            }
         }
 
         function animateCompareSummaryTable(table) {
@@ -1416,13 +1464,13 @@ if IS_CLIENT_VIEW:
                         showDelay = 180 + Math.min(headerIndex * 900, 1800);
                     }
 
-                    setTimeout(function(){
-                        el.classList.add('caprio-show');
-                        if (isFinalCard) {
-                            animateInlineMoney(el, 1900);
-                            // 화살표 큐는 제거. 절감 카드 앞 spacer로 시선 구분만 처리.
-                        }
-                    }, showDelay);
+                    if (isFinalCard) {
+                        revealFinalCardAfterPreviousTable(el, showDelay);
+                    } else {
+                        setTimeout(function(){
+                            el.classList.add('caprio-show');
+                        }, showDelay);
+                    }
                 }
 
                 revealObserver.unobserve(el);
