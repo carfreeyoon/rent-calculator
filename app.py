@@ -1321,7 +1321,7 @@ if IS_CLIENT_VIEW:
                 setTimeout(function(){
                     table.dataset.caprioCalcVisualDone = '1';
                     table.dispatchEvent(new CustomEvent('caprioCalcVisualDone', { bubbles: true }));
-                }, lastRowDelay + 1250);
+                }, lastRowDelay + 700);
             };
 
             const loader = table.previousElementSibling && table.previousElementSibling.classList.contains('caprio-calc-loader')
