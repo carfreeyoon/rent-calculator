@@ -1339,6 +1339,10 @@ if IS_CLIENT_VIEW:
             const duration = 1050;
             const startAt = performance.now() + startDelay;
 
+            // 최종 절감/유리 카드 숫자는 기존 결과값을 먼저 보여주지 않고,
+            // 카드가 등장하는 순간 0원부터 대기했다가 카운트업되도록 처리한다.
+            el.textContent = prefix + '0원' + suffix;
+
             function step(now) {
                 if (now < startAt) {
                     requestAnimationFrame(step);
