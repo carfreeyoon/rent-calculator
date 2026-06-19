@@ -1415,7 +1415,7 @@ if IS_CLIENT_VIEW:
                     setTimeout(function(){
                         el.classList.add('caprio-show');
                         if (isFinalCard) {
-                            animateInlineMoney(el, 560);
+                            animateInlineMoney(el, 1900);
                             // 화살표 큐는 제거. 절감 카드 앞 spacer로 시선 구분만 처리.
                         }
                     }, showDelay);
