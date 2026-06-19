@@ -1503,6 +1503,116 @@ st.markdown("""
     /* 상단 공통 조건 박스 및 테이블 */
     .common-info-box { background-color: #f8f9fa; border: 1px solid #dee2e6; padding: 15px; border-radius: 6px; margin-bottom: 20px; }
     html.caprio-dark .customer-message-box div { color: #f3f6fb !important; }
+
+
+    /* ===== 고객 인삿말/마무리말: 씽 폴리싱 효과 ===== */
+    html.caprio-client-view .customer-message-box.caprio-polish-message {
+        position: relative !important;
+        overflow: hidden !important;
+        isolation: isolate !important;
+        box-shadow: 0 10px 24px rgba(11, 56, 115, 0.06) !important;
+    }
+
+    html.caprio-client-view .customer-message-box.caprio-polish-message::before {
+        content: "";
+        position: absolute;
+        inset: -1px;
+        border-radius: inherit;
+        pointer-events: none;
+        z-index: 1;
+        opacity: 0;
+        background:
+            radial-gradient(circle at 18% 0%, rgba(37, 99, 235, 0.14), transparent 34%),
+            radial-gradient(circle at 100% 100%, rgba(14, 165, 233, 0.10), transparent 36%);
+        transition: opacity 0.5s ease;
+    }
+
+    html.caprio-client-view .customer-message-box.caprio-polish-message::after {
+        content: "";
+        position: absolute;
+        top: -55%;
+        left: -85%;
+        width: 44%;
+        height: 220%;
+        pointer-events: none;
+        z-index: 2;
+        opacity: 0;
+        background: linear-gradient(
+            115deg,
+            transparent 0%,
+            rgba(255, 255, 255, 0.00) 24%,
+            rgba(255, 255, 255, 0.52) 48%,
+            rgba(59, 130, 246, 0.12) 58%,
+            rgba(255, 255, 255, 0.00) 78%,
+            transparent 100%
+        );
+        transform: translateX(0) rotate(10deg);
+    }
+
+    html.caprio-client-view .customer-message-box.caprio-polish-message.caprio-show::before {
+        opacity: 1;
+        animation: caprioPolishGlow 1.25s ease-out 0.1s both;
+    }
+
+    html.caprio-client-view .customer-message-box.caprio-polish-message.caprio-show::after {
+        animation: caprioPolishSweep 1.15s cubic-bezier(.22,.75,.2,1) 0.18s both;
+    }
+
+    html.caprio-dark.caprio-client-view .customer-message-box.caprio-polish-message {
+        box-shadow: 0 12px 28px rgba(0, 102, 255, 0.14) !important;
+    }
+
+    html.caprio-dark.caprio-client-view .customer-message-box.caprio-polish-message::before {
+        background:
+            radial-gradient(circle at 16% 0%, rgba(80, 150, 255, 0.18), transparent 36%),
+            radial-gradient(circle at 100% 100%, rgba(56, 189, 248, 0.12), transparent 38%);
+    }
+
+    html.caprio-dark.caprio-client-view .customer-message-box.caprio-polish-message::after {
+        background: linear-gradient(
+            115deg,
+            transparent 0%,
+            rgba(125, 180, 255, 0.00) 24%,
+            rgba(125, 190, 255, 0.38) 48%,
+            rgba(255, 255, 255, 0.18) 58%,
+            rgba(125, 180, 255, 0.00) 78%,
+            transparent 100%
+        );
+    }
+
+    @keyframes caprioPolishSweep {
+        0% {
+            left: -85%;
+            opacity: 0;
+        }
+        12% {
+            opacity: 1;
+        }
+        100% {
+            left: 132%;
+            opacity: 0;
+        }
+    }
+
+    @keyframes caprioPolishGlow {
+        0% {
+            opacity: 0;
+        }
+        28% {
+            opacity: 1;
+        }
+        100% {
+            opacity: 0.55;
+        }
+    }
+
+    @media (max-width: 768px) {
+        html.caprio-client-view .customer-message-box.caprio-polish-message::after {
+            width: 62%;
+            animation-duration: 1.02s;
+        }
+    }
+
     .common-table { width: 100%; border-collapse: collapse; background-color: #ffffff; text-align: center; font-size: 13px; }
     .common-table th { background-color: #f1f3f5; color: #0b3873; font-weight: bold; padding: 8px; border: 1px solid #dee2e6; }
     .common-table td { padding: 8px; border: 1px solid #dee2e6; color: #333333; }
@@ -4663,7 +4773,7 @@ def render_customer_intro_card(customer_name_value):
     safe_name = html.escape(str(customer_name_value or "").strip())
     customer_label = f"{safe_name}님" if safe_name else "고객님"
     st.markdown(f"""
-    <div class="common-info-box customer-message-box">
+    <div class="common-info-box customer-message-box caprio-polish-message">
         <div style="font-size:15px; font-weight:bold; margin-bottom:9px; line-height:1.45; color:#0b3873;">
             {customer_label},<br>
             더 합리적인 선택을 위해 준비했어요 🙂
@@ -4678,7 +4788,7 @@ def render_customer_intro_card(customer_name_value):
 
 def render_customer_outro_card():
     st.markdown("""
-    <div class="common-info-box customer-message-box">
+    <div class="common-info-box customer-message-box caprio-polish-message">
         <div style="font-size:15px; font-weight:bold; margin-bottom:9px; line-height:1.45; color:#0b3873;">
             혼자 비교하기 복잡하시다면<br>
             언제든 카프리오에 물어보세요 🙂
