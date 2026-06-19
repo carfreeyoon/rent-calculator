@@ -1504,12 +1504,14 @@ st.markdown("""
     .common-info-box { background-color: #f8f9fa; border: 1px solid #dee2e6; padding: 15px; border-radius: 6px; margin-bottom: 20px; }
     html.caprio-dark .customer-message-box div { color: #f3f6fb !important; }
 
-
-    /* ===== 고객 인삿말/마무리말: 씽 폴리싱 효과 ===== */
+    /* ===== 고객 인삿말 / 마무리말: 프리미엄 3회 폴리싱 효과 ===== */
     html.caprio-client-view .customer-message-box.caprio-polish-message {
         position: relative !important;
         overflow: hidden !important;
         isolation: isolate !important;
+        border-radius: 6px !important;
+        animation: caprioMessageSoftIn 0.25s ease-out both;
+        will-change: opacity, transform;
         box-shadow: 0 10px 24px rgba(11, 56, 115, 0.06) !important;
     }
 
@@ -1517,45 +1519,44 @@ st.markdown("""
         content: "";
         position: absolute;
         inset: -1px;
-        border-radius: inherit;
-        pointer-events: none;
         z-index: 1;
+        pointer-events: none;
+        border-radius: inherit;
         opacity: 0;
         background:
-            radial-gradient(circle at 18% 0%, rgba(37, 99, 235, 0.14), transparent 34%),
-            radial-gradient(circle at 100% 100%, rgba(14, 165, 233, 0.10), transparent 36%);
-        transition: opacity 0.5s ease;
+            radial-gradient(circle at 16% 0%, rgba(37, 99, 235, 0.13), transparent 36%),
+            radial-gradient(circle at 100% 100%, rgba(14, 165, 233, 0.10), transparent 38%);
     }
 
     html.caprio-client-view .customer-message-box.caprio-polish-message::after {
         content: "";
         position: absolute;
-        top: -55%;
-        left: -85%;
-        width: 44%;
-        height: 220%;
-        pointer-events: none;
+        top: -60%;
+        left: -105%;
+        width: 72%;
+        height: 230%;
         z-index: 2;
+        pointer-events: none;
         opacity: 0;
+        transform: rotate(10deg);
         background: linear-gradient(
             115deg,
             transparent 0%,
-            rgba(255, 255, 255, 0.00) 24%,
-            rgba(255, 255, 255, 0.52) 48%,
-            rgba(59, 130, 246, 0.12) 58%,
-            rgba(255, 255, 255, 0.00) 78%,
+            rgba(255, 255, 255, 0.00) 18%,
+            rgba(219, 234, 254, 0.20) 34%,
+            rgba(255, 255, 255, 0.62) 50%,
+            rgba(59, 130, 246, 0.14) 64%,
+            rgba(255, 255, 255, 0.00) 82%,
             transparent 100%
         );
-        transform: translateX(0) rotate(10deg);
     }
 
     html.caprio-client-view .customer-message-box.caprio-polish-message.caprio-show::before {
-        opacity: 1;
-        animation: caprioPolishGlow 1.25s ease-out 0.1s both;
+        animation: caprioMessageGlowTriple 7.8s ease-out 0.25s 1 both;
     }
 
     html.caprio-client-view .customer-message-box.caprio-polish-message.caprio-show::after {
-        animation: caprioPolishSweep 1.15s cubic-bezier(.22,.75,.2,1) 0.18s both;
+        animation: caprioMessagePolishSweepTriple 2.6s cubic-bezier(.22,.75,.2,1) 0.45s 3 both;
     }
 
     html.caprio-dark.caprio-client-view .customer-message-box.caprio-polish-message {
@@ -1564,52 +1565,50 @@ st.markdown("""
 
     html.caprio-dark.caprio-client-view .customer-message-box.caprio-polish-message::before {
         background:
-            radial-gradient(circle at 16% 0%, rgba(80, 150, 255, 0.18), transparent 36%),
-            radial-gradient(circle at 100% 100%, rgba(56, 189, 248, 0.12), transparent 38%);
+            radial-gradient(circle at 16% 0%, rgba(80, 150, 255, 0.18), transparent 38%),
+            radial-gradient(circle at 100% 100%, rgba(56, 189, 248, 0.12), transparent 40%);
     }
 
     html.caprio-dark.caprio-client-view .customer-message-box.caprio-polish-message::after {
         background: linear-gradient(
             115deg,
             transparent 0%,
-            rgba(125, 180, 255, 0.00) 24%,
-            rgba(125, 190, 255, 0.38) 48%,
-            rgba(255, 255, 255, 0.18) 58%,
-            rgba(125, 180, 255, 0.00) 78%,
+            rgba(125, 180, 255, 0.00) 18%,
+            rgba(96, 165, 250, 0.16) 34%,
+            rgba(147, 197, 253, 0.46) 50%,
+            rgba(255, 255, 255, 0.16) 64%,
+            rgba(125, 180, 255, 0.00) 82%,
             transparent 100%
         );
     }
 
-    @keyframes caprioPolishSweep {
-        0% {
-            left: -85%;
-            opacity: 0;
-        }
-        12% {
-            opacity: 1;
-        }
-        100% {
-            left: 132%;
-            opacity: 0;
-        }
+    @keyframes caprioMessageSoftIn {
+        0% { opacity: 0; transform: translateY(8px) scale(0.995); }
+        100% { opacity: 1; transform: translateY(0) scale(1); }
     }
 
-    @keyframes caprioPolishGlow {
-        0% {
-            opacity: 0;
-        }
-        28% {
-            opacity: 1;
-        }
-        100% {
-            opacity: 0.55;
-        }
+    @keyframes caprioMessagePolishSweepTriple {
+        0% { left: -105%; opacity: 0; }
+        7% { opacity: 1; }
+        65% { left: 135%; opacity: 0; }
+        100% { left: 135%; opacity: 0; }
+    }
+
+    @keyframes caprioMessageGlowTriple {
+        0% { opacity: 0; }
+        8% { opacity: 0.9; }
+        32% { opacity: 0.55; }
+        40% { opacity: 0.85; }
+        64% { opacity: 0.55; }
+        72% { opacity: 0.82; }
+        100% { opacity: 0.48; }
     }
 
     @media (max-width: 768px) {
         html.caprio-client-view .customer-message-box.caprio-polish-message::after {
-            width: 62%;
-            animation-duration: 1.02s;
+            width: 86%;
+            top: -65%;
+            height: 240%;
         }
     }
 
