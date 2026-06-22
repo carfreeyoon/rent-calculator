@@ -5151,6 +5151,17 @@ if visible_sections.get("compare", True):
 
 GUIDE_STYLE_HTML = """
 <style>
+.mo-br{
+    display:none;
+}
+@media (max-width:768px){
+    .mo-br{
+        display:block;
+    }
+    .installment-guide-list{
+        padding-left:14px !important;
+    }
+}
 .guide-wrap{
     width:100%;
     display:grid;
@@ -5319,37 +5330,177 @@ html.caprio-dark .match-lease .match-result{
     color:#b9a7ff !important;
 }
 @media (max-width:768px){
+    .guide-mobile-carousel-shell{
+        position:relative;
+        width:100%;
+        overflow:hidden;
+        margin-top:12px;
+    }
     .guide-wrap{
-        grid-template-columns:1fr;
+        display:flex !important;
+        grid-template-columns:none !important;
+        gap:0 !important;
+        column-gap:0 !important;
+        overflow-x:auto !important;
+        overflow-y:hidden !important;
+        scroll-snap-type:x mandatory !important;
+        scroll-padding:0 !important;
+        -webkit-overflow-scrolling:touch !important;
+        overscroll-behavior-x:contain !important;
+        touch-action:pan-x pan-y !important;
+        padding:0 0 12px 0 !important;
+        margin-top:0 !important;
+        scrollbar-width:none !important;
+    }
+    .guide-wrap::-webkit-scrollbar{
+        display:none !important;
+    }
+    .guide-card{
+        flex:0 0 100% !important;
+        width:100% !important;
+        min-width:100% !important;
+        max-width:100% !important;
+        margin-right:0 !important;
+        scroll-snap-align:start !important;
+        scroll-snap-stop:always !important;
+        box-sizing:border-box !important;
+        padding:16px !important;
+    }
+    .guide-title{
+        font-size:21px !important;
+    }
+    .guide-copy{
+        font-size:17px !important;
+        line-height:1.42 !important;
+        margin-bottom:10px !important;
+    }
+    .guide-subtitle{
+        font-size:16px !important;
+        font-weight:800 !important;
+        margin-bottom:7px !important;
+    }
+    .guide-list{
+        font-size:13.5px !important;
+        line-height:1.68 !important;
+        margin-bottom:10px !important;
+    }
+    .reality-box{
+        padding:11px !important;
+    }
+    .reality-title{
+        font-size:16px !important;
+        font-weight:800 !important;
+        margin-bottom:7px !important;
+    }
+    .reality-item{
+        font-size:13px !important;
+        line-height:1.52 !important;
+        margin-bottom:4px !important;
+    }
+    .guide-swipe-hint{
+        position:absolute;
+        left:50%;
+        top:46%;
+        transform:translate(-50%,-50%);
+        z-index:999;
+        pointer-events:none;
+        display:flex;
+        flex-direction:column;
+        align-items:center;
+        justify-content:center;
+        gap:7px;
+        opacity:0;
+        animation:caprioSwipeHintWrap 6.4s ease-in-out 0.6s infinite both;
+        will-change:opacity, transform;
+    }
+    .guide-swipe-hand{
+        width:78px;
+        height:78px;
+        border-radius:999px;
+        display:flex;
+        align-items:center;
+        justify-content:center;
+        background:rgba(15,55,115,0.78);
+        color:#ffffff;
+        font-size:42px;
+        box-shadow:0 16px 34px rgba(15,55,115,0.26);
+        backdrop-filter:blur(6px);
+        animation:caprioSwipeHandMove 3.0s ease-in-out 0.6s infinite both;
+        will-change:opacity, transform;
+    }
+    .guide-swipe-text{
+        padding:7px 12px;
+        border-radius:999px;
+        background:rgba(15,55,115,0.70);
+        color:#ffffff;
+        font-size:13px;
+        font-weight:800;
+        letter-spacing:-0.02em;
+        white-space:nowrap;
+        box-shadow:0 8px 20px rgba(15,55,115,0.16);
+        backdrop-filter:blur(6px);
+    }
+    .guide-card{
+        position:relative;
+        z-index:1;
+    }
+    html.caprio-dark .guide-swipe-hand{
+        background:rgba(92,142,220,0.70) !important;
+        box-shadow:0 12px 28px rgba(0,0,0,0.28);
+    }
+    html.caprio-dark .guide-swipe-text{
+        background:rgba(92,142,220,0.62) !important;
+    }
+    @keyframes caprioSwipeHintWrap{
+        0%{opacity:0;}
+        8%{opacity:0.84;}
+        46%{opacity:0.84;}
+        56%{opacity:0;}
+        100%{opacity:0;}
+    }
+    @keyframes caprioSwipeHandMove{
+        0%{transform:translateX(54px); opacity:0;}
+        8%{transform:translateX(54px); opacity:0.9;}
+        30%{transform:translateX(-54px); opacity:0.9;}
+        38%{transform:translateX(-54px); opacity:0;}
+        48%{transform:translateX(54px); opacity:0;}
+        56%{transform:translateX(54px); opacity:0.9;}
+        78%{transform:translateX(-54px); opacity:0.9;}
+        88%{transform:translateX(-54px); opacity:0;}
+        100%{transform:translateX(-54px); opacity:0;}
     }
     .match-card{
         display:block;
-        padding:14px;
         margin-top:12px;
+        grid-template-columns:1fr !important;
+        padding:15px 16px !important;
+        border-width:1.5px !important;
+        box-shadow:0 10px 24px rgba(15,55,115,0.10) !important;
     }
-    .match-icon{
-        display:none;
-    }
-    .match-title{
-        font-size:16px;
-        margin-bottom:8px;
-    }
-    .match-list{
-        font-size:13px;
-        line-height:1.65;
-    }
-    .match-result{
-        font-size:15px;
-    }
-}
-
-@media (max-width:768px){
     .match-icon{
         display:none !important;
     }
-    .match-card{
-        grid-template-columns:1fr !important;
-        padding:15px 16px !important;
+    .match-title{
+        font-size:16px !important;
+        font-weight:900 !important;
+        margin-bottom:7px !important;
+    }
+    .match-list{
+        font-size:14px !important;
+        line-height:1.42 !important;
+    }
+    .match-list li{
+        margin-bottom:0 !important;
+        padding-bottom:0 !important;
+    }
+    .match-result{
+        font-size:16px !important;
+        padding-top:9px !important;
+        margin-top:10px !important;
+        letter-spacing:-0.02em;
+    }
+    html.caprio-dark .match-card{
+        box-shadow:0 10px 28px rgba(0,0,0,0.26) !important;
     }
 }
 
@@ -5368,19 +5519,19 @@ def guide_card_installment():
     return """
 <div class="guide-card">
 <div class="guide-title">💳 [소유형] 할부 구매</div>
-<div class="guide-copy">내 차라는 확실한 자산, 오래도록 변함없이 타고 싶다면?</div>
+<div class="guide-copy">내 차라는 확실한 자산<br class="mo-br"> 오래도록 변함없이 타고 싶다면?</div>
 <div class="guide-subtitle">✅ 할부 체크리스트</div>
-<ol class="guide-list">
+<ol class="guide-list installment-guide-list">
 <li>5~10년 이상 장기 보유할 목적이 확실해요.</li>
 <li>취등록세와 같은 초기 목돈을 지출할 여력이 있어요.</li>
 <li>명의가 개인 또는 법인 소유인 온전한 자산을 원해요.</li>
 </ol>
 <div class="reality-box">
 <div class="reality-title">💡 현실 체크</div>
-<div class="reality-item">🏠 <b>집 대출 한도 축소</b> : 내 명의로 대출이 잡히기 때문에, DSR 한도체크는 필수예요</div>
-<div class="reality-item">💸 <b>부대 비용 발생</b> : 자동차세·취등록세·보험료 등 지속적인 비용이 발생해요.</div>
-<div class="reality-item">🛡️ <b>자산 가치 관리</b> : 사고주의 & 관리를 통해 감가를 최소화하는게 중요해요.</div>
-<div class="reality-item">🏢 <b>법인 시 주의</b> : 판매 시 부가세 10%가 발생하니 미리 대비해야해요!</div>
+<div class="reality-item">🏠 <b>집 대출 한도 축소</b> : 내 명의로 대출이 잡히기 때문에,<br class="mo-br"> DSR 한도체크는 필수예요</div>
+<div class="reality-item">💸 <b>부대 비용 발생</b> : 자동차세·취등록세·보험료 등<br class="mo-br"> 지속적인 비용이 발생해요.</div>
+<div class="reality-item">🛡️ <b>자산 가치 관리</b> : 사고주의 & 관리를 통해<br class="mo-br"> 감가를 최소화하는게 중요해요.</div>
+<div class="reality-item">🏢 <b>법인 시 주의</b> : 판매 시 부가세 10%가 발생하니<br class="mo-br"> 미리 대비해야해요!</div>
 </div>
 <div class="match-card match-installment">
 <div class="match-icon">💳</div>
@@ -5389,7 +5540,7 @@ def guide_card_installment():
 <ul class="match-list">
 <li>✔ 5년 이상 장기 보유 예정이며</li>
 <li>✔ 사고·감가 리스크가 크게 부담되지 않고</li>
-<li>✔ 차량가의 30% 이상 초기비용 부담이 가능하고</li>
+<li>✔ 차량가 30% 이상 초기비용 부담 가능하고</li>
 <li>✔ DSR·대출한도 영향이 중요하지 않다면?</li>
 </ul>
 <div class="match-result">→ 할부가 잘 맞아요.</div>
@@ -5403,26 +5554,26 @@ def guide_card_rent():
     return """
 <div class="guide-card">
 <div class="guide-title">🚗 [재테크형] 장기렌트</div>
-<div class="guide-copy">대출 한도 보호와 차량 관리의 효율성을 동시에!</div>
+<div class="guide-copy">대출 한도 보호와<br class="mo-br"> 차량 관리의 효율성을 동시에!</div>
 <div class="guide-subtitle">✅ 렌트 체크리스트</div>
 <ol class="guide-list">
-<li>추후 주택 마련 등을 위해 대출 한도를 확보해야 해요.</li>
-<li>3~5년마다 새로운 차량으로 교체하는 주기를 선호해요.</li>
-<li>정비·세금·사고처리 등 번거로운 일은 맡기고 싶어요.</li>
+<li>주택 마련 등을 위해 대출한도를 확보해야 해요.</li>
+<li>3~5년마다 새 차량으로 교체하는 걸 선호해요.</li>
+<li>정비·세금·사고처리 등 번거로운 일은 싫어요.</li>
 </ol>
 <div class="reality-box">
 <div class="reality-title">💡 현실 체크</div>
-<div class="reality-item">🔓 <b>대출 한도 영향 없음</b> : 렌트사 명의라 개인 대출 한도에 영향이 없어요.</div>
-<div class="reality-item">💵 <b>세금 할증 없음</b> : 재산세 등 세금 인상은 걱정하지 않으셔도 괜찮아요.</div>
-<div class="reality-item">🚫 <b>보험·사고 기록</b> : 사고 시, 정해진 면책금으로 해결하고 개인 보험 이력에 남지 않아요.</div>
-<div class="reality-item">🗓️ <b>관리 비용 최소화</b> : 보험·세금이 모두 월 이용료에 포함되며 추가 비용 부담이 없어요!</div>
+<div class="reality-item">🔓 <b>대출 한도 영향 없음</b> : 렌트사 명의라<br class="mo-br"> 개인 대출 한도에 영향이 없어요.</div>
+<div class="reality-item">💵 <b>세금 할증 없음</b> : 재산세 등 세금 인상은<br class="mo-br"> 걱정하지 않으셔도 괜찮아요.</div>
+<div class="reality-item">🚫 <b>보험·사고 기록</b> : 사고 시, 면책금으로 해결하고<br class="mo-br"> 사고이력은 남지 않아요.</div>
+<div class="reality-item">🗓️ <b>관리 비용 최소화</b> : 보험·세금이 모두 월 이용료로<br class="mo-br"> 추가비용 부담을 없애요!</div>
 </div>
 <div class="match-card match-rent">
 <div class="match-icon">🚗</div>
 <div>
 <div class="match-title">🔥 렌트는 이런 경우 고민없이!</div>
 <ul class="match-list">
-<li>✔ 5년 이하 운행 또는 주기적 신차 교체를 선호하고</li>
+<li>✔ 5년 이하 운행, 신차 교체를 선호하고</li>
 <li>✔ 보험료가 높거나 사고이력이 부담되며</li>
 <li>✔ 사고·세금·보험 처리를 간편한 걸 원하고</li>
 <li>✔ DSR·대출한도 보호까지 신경 쓴다면?</li>
@@ -5438,7 +5589,7 @@ def guide_card_lease():
     return """
 <div class="guide-card">
 <div class="guide-title">✨ [이미지형] 리스</div>
-<div class="guide-copy">품격은 일반 번호판으로, 초기 비용은 리스로 합리적으로!</div>
+<div class="guide-copy">품격은 일반 번호판으로,<br class="mo-br"> 초기 비용은 리스로 합리적으로!</div>
 <div class="guide-subtitle">✅ 리스 체크리스트</div>
 <ol class="guide-list">
 <li>취등록세 초기 목돈 지출이 부담스러워요.</li>
@@ -5447,10 +5598,10 @@ def guide_card_lease():
 </ol>
 <div class="reality-box">
 <div class="reality-title">💡 현실 체크</div>
-<div class="reality-item">📉 <b>개인 보험요율 유지</b> : 무사고 경력이 길고 보험료가 낮다면 유리할 수 있어요.</div>
-<div class="reality-item">✨ <b>일반 번호판</b> : 자가용과 동일한 번호판을 유지해요.</div>
-<div class="reality-item">💰 <b>효율적 비용 구성</b> : 자동차세 포함 + 초기비용 부담을 낮출 수 있어요.</div>
-<div class="reality-item">💵 <b>세금 인상</b> : 재산세 등 세금 인상은 걱정하지 않으셔도 괜찮아요!</div>
+<div class="reality-item">📉 <b>개인 보험요율 유지</b> : 무사고 경력이 길고<br class="mo-br">보험료가 낮다면 유리할 수 있어요.</div>
+<div class="reality-item">✨ <b>일반 번호판</b> : 자가용과 같은 번호판을 유지해요.</div>
+<div class="reality-item">💰 <b>월 납입금</b> : 부담을 줄여 이용할 수 있어요.</div>
+<div class="reality-item">💵 <b>세금 인상</b> : 재산세 등 세금 인상은<br class="mo-br"> 걱정하지 않으셔도 괜찮아요!</div>
 </div>
 <div class="match-card match-lease">
 <div class="match-icon">✨</div>
@@ -5502,10 +5653,16 @@ if visible_sections.get("guide", True):
             GUIDE_STYLE_HTML
             + """
 
-<div class="guide-wrap">
+<div class="guide-mobile-carousel-shell">
+    <div class="guide-swipe-hint" aria-hidden="true">
+        <div class="guide-swipe-hand">☝️</div>
+        <div class="guide-swipe-text">왼쪽으로 밀어 확인하세요</div>
+    </div>
+    <div class="guide-wrap">
 """
             + "\n".join(selected_guide_cards)
             + """
+    </div>
 </div>
 """
         )
