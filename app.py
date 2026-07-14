@@ -3555,7 +3555,7 @@ def auto_convert_quote(raw_text):
     - 신규: 최종차량가격 중심
     - 올드: 총차량가격 중심
     """
-    if not raw_text or "견적서" not in raw_text:
+    if not raw_text:
         return raw_text
 
     text = str(raw_text).replace("\r\n", "\n").replace("\r", "\n")
