@@ -1,4 +1,6 @@
 import streamlit as st
+from share_store import ShareError, ShareNotFound, decode_share
+from share_backend import configured_store, ShareWritesPaused
 import streamlit.components.v1 as components
 import re
 import json
@@ -14,8 +16,7 @@ import textwrap
 st.set_page_config(page_title="카프리오 비교 계산기", layout="wide")
 
 APP_PASSWORD = st.secrets.get("APP_PASSWORD", "")
-SUPABASE_URL = st.secrets.get("SUPABASE_URL", "").rstrip("/")
-SUPABASE_KEY = st.secrets.get("SUPABASE_KEY", "")
+SHARE_STORE = configured_store(st.secrets)
 APP_BASE_URL = "https://compare-carfreeoh.com"
 
 # ==========================================
@@ -667,77 +668,33 @@ def generate_share_code(length=6):
     return "".join(secrets.choice(alphabet) for _ in range(length))
 
 
-def supabase_request(method, path, payload=None):
-    if not SUPABASE_URL or not SUPABASE_KEY:
-        return None
-
-    url = f"{SUPABASE_URL}{path}"
-    data = None
-    headers = {
-        "apikey": SUPABASE_KEY,
-        "Authorization": f"Bearer {SUPABASE_KEY}",
-        "Content-Type": "application/json"
-    }
-
-    if payload is not None:
-        data = json.dumps(payload, ensure_ascii=False).encode("utf-8")
-        headers["Prefer"] = "return=minimal"
-
-    req = urllib.request.Request(url, data=data, headers=headers, method=method)
-
-    try:
-        with urllib.request.urlopen(req, timeout=8) as response:
-            body = response.read().decode("utf-8")
-            return json.loads(body) if body else True
-    except Exception:
-        return None
-
-
 def save_share_data(data):
-    for _ in range(5):
-        code = generate_share_code()
-        result = supabase_request(
-            "POST",
-            "/rest/v1/share_links",
-            [{"code": code, "payload": data}]
-        )
-        if result is not None:
-            return code
-    return ""
+    try:
+        return SHARE_STORE.save(data)
+    except ShareWritesPaused:
+        st.info("공유 링크 저장소 전환 중입니다. 현재는 긴 공유 링크가 생성되며 정상 이용할 수 있습니다. 링크 전체를 복사해 주세요.")
+        return ""
+    except ShareError:
+        st.warning("단축 링크 저장에 실패해 기존 방식의 긴 공유 링크를 생성합니다. 링크 전체를 복사해 주세요.")
+        return ""
 
 
 def load_share_data(code):
-    code = str(code or "").strip().upper()
-    if not is_short_code(code):
-        return {}
-
-    result = supabase_request(
-        "GET",
-        f"/rest/v1/share_links?code=eq.{urllib.parse.quote(code)}&select=payload"
-    )
-
-    if isinstance(result, list) and result:
-        return result[0].get("payload", {}) or {}
-    return {}
+    return SHARE_STORE.load(str(code or "").strip().upper())
 
 def encode_share_data(data):
     json_text = json.dumps(data, ensure_ascii=False)
     return base64.urlsafe_b64encode(json_text.encode("utf-8")).decode("utf-8")
 
 def decode_share_data(encoded_text):
-    encoded_text = str(encoded_text or "").strip()
-
-    if is_short_code(encoded_text):
-        loaded_data = load_share_data(encoded_text)
-        if loaded_data:
-            return loaded_data
-
     try:
-        padding = "=" * (-len(encoded_text) % 4)
-        decoded = base64.urlsafe_b64decode((encoded_text + padding).encode("utf-8"))
-        return json.loads(decoded.decode("utf-8"))
-    except Exception:
-        return {}
+        return decode_share(encoded_text, SHARE_STORE)
+    except ShareNotFound:
+        st.error("공유 견적을 찾을 수 없습니다. 담당자에게 링크를 확인해 주세요.")
+        st.stop()
+    except ShareError:
+        st.error("공유 견적을 불러오지 못했습니다. 잠시 후 다시 시도해 주세요. 기본 견적으로 대체하지 않습니다.")
+        st.stop()
 
 
 def extract_share_query_value(value):
@@ -5702,3 +5659,4 @@ st.markdown("""
     </div>
 </div>
 """, unsafe_allow_html=True)
+
